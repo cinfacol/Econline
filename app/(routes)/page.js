@@ -1,4 +1,5 @@
 import Banner from "@/components/common/Banner";
+import ProductsList from "@/components/products/ProductsList";
 
 export default function Home() {
   return (
@@ -17,6 +18,7 @@ export default function Home() {
               Tailwind.
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6"></div>
+            <ProductsList />
           </div>
         </div>
       </div>
