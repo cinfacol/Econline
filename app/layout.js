@@ -1,13 +1,13 @@
 import { Navbar, Footer } from "@/components/common";
 import { Setup } from "@/components/utils";
 import CustomProvider from "@/redux/provider";
-import { Nunito } from "next/font/google";
+import { Urbanist } from "next/font/google";
 import "@/styles/globals.css";
 
-const font = Nunito({ subsets: ["latin"] });
+const font = Urbanist({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "EcOnline | Home",
+  title: "EcOnline",
   description: "Tienda Online home page",
 };
 

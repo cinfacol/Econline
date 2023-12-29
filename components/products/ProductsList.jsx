@@ -1,6 +1,6 @@
 "use client";
 
-import ProductsExerpt from "./ProductsExerpt";
+import ProductsExcerpt from "./ProductsExcerpt";
 import { useGetProductsQuery } from "@/redux/features/products/productsApiSlice";
 
 const ProductsList = () => {
@@ -17,7 +17,7 @@ const ProductsList = () => {
     content = <p>"Loading..."</p>;
   } else if (isSuccess) {
     content = products.ids.map((productId) => (
-      <ProductsExerpt key={productId} productId={productId} />
+      <ProductsExcerpt key={productId} productId={productId} />
     ));
   } else if (isError) {
     content = <p>{error}</p>;

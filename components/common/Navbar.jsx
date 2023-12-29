@@ -15,6 +15,7 @@ import { useAppSelector, useAppDispatch } from "@/redux/hooks";
 import { useLogoutMutation } from "@/redux/features/auth/authApiSlice";
 import { logout as setLogout } from "@/redux/features/auth/authSlice";
 import { NavLink } from "@/components/common";
+import Container from "../ui/container";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -122,18 +123,18 @@ export default function Navbar() {
         Team
       </NavLink>
       <NavLink
-        isSelected={isSelected("/projects")}
+        isSelected={isSelected("/products")}
         isMobile={isMobile}
-        href="/projects"
+        href="/products"
       >
-        Projects
+        Products
       </NavLink>
       <NavLink
-        isSelected={isSelected("/calendar")}
+        isSelected={isSelected("/categories")}
         isMobile={isMobile}
-        href="/calendar"
+        href="/categories"
       >
-        Calendar
+        Categories
       </NavLink>
     </>
   );
@@ -145,7 +146,7 @@ export default function Navbar() {
   return (
     <Disclosure as="nav" className="bg-gray-800">
       {({ open }) => (
-        <>
+        <Container>
           <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
             <div className="relative flex h-16 items-center justify-between">
               <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
@@ -259,7 +260,7 @@ export default function Navbar() {
               {navigationLinks(true)}
             </div>
           </Disclosure.Panel>
-        </>
+        </Container>
       )}
     </Disclosure>
   );

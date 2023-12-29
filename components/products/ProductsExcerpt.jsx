@@ -1,22 +1,23 @@
+import TimeAgo from "@/components/products/TimeAgo";
 import Link from "next/link";
 import { useGetProductsQuery } from "@/redux/features/products/productsApiSlice";
 
-const ProductsExcerpt = ({ productId }) => {
+function ProductsExcerpt({ productId }) {
   const { product } = useGetProductsQuery("getProducts", {
     selectFromResult: ({ data }) => ({
       product: data?.entities[productId],
     }),
   });
-
   return (
-    <div>
+    <article>
       <h2>{product?.title}</h2>
-      <p className="excerpt">{product?.description.substring(0, 75)}...</p>
+      <p className="excerpt">{product?.description?.substring(0, 75)}...</p>
       <p className="productCredit">
         <Link href={`product/${product?.id}`}>View Product</Link>
+        <TimeAgo timestamp={product?.date} />
       </p>
-    </div>
+    </article>
   );
-};
+}
 
 export default ProductsExcerpt;
