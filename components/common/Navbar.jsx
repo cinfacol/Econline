@@ -15,7 +15,6 @@ import { useAppSelector, useAppDispatch } from "@/redux/hooks";
 import { useLogoutMutation } from "@/redux/features/auth/authApiSlice";
 import { logout as setLogout } from "@/redux/features/auth/authSlice";
 import { NavLink } from "@/components/common";
-import Container from "../ui/container";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -38,78 +37,55 @@ export default function Navbar() {
 
   const isSelected = (path) => (pathname === path ? true : false);
 
-  const authLinks = () => (
+  function classNames(...classes) {
+    return classes.filter(Boolean).join(" ");
+  }
+
+  const authLinks = (isMobile) => (
     <>
-      <Menu.Item>
-        {({ active }) => (
-          <Link
-            href="/dashboard"
-            className={classNames(
-              active ? "bg-gray-100" : "",
-              "block px-4 py-2 text-sm text-gray-700"
-            )}
-          >
-            Dashboard
-          </Link>
-        )}
-      </Menu.Item>
-      <Menu.Item>
-        {({ active }) => (
-          <Link
-            href="/profile"
-            className={classNames(
-              active ? "bg-gray-100" : "",
-              "block px-4 py-2 text-sm text-gray-700"
-            )}
-          >
-            Profile
-          </Link>
-        )}
-      </Menu.Item>
-      <Menu.Item>
-        {({ active }) => (
-          <Link
-            href="/settings"
-            className={classNames(
-              active ? "bg-gray-100" : "",
-              "block px-4 py-2 text-sm text-gray-700"
-            )}
-          >
-            Settings
-          </Link>
-        )}
-      </Menu.Item>
-      <Menu.Item>
-        {({ active }) => (
-          <button
-            onClick={handleLogout}
-            className={classNames(
-              active ? "bg-gray-100" : "",
-              "block px-4 py-2 text-sm text-gray-700"
-            )}
-          >
-            Sign out
-          </button>
-        )}
-      </Menu.Item>
+      <NavLink
+        isSelected={isSelected("/dashboard")}
+        isMobile={isMobile}
+        href="/dashboard"
+      >
+        Dashboard
+      </NavLink>
+      <NavLink
+        isSelected={isSelected("/profile")}
+        isMobile={isMobile}
+        href="/profile"
+      >
+        Profile
+      </NavLink>
+      <NavLink
+        isSelected={isSelected("/settings")}
+        isMobile={isMobile}
+        href="/settings"
+      >
+        Settings
+      </NavLink>
+      <NavLink isMobile={isMobile} onClick={handleLogout}>
+        Logout
+      </NavLink>
     </>
   );
 
-  const guestLinks = () => (
+  const guestLinks = (isMobile) => (
     <>
-      <Menu.Item>
-        {({ active }) => (
-          <Link
-            href="/auth/login"
-            className={classNames(
-              active ? "bg-gray-100" : "",
-              "block px-4 py-2 text-sm text-gray-700"
-            )}
-          >
-            Login
-          </Link>
-        )}
-      </Menu.Item>
+      <NavLink
+        isSelected={isSelected("/auth/login")}
+        isMobile={isMobile}
+        href="/auth/login"
+      >
+        Login
+      </NavLink>
+      <NavLink
+        isSelected={isSelected("/auth/register")}
+        isMobile={isMobile}
+        href="/auth/register"
+      >
+        Register
+      </NavLink>
     </>
   );
 
@@ -129,24 +105,49 @@ export default function Navbar() {
       >
         Products
       </NavLink>
-      <NavLink
-        isSelected={isSelected("/categories")}
-        isMobile={isMobile}
-        href="/categories"
-      >
-        Categories
-      </NavLink>
+      <Menu as="div" className="relative ml-3">
+        <NavLink
+          isSelected={isSelected("/categories")}
+          isMobile={isMobile}
+          href=""
+        >
+          <Menu.Button className="text-white">Categories</Menu.Button>
+        </NavLink>
+        <Transition
+          as={Fragment}
+          enter="transition ease-out duration-100"
+          enterFrom="transform opacity-0 scale-95"
+          enterTo="transform opacity-100 scale-100"
+          leave="transition ease-in duration-75"
+          leaveFrom="transform opacity-100 scale-100"
+          leaveTo="transform opacity-0 scale-95"
+        >
+          <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+            <div className="py-1">
+              <Menu.Item>
+                {({ active }) => (
+                  <Link
+                    href="#"
+                    className={classNames(
+                      active ? "bg-gray-100 text-gray-900" : "text-gray-700",
+                      "block px-4 py-2 text-sm"
+                    )}
+                  >
+                    All Categories
+                  </Link>
+                )}
+              </Menu.Item>
+            </div>
+          </Menu.Items>
+        </Transition>
+      </Menu>
     </>
   );
-
-  function classNames(...classes) {
-    return classes.filter(Boolean).join(" ");
-  }
 
   return (
     <Disclosure as="nav" className="bg-gray-800">
       {({ open }) => (
-        <Container>
+        <>
           <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
             <div className="relative flex h-16 items-center justify-between">
               <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
@@ -183,7 +184,7 @@ export default function Navbar() {
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                 {/* Profile dropdown */}
                 <div className="text-white">
-                  {isAuthenticated ? user?.first_name : "Invitado"}
+                  {isAuthenticated ? `Wellcome: ${user?.first_name}` : ""}
                 </div>
                 <Menu as="div" className="relative ml-3">
                   <div>
@@ -260,7 +261,7 @@ export default function Navbar() {
               {navigationLinks(true)}
             </div>
           </Disclosure.Panel>
-        </Container>
+        </>
       )}
     </Disclosure>
   );
