@@ -1,9 +1,12 @@
 import Banner from "@/components/common/Banner";
+// import Billboard from "@/components/common/billboard";
 import ProductsList from "@/components/products/ProductsList";
+import Container from "@/components/ui/container";
 
 export default function Home() {
   return (
-    <main className="bg-white overflow-hidden">
+    <Container className="bg-white overflow-hidden">
+      {/* <Billboard data="" /> */}
       <Banner />
       <div className="relative isolate px-6 pt-2 lg:px-8">
         <div className="mx-auto max-w-2xl py-5 sm:py-6 lg:py-12">
@@ -18,10 +21,12 @@ export default function Home() {
               Tailwind.
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6"></div>
-            <ProductsList />
           </div>
         </div>
       </div>
-    </main>
+      <div className="flex flex-col gap-y-8 px-4 sm:px-6 lg:px-8">
+        <ProductsList />
+      </div>
+    </Container>
   );
 }

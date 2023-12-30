@@ -1,4 +1,5 @@
 export { default as Banner } from "./Banner";
+export { default as Billboard } from "./billboard";
 export { default as Footer } from "./Footer";
 export { default as ImageUpload } from "./image-upload";
 export { default as Navbar } from "./Navbar";
