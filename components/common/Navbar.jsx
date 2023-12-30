@@ -8,13 +8,12 @@ import {
   Bars3Icon,
   BellIcon,
   HeartIcon,
-  ShoppingCartIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { useAppSelector, useAppDispatch } from "@/redux/hooks";
 import { useLogoutMutation } from "@/redux/features/auth/authApiSlice";
 import { logout as setLogout } from "@/redux/features/auth/authSlice";
-import { NavLink } from "@/components/common";
+import { NavLink, NavbarActions } from "@/components/common";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -111,7 +110,7 @@ export default function Navbar() {
           isMobile={isMobile}
           href=""
         >
-          <Menu.Button className="text-white">Categories</Menu.Button>
+          <Menu.Button className="">Categories</Menu.Button>
         </NavLink>
         <Transition
           as={Fragment}
@@ -230,23 +229,16 @@ export default function Navbar() {
                 </Menu>
                 <button
                   type="button"
-                  className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                  className="relative rounded-full bg-gray-800 p-1 text-gray-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
                 >
                   <span className="absolute -inset-1.5" />
                   <span className="sr-only">Favorites</span>
                   <HeartIcon className="h-6 w-6" aria-hidden="true" />
                 </button>
+                <NavbarActions />
                 <button
                   type="button"
-                  className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
-                >
-                  <span className="absolute -inset-1.5" />
-                  <span className="sr-only">Items in Cart</span>
-                  <ShoppingCartIcon className="h-6 w-6" aria-hidden="true" />
-                </button>
-                <button
-                  type="button"
-                  className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                  className="relative rounded-full bg-gray-800 p-1 text-gray-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
                 >
                   <span className="absolute -inset-1.5" />
                   <span className="sr-only">View notifications</span>
