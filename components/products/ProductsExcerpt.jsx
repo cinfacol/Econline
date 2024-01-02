@@ -1,6 +1,8 @@
 import TimeAgo from "@/components/products/TimeAgo";
 import Link from "next/link";
 import { useGetProductsQuery } from "@/redux/features/products/productsApiSlice";
+import NoResults from "@/components/ui/no-results";
+import ProductCard from "@/components/ui/product-card";
 
 function ProductsExcerpt({ productId }) {
   const { product } = useGetProductsQuery("getProducts", {
@@ -9,14 +11,12 @@ function ProductsExcerpt({ productId }) {
     }),
   });
   return (
-    <article>
-      <h2>{product?.title}</h2>
-      <p className="excerpt">{product?.description?.substring(0, 75)}...</p>
-      <p className="productCredit">
-        <Link href={`product/${product?.id}`}>View Product</Link>
-        <TimeAgo timestamp={product?.date} />
-      </p>
-    </article>
+    <>
+      {product.length === 0 && <NoResults />}
+      <div>
+        <ProductCard key={product.id} data={product} />
+      </div>
+    </>
   );
 }
 

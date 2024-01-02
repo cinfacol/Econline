@@ -7,7 +7,7 @@ export default function Home() {
   return (
     <Container className="bg-white overflow-hidden">
       {/* <Billboard data="" /> */}
-      <Banner />
+      {/* <Banner /> */}
       <div className="relative isolate px-6 pt-2 lg:px-8">
         <div className="mx-auto max-w-2xl py-5 sm:py-6 lg:py-12">
           <div className="text-center">
@@ -24,8 +24,10 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <div className="flex flex-col gap-y-8 px-4 sm:px-6 lg:px-8">
-        <ProductsList />
+      <div className="space-y-10 pb-10">
+        <div className="flex flex-col gap-y-8 px-4 sm:px-6 lg:px-8">
+          <ProductsList />
+        </div>
       </div>
     </Container>
   );
