@@ -98,9 +98,9 @@ export default function Navbar() {
         Team
       </NavLink>
       <NavLink
-        isSelected={isSelected("/products")}
+        isSelected={isSelected("/product")}
         isMobile={isMobile}
-        href="/products"
+        href="/product"
       >
         Products
       </NavLink>

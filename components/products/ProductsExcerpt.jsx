@@ -1,5 +1,3 @@
-import TimeAgo from "@/components/products/TimeAgo";
-import Link from "next/link";
 import { useGetProductsQuery } from "@/redux/features/products/productsApiSlice";
 import NoResults from "@/components/ui/no-results";
 import ProductCard from "@/components/ui/product-card";

@@ -1,5 +1,4 @@
 import Banner from "@/components/common/Banner";
-// import Billboard from "@/components/common/billboard";
 import ProductsList from "@/components/products/ProductsList";
 import Container from "@/components/ui/container";
 

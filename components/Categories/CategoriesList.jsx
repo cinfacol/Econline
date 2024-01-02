@@ -1,6 +1,7 @@
 "use client";
 
 import { useGetCategoriesQuery } from "@/redux/features/categories/categoriesApiSlice";
+import { Spinner } from "@/components/common";
 
 const CategoriesList = () => {
   const {
@@ -12,7 +13,7 @@ const CategoriesList = () => {
   } = useGetCategoriesQuery("getCategories");
   let content;
   if (isLoading) {
-    content = <p>"Loading..."</p>;
+    content = <Spinner lg />;
   } else if (isSuccess) {
     content = categories.categories.map((category) => {
       return <div key={category.id}>{category.name}</div>;

@@ -1,5 +1,6 @@
 "use client";
 
+import { Spinner } from "@/components/common";
 import ProductsExcerpt from "./ProductsExcerpt";
 import { useGetProductsQuery } from "@/redux/features/products/productsApiSlice";
 
@@ -14,7 +15,7 @@ const ProductsList = () => {
 
   let content;
   if (isLoading) {
-    content = <p>"Loading..."</p>;
+    content = <Spinner lg />;
   } else if (isSuccess) {
     content = products.ids.map((productId) => (
       <ProductsExcerpt key={productId} productId={productId} />
