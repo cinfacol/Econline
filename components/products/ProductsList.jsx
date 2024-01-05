@@ -4,7 +4,7 @@ import { Spinner } from "@/components/common";
 import ProductsExcerpt from "./ProductsExcerpt";
 import { useGetProductsQuery } from "@/redux/features/products/productsApiSlice";
 
-const ProductsList = () => {
+const ProductsList = ({ title }) => {
   const {
     data: products,
     isLoading,
@@ -27,7 +27,7 @@ const ProductsList = () => {
   return (
     <section>
       <div className="space-y-4">
-        <h3 className="font-bold text-3xl">"Featured Products"</h3>
+        <h3 className="font-bold text-3xl">{title}</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {content}
         </div>

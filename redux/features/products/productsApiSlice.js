@@ -22,8 +22,7 @@ export const productsApiSlice = apiSlice.injectEndpoints({
         return productsAdapter.setAll(initialState, loadedProducts);
       },
       providesTags: (result, error, arg) => [
-        { type: "Product", id: "LIST" },
-        // "products",
+        "products",
         ...result?.ids.map((id) => ({ id })),
       ],
     }),
@@ -39,6 +38,7 @@ export const productsApiSlice = apiSlice.injectEndpoints({
         return productsAdapter.setAll(initialState, loadedProducts);
       },
       providesTags: (result, error, arg) => [
+        "products",
         ...result.ids.map((id) => ({ type: "Product", id })),
       ],
     }),
