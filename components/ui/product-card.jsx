@@ -40,7 +40,7 @@ const ProductCard = ({ data }) => {
           src={data.cover_photo}
           alt=""
           fill
-          className="aspect-square object-cover rounded-md"
+          className="aspect-square object-fill rounded-md"
         />
         <div className="opacity-20 group-hover:opacity-100 transition absolute w-full px-6 bottom-5">
           <div className="flex gap-x-6 justify-center">
