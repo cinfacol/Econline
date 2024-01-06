@@ -21,8 +21,8 @@ const Gallery = ({ images = [] }) => {
             <div className="aspect-square relative h-full w-full sm:rounded-lg overflow-hidden">
               <NextImage
                 fill
-                src={image}
-                alt="Image"
+                src={image?.image}
+                alt={image?.alt_text}
                 className="object-fill object-center"
               />
             </div>

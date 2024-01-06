@@ -11,8 +11,8 @@ const GalleryTab = ({ image }) => {
           <span className="absolute h-full w-full aspect-square inset-0 overflow-hidden rounded-md">
             <NextImage
               fill
-              src={image}
-              alt=""
+              src={image?.image}
+              alt={image?.alt_text}
               className="object-fill object-center"
             />
           </span>

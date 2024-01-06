@@ -12,13 +12,8 @@ const ProductsPage = ({ params }) => {
   const { data: products } = useGetProductsQuery("getProducts");
   const product = products?.entities[productId];
   const category = product?.category;
-  const cover_photo = product?.cover_photo;
-  const photo1 = product?.photo1;
-  const photo2 = product?.photo2;
-  const photo3 = product?.photo3;
-  const photo4 = product?.photo4;
 
-  const images = [cover_photo, photo1, photo2, photo3, photo4];
+  const images = product?.image;
 
   return (
     <div className="bg-white">

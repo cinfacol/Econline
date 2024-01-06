@@ -30,8 +30,6 @@ const CategoryPage = async ({ params, searchParams }) => {
   // const colors = await getColors();
   // const category = await getCategory(params.categoryId);
   const category = useGetCategoriesQuery(params.categoryId);
-  console.log("category", category);
-
   return (
     <div className="bg-white">
       <Container>

@@ -29,7 +29,6 @@ const ProductCard = ({ data }) => {
 
     // cart.addItem(data);
   };
-
   return (
     <div
       onClick={handleClick}
@@ -37,8 +36,8 @@ const ProductCard = ({ data }) => {
     >
       <div className="aspect-square rounded-xl bg-gray-100 relative">
         <Image
-          src={data.cover_photo}
-          alt=""
+          src={data?.image[0]?.image}
+          alt={data?.image[0]?.alt_text}
           fill
           className="aspect-square object-fill rounded-md"
         />
