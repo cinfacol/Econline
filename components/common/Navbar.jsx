@@ -17,6 +17,7 @@ import { useGetCategoriesQuery } from "@/redux/features/categories/categoriesApi
 import { NavLink, NavbarActions } from "@/components/common";
 import Image from "next/image";
 import Link from "next/link";
+import CategoryLink from "@/components/Categories/CategoryLink";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -26,6 +27,8 @@ export default function Navbar() {
 
   const { isAuthenticated } = useAppSelector((state) => state.auth);
   const { data: user, isLoading, isFetching } = useRetrieveUserQuery();
+
+  const categories = useGetCategoriesQuery("getCategories");
 
   const handleLogout = () => {
     logout(undefined)
@@ -122,20 +125,20 @@ export default function Navbar() {
           leaveFrom="transform opacity-100 scale-100"
           leaveTo="transform opacity-0 scale-95"
         >
-          <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+          <Menu.Items className="flex absolute right-0 z-10 mt-2 w-auto origin-top-right rounded-md bg-gray-100 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
             <div className="py-1">
               <Menu.Item>
                 {({ active }) => (
-                  <Link
-                    // href={`/category/${route.id}`}
-                    href="/"
+                  <div
                     className={classNames(
                       active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                      "block px-4 py-2 text-sm"
+                      "block px-4 py-2 disabled"
                     )}
                   >
-                    All Categories
-                  </Link>
+                    {categories?.data?.categories?.map((item) => (
+                      <CategoryLink key={item.id} data={item} />
+                    ))}
+                  </div>
                 )}
               </Menu.Item>
             </div>
