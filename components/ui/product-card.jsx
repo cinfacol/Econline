@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 
 import Currency from "@/components/ui/currency";
 import IconButton from "@/components/ui/icon-button";
+import StarRatings from "react-star-ratings";
 // import usePreviewModal from "@/hooks/use-preview-modal";
 // import useCart from "@/hooks/use-cart";
 
@@ -60,6 +61,30 @@ const ProductCard = ({ data }) => {
         <p className="text-sm text-gray-500">{data.category}</p>
       </div>
       {/* Price & Reiew */}
+      <div className="flex flex-wrap items-center space-x-2 mb-2">
+        <div className="ratings">
+          <StarRatings
+            rating={3}
+            starRatedColor="#ffb829"
+            numberOfStars={5}
+            starDimension="20px"
+            starSpacing="2px"
+            name="rating"
+          />
+        </div>
+        <span className="text-yellow-500">3</span>
+
+        <svg
+          width="6px"
+          height="6px"
+          viewBox="0 0 6 6"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <circle cx="3" cy="3" r="3" fill="#DBDBDB" />
+        </svg>
+
+        <span className="text-green-500">Verified</span>
+      </div>
       <div className="flex items-center justify-between">
         <Currency value={data?.price} />
       </div>

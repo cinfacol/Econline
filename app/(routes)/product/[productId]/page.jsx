@@ -6,7 +6,7 @@ import SuggestedProducts from "@/components/products/SuggestedProducts";
 import Container from "@/components/ui/container";
 import { useGetProductsQuery } from "@/redux/features/products/productsApiSlice";
 
-const ProductsPage = ({ params }) => {
+const ProductDetailsPage = ({ params }) => {
   const productId = params.productId;
 
   const { data: products } = useGetProductsQuery("getProducts");
@@ -34,4 +34,4 @@ const ProductsPage = ({ params }) => {
   );
 };
 
-export default ProductsPage;
+export default ProductDetailsPage;

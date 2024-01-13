@@ -15,7 +15,7 @@ const CategoryLink = ({ data }) => {
       <div className="rounded-lg text-smflex-auto ml-6">
         {data?.sub_categories?.map((sub) => (
           <Link
-            href={`/categories/${sub.id}`}
+            href={`/category/${sub.id}`}
             className="block font-semibold text-gray-900"
           >
             <div className="rounded-lg p-1 text-sm hover:bg-gray-50 hover:text-blue-400">

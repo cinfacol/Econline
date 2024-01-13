@@ -4,6 +4,7 @@ import { ShoppingCart } from "lucide-react";
 
 import Currency from "@/components/ui/currency";
 import { Button } from "@/components/ui/button";
+import StarRatings from "react-star-ratings";
 // import useCart from "@/hooks/use-cart";
 
 const Info = ({ data }) => {
@@ -16,6 +17,30 @@ const Info = ({ data }) => {
   return (
     <div>
       <h1 className="text-3xl font-bold text-gray-900">{data?.title}</h1>
+      <div className="flex flex-wrap items-center space-x-2 mb-2">
+        <div className="ratings">
+          <StarRatings
+            rating={3}
+            starRatedColor="#ffb829"
+            numberOfStars={5}
+            starDimension="20px"
+            starSpacing="2px"
+            name="rating"
+          />
+        </div>
+        <span className="text-yellow-500">3</span>
+
+        <svg
+          width="6px"
+          height="6px"
+          viewBox="0 0 6 6"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <circle cx="3" cy="3" r="3" fill="#DBDBDB" />
+        </svg>
+
+        <span className="text-green-500">Verified</span>
+      </div>
       <div className="mt-3 flex items-end justify-between">
         <p className="text-2xl text-gray-900">
           <Currency value={data?.price} />
