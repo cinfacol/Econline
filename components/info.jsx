@@ -5,9 +5,16 @@ import { ShoppingCart } from "lucide-react";
 import Currency from "@/components/ui/currency";
 import { Button } from "@/components/ui/button";
 import StarRatings from "react-star-ratings";
+import { useGetRatingsQuery } from "@/redux/features/ratings/ratingsApiSlice";
 // import useCart from "@/hooks/use-cart";
 
 const Info = ({ data }) => {
+  // const ratings = useGetRatingsQuery("ratings");
+  const raters = data?.rating.length;
+  let total = 0;
+  const rate = data?.rating?.map(({ rating }) => (total += rating));
+  const resultado = total / raters;
+  const resultadoAdjust = resultado.toFixed(1);
   // const cart = useCart();
 
   /* const onAddToCart = () => {
@@ -20,7 +27,7 @@ const Info = ({ data }) => {
       <div className="flex flex-wrap items-center space-x-2 mb-2">
         <div className="ratings">
           <StarRatings
-            rating={3}
+            rating={resultado}
             starRatedColor="#ffb829"
             numberOfStars={5}
             starDimension="20px"
@@ -28,7 +35,7 @@ const Info = ({ data }) => {
             name="rating"
           />
         </div>
-        <span className="text-yellow-500">3</span>
+        <span className="text-gray-500">{resultadoAdjust}</span>
 
         <svg
           width="6px"

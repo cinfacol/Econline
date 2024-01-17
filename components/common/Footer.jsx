@@ -86,22 +86,25 @@ const navigation = {
 export default function Footer() {
   const categories = useGetCategoriesQuery("getCategories");
 
+  const categoriesData = [categories?.data?.categories];
+  const carrouselCategories = [...categoriesData, ...categoriesData];
+  console.log("categoriesData", categoriesData);
   return (
-    <footer className="bg-white" aria-labelledby="footer-heading">
+    <footer className="bg-gray-100" aria-labelledby="footer-heading">
       <h2 id="footer-heading" className="sr-only">
         Footer
       </h2>
       <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8">
-        <div className="xl:grid xl:grid-cols-3 xl:gap-8">
-          <div className="grid grid-cols-1 gap-8 xl:col-span-2">
-            <div className="md:grid md:grid-cols-4 md:gap-8">
+        <div className="xl:flex xl:flex-3 xl:gap-8">
+          <div className="flex flex-1 gap-8 xl:col-span-2 overflow-hidden">
+            <div className="md:flex md:flex-4 md:gap-8 animate-scroll">
               {categories?.data?.categories?.map((item) => (
                 <CategoryLinkFooter key={item.id} data={item} />
               ))}
             </div>
           </div>
           <div className="mt-8 xl:mt-0">
-            <h3 className="text-sm font-semibold text-gray-400 tracking-wider uppercase">
+            <h3 className="text-sm font-bold mt-2 text-gray-400 tracking-wider uppercase">
               Subscribe to our newsletter
             </h3>
             <p className="mt-4 text-base text-gray-500">

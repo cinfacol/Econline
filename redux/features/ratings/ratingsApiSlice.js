@@ -11,14 +11,7 @@ const initialState = ratingsAdapter.getInitialState();
 export const ratingsApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getRatings: builder.query({
-      query: ({ productId }) => ({
-        url: {
-          url: "get_ratings/<productId:productId>/",
-          headers: {
-            Accept: "application/json",
-          },
-        },
-      }),
+      query: ({ productId }) => `/get_ratings/${productId}`,
       transformResponse: (responseData) => {
         let min = 1;
         const loadedRatings = responseData.results.map((rating) => {

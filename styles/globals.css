@@ -74,3 +74,16 @@
     @apply bg-background text-foreground;
   }
 }
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(calc(-33px * 10 - 0.5rem * 20));
+  }
+}
+
+.animate-scroll {
+  animation: scroll 30s linear infinite;
+}
