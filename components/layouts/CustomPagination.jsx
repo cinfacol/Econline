@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import React from "react";
 import Pagination from "react-js-pagination";
 
 const CustomPagination = ({ resPerPage, productsCount }) => {
