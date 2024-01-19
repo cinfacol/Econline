@@ -11,9 +11,9 @@ import StarRatings from "react-star-ratings";
 // import useCart from "@/hooks/use-cart";
 
 const ProductCard = ({ data }) => {
-  const raters = data?.rating.length;
+  const raters = data?.review.length;
   let total = 0;
-  const rate = data?.rating?.map(({ rating }) => (total += rating));
+  const rate = data?.review?.map(({ rating }) => (total += rating));
   const resultado = total / raters;
   const resultadoAdjust = resultado.toFixed(1);
   // const previewModal = usePreviewModal();
@@ -67,7 +67,7 @@ const ProductCard = ({ data }) => {
       </div>
       {/* Price & Reiew */}
       <div className="flex flex-wrap items-center space-x-2 mb-2">
-        <div className="ratings">
+        <div className="">
           <StarRatings
             rating={resultado}
             starRatedColor="#ffb829"

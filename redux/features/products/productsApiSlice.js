@@ -26,7 +26,7 @@ export const productsApiSlice = apiSlice.injectEndpoints({
         ...result?.ids.map((id) => ({ id })),
       ],
     }),
-    getProductsByAgent: builder.query({
+    /* getProductsByAgent: builder.query({
       query: () => "agents/",
       transformResponse: (responseData) => {
         let min = 1;
@@ -41,8 +41,8 @@ export const productsApiSlice = apiSlice.injectEndpoints({
         "products",
         ...result.ids.map((id) => ({ type: "Product", id })),
       ],
-    }),
-    addNewProduct: builder.mutation({
+    }), */
+    /* addNewProduct: builder.mutation({
       query: (initialProduct) => ({
         url: "create/",
         method: "POST",
@@ -53,8 +53,8 @@ export const productsApiSlice = apiSlice.injectEndpoints({
         },
       }),
       invalidatesTags: [{ type: "Product", id: "LIST" }],
-    }),
-    updateProduct: builder.mutation({
+    }), */
+    /* updateProduct: builder.mutation({
       query: (initialProduct) => ({
         url: "update/<slug:slug>/",
         method: "PUT",
@@ -66,8 +66,8 @@ export const productsApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: (result, error, arg) => [
         { type: "Product", id: arg.id },
       ],
-    }),
-    deleteProduct: builder.mutation({
+    }), */
+    /* deleteProduct: builder.mutation({
       query: ({ id }) => ({
         url: "delete/<slug:slug>/",
         method: "DELETE",
@@ -76,14 +76,14 @@ export const productsApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: (result, error, arg) => [
         { type: "Product", id: arg.id },
       ],
-    }),
+    }), */
   }),
 });
 
 export const {
   useGetProductsQuery,
-  useGetProductsByAgentQuery,
-  useAddNewProductMutation,
-  useUpdateProductMutation,
-  useDeleteProductMutation,
+  // useGetProductsByAgentQuery,
+  // useAddNewProductMutation,
+  // useUpdateProductMutation,
+  // useDeleteProductMutation,
 } = productsApiSlice;

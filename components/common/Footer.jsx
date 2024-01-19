@@ -88,7 +88,6 @@ export default function Footer() {
 
   const categoriesData = [categories?.data?.categories];
   const carrouselCategories = [...categoriesData, ...categoriesData];
-  console.log("categoriesData", categoriesData);
   return (
     <footer className="bg-gray-100" aria-labelledby="footer-heading">
       <h2 id="footer-heading" className="sr-only">
@@ -97,7 +96,8 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8">
         <div className="xl:flex xl:flex-3 xl:gap-8">
           <div className="flex flex-1 gap-8 xl:col-span-2 overflow-hidden">
-            <div className="md:flex md:flex-4 md:gap-8 animate-scroll">
+            <div className="md:flex md:flex-4 md:gap-8">
+              {/* <div className="md:flex md:flex-4 md:gap-8 animate-scroll"> */}
               {categories?.data?.categories?.map((item) => (
                 <CategoryLinkFooter key={item.id} data={item} />
               ))}

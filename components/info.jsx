@@ -1,18 +1,26 @@
 "use client";
 
-import { ShoppingCart } from "lucide-react";
+import { HeartIcon, ShoppingCart } from "lucide-react";
 
 import Currency from "@/components/ui/currency";
 import { Button } from "@/components/ui/button";
 import StarRatings from "react-star-ratings";
-import { useGetRatingsQuery } from "@/redux/features/ratings/ratingsApiSlice";
+import { useGetReviewsByProductIdQuery } from "@/redux/features/reviews/ratingsApiSlice";
 // import useCart from "@/hooks/use-cart";
 
 const Info = ({ data }) => {
-  // const ratings = useGetRatingsQuery("ratings");
-  const raters = data?.rating.length;
+  console.log("data", data?.review);
+  const productId = data?.id;
+  /* const {
+    data: reviews,
+    isLoading,
+    error,
+  } = useGetReviewsByProductIdQuery(productId); */
+  // console.log("reviews", reviews);
+  const raters = data?.review.length;
   let total = 0;
-  const rate = data?.rating?.map(({ rating }) => (total += rating));
+  console.log("total", total);
+  const rate = data?.review?.map(({ rating }) => (total += rating));
   const resultado = total / raters;
   const resultadoAdjust = resultado.toFixed(1);
   // const cart = useCart();
@@ -23,9 +31,21 @@ const Info = ({ data }) => {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-gray-900">{data?.title}</h1>
+      <div className="flex space-x-4">
+        <h1 className="text-3xl font-bold text-gray-900">{data?.title}</h1>
+        <button
+          type="button"
+          className="relative rounded-full p-1 text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+        >
+          <span className="absolute -inset-1.5" />
+          <span className="sr-only">Favorites</span>
+          <HeartIcon className="h-6 w-6" aria-hidden="true" />
+        </button>
+      </div>
+
       <div className="flex flex-wrap items-center space-x-2 mb-2">
-        <div className="ratings">
+        <span className="text-gray-500">{resultadoAdjust}</span>
+        <div className="">
           <StarRatings
             rating={resultado}
             starRatedColor="#ffb829"
@@ -35,7 +55,8 @@ const Info = ({ data }) => {
             name="rating"
           />
         </div>
-        <span className="text-gray-500">{resultadoAdjust}</span>
+
+        <span className="text-gray-500">({raters})</span>
 
         <svg
           width="6px"
