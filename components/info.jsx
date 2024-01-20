@@ -9,7 +9,6 @@ import { useGetReviewsByProductIdQuery } from "@/redux/features/reviews/ratingsA
 // import useCart from "@/hooks/use-cart";
 
 const Info = ({ data }) => {
-  console.log("data", data?.review);
   const productId = data?.id;
   /* const {
     data: reviews,
@@ -19,7 +18,6 @@ const Info = ({ data }) => {
   // console.log("reviews", reviews);
   const raters = data?.review.length;
   let total = 0;
-  console.log("total", total);
   const rate = data?.review?.map(({ rating }) => (total += rating));
   const resultado = total / raters;
   const resultadoAdjust = resultado.toFixed(1);

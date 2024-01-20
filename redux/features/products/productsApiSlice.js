@@ -21,10 +21,10 @@ export const productsApiSlice = apiSlice.injectEndpoints({
         });
         return productsAdapter.setAll(initialState, loadedProducts);
       },
-      providesTags: (result, error, arg) => [
+      /* providesTags: (result, error, arg) => [
         "products",
         ...result?.ids.map((id) => ({ id })),
-      ],
+      ], */
     }),
     /* getProductsByAgent: builder.query({
       query: () => "agents/",

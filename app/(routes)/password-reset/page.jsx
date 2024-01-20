@@ -1,8 +1,8 @@
 import { PasswordResetForm } from "@/components/forms";
 
 export const metadata = {
-  title: "Tienda Online | Password Reset",
-  description: "Tienda Online password reset page",
+  title: "EcOnline | Password Reset",
+  description: "EcOnline password reset page",
 };
 
 export default function Page() {
