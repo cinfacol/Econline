@@ -16,7 +16,7 @@ const Info = ({ data }) => {
     error,
   } = useGetReviewsByProductIdQuery(productId); */
   // console.log("reviews", reviews);
-  const raters = data?.review.length;
+  const raters = data?.review?.length;
   let total = 0;
   const rate = data?.review?.map(({ rating }) => (total += rating));
   const resultado = total / raters;
@@ -42,19 +42,27 @@ const Info = ({ data }) => {
       </div>
 
       <div className="flex flex-wrap items-center space-x-2 mb-2">
-        <span className="text-gray-500">{resultadoAdjust}</span>
-        <div className="">
-          <StarRatings
-            rating={resultado}
-            starRatedColor="#ffb829"
-            numberOfStars={5}
-            starDimension="20px"
-            starSpacing="2px"
-            name="rating"
-          />
-        </div>
+        {raters == 0 ? (
+          <div className="mr-2 text-blue-600 bg-gray-200 py-1 px-2 rounded-full">
+            <h1>No Reviews yet</h1>
+          </div>
+        ) : (
+          <>
+            <span className="text-gray-500">{resultadoAdjust}</span>
+            <div className="">
+              <StarRatings
+                rating={resultado}
+                starRatedColor="#ffb829"
+                numberOfStars={5}
+                starDimension="20px"
+                starSpacing="2px"
+                name="rating"
+              />
+            </div>
 
-        <span className="text-gray-500">({raters})</span>
+            <span className="text-gray-500">({raters})</span>
+          </>
+        )}
 
         <svg
           width="6px"

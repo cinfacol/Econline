@@ -11,7 +11,7 @@ import StarRatings from "react-star-ratings";
 // import useCart from "@/hooks/use-cart";
 
 const ProductCard = ({ data }) => {
-  const raters = data?.review.length;
+  const raters = data?.review?.length;
   let total = 0;
   const rate = data?.review?.map(({ rating }) => (total += rating));
   const resultado = total / raters;
@@ -67,17 +67,27 @@ const ProductCard = ({ data }) => {
       </div>
       {/* Price & Reiew */}
       <div className="flex flex-wrap items-center space-x-2 mb-2">
-        <div className="">
-          <StarRatings
-            rating={resultado}
-            starRatedColor="#ffb829"
-            numberOfStars={5}
-            starDimension="20px"
-            starSpacing="2px"
-            name="rating"
-          />
-        </div>
-        <span className="text-yellow-500">{resultadoAdjust}</span>
+        {raters == 0 ? (
+          <div className="font-semibold text-amber-400 py-1 px-2 rounded-full">
+            <h1>No Reviews yet</h1>
+          </div>
+        ) : (
+          <>
+            <span className="text-gray-500">{resultadoAdjust}</span>
+            <div className="">
+              <StarRatings
+                rating={resultado}
+                starRatedColor="#ffb829"
+                numberOfStars={5}
+                starDimension="20px"
+                starSpacing="2px"
+                name="rating"
+              />
+            </div>
+
+            <span className="text-gray-500">({raters})</span>
+          </>
+        )}
 
         <svg
           width="6px"

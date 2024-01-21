@@ -106,7 +106,7 @@ export default function Navbar() {
         isMobile={isMobile}
         href="/product"
       >
-        Products
+        Store
       </NavLink>
       <Menu as="div" className="relative ml-3">
         <NavLink
