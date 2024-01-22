@@ -1,6 +1,7 @@
 "use client";
 
 import { Spinner } from "@/components/common";
+import NoResults from "@/components/ui/no-results";
 import ProductsExcerpt from "./ProductsExcerpt";
 import { useGetProductsQuery } from "@/redux/features/products/productsApiSlice";
 
@@ -17,9 +18,13 @@ const ProductsList = ({ title }) => {
   if (isLoading) {
     content = <Spinner lg />;
   } else if (isSuccess) {
-    content = products.ids.map((productId) => (
-      <ProductsExcerpt key={productId} productId={productId} />
-    ));
+    if (products.ids.length !== 0) {
+      content = products.ids.map((productId) => (
+        <ProductsExcerpt key={productId} productId={productId} />
+      ));
+    } else {
+      content = <NoResults title="Products" />;
+    }
   } else if (isError) {
     content = <p>{error}</p>;
   }

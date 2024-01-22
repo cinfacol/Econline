@@ -18,6 +18,7 @@ import { NavLink, NavbarActions } from "@/components/common";
 import Image from "next/image";
 import Link from "next/link";
 import CategoryLink from "@/components/Categories/CategoryLink";
+import NoResults from "@/components/ui/no-results";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -29,6 +30,7 @@ export default function Navbar() {
   const { data: user, isLoading, isFetching } = useRetrieveUserQuery();
 
   const categories = useGetCategoriesQuery("getCategories");
+  const num_cats = categories?.data?.categories?.length;
 
   const handleLogout = () => {
     logout(undefined)
@@ -135,9 +137,13 @@ export default function Navbar() {
                       "block px-4 py-2 disabled"
                     )}
                   >
-                    {categories?.data?.categories?.map((item) => (
-                      <CategoryLink key={item.id} data={item} />
-                    ))}
+                    {num_cats !== 0 ? (
+                      categories?.data?.categories?.map((item) => (
+                        <CategoryLink key={item.id} data={item} />
+                      ))
+                    ) : (
+                      <NoResults title="Categories" />
+                    )}
                   </div>
                 )}
               </Menu.Item>

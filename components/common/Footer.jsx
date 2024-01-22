@@ -16,6 +16,7 @@
 import Link from "next/link";
 import { useGetCategoriesQuery } from "@/redux/features/categories/categoriesApiSlice";
 import CategoryLinkFooter from "@/components/Categories/CategoryLinkFooter";
+import NoResults from "@/components/ui/no-results";
 
 const navigation = {
   social: [
@@ -85,6 +86,7 @@ const navigation = {
 
 export default function Footer() {
   const categories = useGetCategoriesQuery("getCategories");
+  const num_cats = categories?.data?.categories?.length;
 
   const categoriesData = [categories?.data?.categories];
   const carrouselCategories = [...categoriesData, ...categoriesData];
@@ -98,9 +100,13 @@ export default function Footer() {
           <div className="flex flex-1 gap-8 xl:col-span-2 overflow-hidden">
             <div className="md:flex md:flex-4 md:gap-8">
               {/* <div className="md:flex md:flex-4 md:gap-8 animate-scroll"> */}
-              {categories?.data?.categories?.map((item) => (
-                <CategoryLinkFooter key={item.id} data={item} />
-              ))}
+              {num_cats !== 0 ? (
+                categories?.data?.categories?.map((item) => (
+                  <CategoryLinkFooter key={item.id} data={item} />
+                ))
+              ) : (
+                <NoResults title="Categories" />
+              )}
             </div>
           </div>
           <div className="mt-8 xl:mt-0">
