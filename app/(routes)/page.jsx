@@ -1,5 +1,5 @@
-import Banner from "@/components/common/Banner";
-import ProductsList from "@/components/products/ProductsList";
+// import Banner from "@/components/common/Banner";
+import InventoriesList from "@/components/inventories/InventoriesList";
 import Container from "@/components/ui/container";
 
 export default function Home() {
@@ -25,7 +25,7 @@ export default function Home() {
       </div>
       <div className="space-y-10 pb-10">
         <div className="flex flex-col gap-y-8 px-4 sm:px-6 lg:px-8">
-          <ProductsList title="Featured Products" />
+          {<InventoriesList title="Featured Products" />}
         </div>
       </div>
     </Container>

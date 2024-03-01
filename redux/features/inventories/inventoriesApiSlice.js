@@ -2,24 +2,24 @@ import { createEntityAdapter } from "@reduxjs/toolkit";
 import { sub } from "date-fns";
 import { apiSlice } from "@/redux/api/apiSlice";
 
-const productsAdapter = createEntityAdapter({
+const inventoriesAdapter = createEntityAdapter({
   sortComparer: (a, b) => b.date.localeCompare(a.date),
 });
 
-const initialState = productsAdapter.getInitialState();
+const initialState = inventoriesAdapter.getInitialState();
 
-export const productsApiSlice = apiSlice.injectEndpoints({
+export const inventoriesApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getProducts: builder.query({
-      query: () => "/products/all/",
+    getInventories: builder.query({
+      query: () => "/inventory/all/",
       transformResponse: (responseData) => {
         let min = 1;
-        const loadedProducts = responseData.results.map((product) => {
-          if (!product?.date)
-            product.date = sub(new Date(), { minutes: min++ }).toISOString();
-          return product;
+        const loadedInventories = responseData.results.map((inventory) => {
+          if (!inventory?.date)
+            inventory.date = sub(new Date(), { minutes: min++ }).toISOString();
+          return inventory;
         });
-        return productsAdapter.setAll(initialState, loadedProducts);
+        return inventoriesAdapter.setAll(initialState, loadedInventories);
       },
       /* providesTags: (result, error, arg) => [
         "products",
@@ -81,9 +81,9 @@ export const productsApiSlice = apiSlice.injectEndpoints({
 });
 
 export const {
-  useGetProductsQuery,
+  useGetInventoriesQuery,
   // useGetProductsByAgentQuery,
   // useAddNewProductMutation,
   // useUpdateProductMutation,
   // useDeleteProductMutation,
-} = productsApiSlice;
+} = inventoriesApiSlice;

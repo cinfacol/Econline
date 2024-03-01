@@ -11,14 +11,16 @@ import StarRatings from "react-star-ratings";
 // import useCart from "@/hooks/use-cart";
 
 const ProductCard = ({ data }) => {
-  const raters = data?.review?.length;
+  const raters = data?.rating?.length;
   let total = 0;
-  const rate = data?.review?.map(({ rating }) => (total += rating));
+  const rate = data?.rating?.map(({ rating }) => (total += rating));
   const resultado = total / raters;
   const resultadoAdjust = resultado.toFixed(1);
   // const previewModal = usePreviewModal();
   // const cart = useCart();
   const router = useRouter();
+
+  console.log("data", data);
 
   const handleClick = () => {
     router.push(`/product/${data?.id}`);
@@ -62,8 +64,10 @@ const ProductCard = ({ data }) => {
       </div>
       {/* Description */}
       <div>
-        <p className="font-semibold text-lg">{data.title}</p>
-        <p className="text-sm text-gray-500">{data.category}</p>
+        <p className="font-semibold text-lg">{data.product.name}</p>
+        <p className="text-sm text-gray-500">
+          {data?.product.category[0]?.name}
+        </p>
       </div>
       {/* Price & Reiew */}
       <div className="flex flex-wrap items-center space-x-2 mb-2">
@@ -101,7 +105,7 @@ const ProductCard = ({ data }) => {
         <span className="text-green-500">Verified</span>
       </div>
       <div className="flex items-center justify-between">
-        <Currency value={data?.price} />
+        <Currency value={data?.store_price} />
       </div>
     </div>
   );

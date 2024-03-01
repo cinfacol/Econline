@@ -1,5 +1,5 @@
 import Filters from "@/components/layouts/Filters";
-import ProductsList from "@/components/products/ProductsList";
+import InventoriesList from "@/components/inventories/InventoriesList";
 
 export default function ProductPage() {
   return (
@@ -8,7 +8,7 @@ export default function ProductPage() {
         <div className="flex flex-col md:flex-row -mx-4">
           <Filters />
           <main className="md:w-2/3 lg:w-3/4 px-3">
-            <ProductsList title="All Products" />
+            <InventoriesList title="All Products" />
           </main>
         </div>
       </div>

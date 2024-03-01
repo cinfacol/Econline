@@ -3,14 +3,14 @@ import Container from "@/components/ui/container";
 import ProductCard from "@/components/ui/product-card";
 import NoResults from "@/components/ui/no-results";
 import { useGetCategoriesQuery } from "@/redux/features/categories/categoriesApiSlice";
-import { useGetProductsQuery } from "@/redux/features/products/productsApiSlice";
-import SuggestedProducts from "@/components/products/SuggestedProducts";
+import { useGetInventoriesQuery } from "@/redux/features/inventories/inventoriesApiSlice";
+import SuggestedProducts from "@/components/inventories/SuggestedProducts";
 
 export const revalidate = 0;
 
 const CategoryPage = async ({ params, searchParams }) => {
   const category_id = params.categoryId;
-  const products = useGetProductsQuery("getProducts", {
+  const products = useGetInventoriesQuery("getInventories", {
     /* selectFromResult: {
       categoryId: params.categoryId,
     }, */

@@ -1,10 +1,9 @@
 "use client";
 
-// import { useGetCategoriesQuery } from "@/redux/features/categories/categoriesApiSlice";
-import { useGetProductsQuery } from "@/redux/features/products/productsApiSlice";
+import { useGetInventoriesQuery } from "@/redux/features/inventories/inventoriesApiSlice";
 import { Spinner } from "@/components/common";
 
-const ProductDetails = (params) => {
+const InventoryDetails = (params) => {
   const productId = params.params?.productId;
 
   const {
@@ -13,7 +12,7 @@ const ProductDetails = (params) => {
     isSuccess,
     isError,
     error,
-  } = useGetProductsQuery("getProducts");
+  } = useGetInventoriesQuery("getInventories");
   // const entitiesIds = products?.ids;
 
   let content;
@@ -40,4 +39,4 @@ const ProductDetails = (params) => {
   );
 };
 
-export default ProductDetails;
+export default InventoryDetails;

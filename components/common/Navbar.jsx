@@ -30,8 +30,7 @@ export default function Navbar() {
   const { data: user, isLoading, isFetching } = useRetrieveUserQuery();
 
   const categories = useGetCategoriesQuery("getCategories");
-  const num_cats = categories?.data?.categories?.length;
-
+  const num_cats = categories?.data?.count;
   const handleLogout = () => {
     logout(undefined)
       .unwrap()
@@ -138,9 +137,7 @@ export default function Navbar() {
                     )}
                   >
                     {num_cats !== 0 ? (
-                      categories?.data?.categories?.map((item) => (
-                        <CategoryLink key={item.id} data={item} />
-                      ))
+                      <CategoryLink data={categories?.data?.results} />
                     ) : (
                       <NoResults title="Categories" />
                     )}
@@ -206,7 +203,11 @@ export default function Navbar() {
                           className="h-8 w-8 rounded-full"
                           width={44}
                           height={44}
-                          src={user?.profile_photo}
+                          src={
+                            user?.profile_photo
+                              ? user?.profile_photo
+                              : "/images/profile_default.png"
+                          }
                           alt=""
                         />
                       </Menu.Button>

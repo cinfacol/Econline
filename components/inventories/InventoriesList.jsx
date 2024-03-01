@@ -2,25 +2,22 @@
 
 import { Spinner } from "@/components/common";
 import NoResults from "@/components/ui/no-results";
-import ProductsExcerpt from "./ProductsExcerpt";
-import { useGetProductsQuery } from "@/redux/features/products/productsApiSlice";
+import InventoriesExcerpt from "./InventoriesExcerpt";
+import { useGetInventoriesQuery } from "@/redux/features/inventories/inventoriesApiSlice";
 
-const ProductsList = ({ title }) => {
-  const {
-    data: products,
-    isLoading,
-    isSuccess,
-    isError,
-    error,
-  } = useGetProductsQuery("getProducts");
+const InventoriesList = ({ title }) => {
+  const { data, isLoading, isSuccess, isError, error } =
+    useGetInventoriesQuery("getInventories");
+
+  // console.log("data", data);
 
   let content;
   if (isLoading) {
     content = <Spinner lg />;
   } else if (isSuccess) {
-    if (products.ids.length !== 0) {
-      content = products.ids.map((productId) => (
-        <ProductsExcerpt key={productId} productId={productId} />
+    if (data?.ids?.length !== 0) {
+      content = data?.ids?.map((productId) => (
+        <InventoriesExcerpt key={productId} productId={productId} />
       ));
     } else {
       content = <NoResults title="Products" />;
@@ -34,10 +31,11 @@ const ProductsList = ({ title }) => {
       <div className="space-y-4">
         <h3 className="font-bold text-3xl">{title}</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {/* {console.log("content", content)} */}
           {content}
         </div>
       </div>
     </section>
   );
 };
-export default ProductsList;
+export default InventoriesList;

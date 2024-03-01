@@ -2,15 +2,15 @@
 
 import Gallery from "@/components/gallery";
 import Info from "@/components/info";
-import SuggestedProducts from "@/components/products/SuggestedProducts";
+import SuggestedProducts from "@/components/inventories/SuggestedProducts";
 import Container from "@/components/ui/container";
-import { useGetProductsQuery } from "@/redux/features/products/productsApiSlice";
+import { useGetInventoriesQuery } from "@/redux/features/inventories/inventoriesApiSlice";
 
-const ProductDetailsPage = ({ params }) => {
-  const productId = params.productId;
+const InventoryDetailsPage = ({ params }) => {
+  const inventoryId = params.inventoryId;
 
-  const { data: products } = useGetProductsQuery("getProducts");
-  const product = products?.entities[productId];
+  const { data: products } = useGetInventoriesQuery("getInventories");
+  const product = products?.entities[inventoryId];
   const category = product?.category;
 
   const images = product?.image;
@@ -34,4 +34,4 @@ const ProductDetailsPage = ({ params }) => {
   );
 };
 
-export default ProductDetailsPage;
+export default InventoryDetailsPage;
