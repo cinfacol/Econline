@@ -20,8 +20,6 @@ const ProductCard = ({ data }) => {
   // const cart = useCart();
   const router = useRouter();
 
-  console.log("data", data);
-
   const handleClick = () => {
     router.push(`/product/${data?.id}`);
   };
@@ -64,9 +62,9 @@ const ProductCard = ({ data }) => {
       </div>
       {/* Description */}
       <div>
-        <p className="font-semibold text-lg">{data.product.name}</p>
+        <p className="font-semibold text-lg">{data?.product?.name}</p>
         <p className="text-sm text-gray-500">
-          {data?.product.category[0]?.name}
+          {data?.product?.category[0]?.name}
         </p>
       </div>
       {/* Price & Reiew */}

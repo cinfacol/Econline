@@ -8,11 +8,12 @@ function InventoriesExcerpt({ productId }) {
       inventory: data?.entities[productId],
     }),
   });
+
   return (
     <>
-      {inventory.length === 0 && <NoResults />}
+      {inventory?.length === 0 && <NoResults />}
       <div>
-        <ProductCard key={inventory.id} data={inventory} />
+        <ProductCard key={inventory?.id} data={inventory} />
       </div>
     </>
   );

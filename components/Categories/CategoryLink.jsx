@@ -4,8 +4,6 @@ import React from "react";
 const CategoryLink = ({ data }) => {
   const parentData = data.filter((item) => item.is_parent);
   const noParentData = data.filter((item) => item.is_parent == false);
-  console.log("parentData", parentData);
-  console.log("data", data);
   return (
     <>
       <div className="group relative flex items-start gap-x-6 rounded-lg p-2 leading-6 bg-gray-200">

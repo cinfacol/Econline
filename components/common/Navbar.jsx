@@ -16,7 +16,6 @@ import { logout as setLogout } from "@/redux/features/auth/authSlice";
 import { useGetCategoriesQuery } from "@/redux/features/categories/categoriesApiSlice";
 import { NavLink, NavbarActions } from "@/components/common";
 import Image from "next/image";
-import Link from "next/link";
 import CategoryLink from "@/components/Categories/CategoryLink";
 import NoResults from "@/components/ui/no-results";
 
@@ -191,7 +190,7 @@ export default function Navbar() {
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                 {/* Profile dropdown */}
                 <div className="text-white">
-                  {isAuthenticated ? `Wellcome: ${user?.first_name}` : ""}
+                  {isAuthenticated ? user?.first_name : "Guess"}
                 </div>
                 <Menu as="div" className="relative ml-3">
                   <div>

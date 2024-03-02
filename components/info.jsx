@@ -9,16 +9,15 @@ import { useGetReviewsByProductIdQuery } from "@/redux/features/reviews/ratingsA
 // import useCart from "@/hooks/use-cart";
 
 const Info = ({ data }) => {
-  const productId = data?.id;
-  /* const {
+  /* const productId = data?.id;
+  const {
     data: reviews,
     isLoading,
     error,
   } = useGetReviewsByProductIdQuery(productId); */
-  // console.log("reviews", reviews);
-  const raters = data?.review?.length;
+  const raters = data?.rating?.length;
   let total = 0;
-  const rate = data?.review?.map(({ rating }) => (total += rating));
+  const rate = data?.rating?.map(({ rating }) => (total += rating));
   const resultado = total / raters;
   const resultadoAdjust = resultado.toFixed(1);
   // const cart = useCart();
@@ -77,18 +76,18 @@ const Info = ({ data }) => {
       </div>
       <div className="mt-3 flex items-end justify-between">
         <p className="text-2xl text-gray-900">
-          <Currency value={data?.price} />
+          <Currency value={data?.retail_price} />
         </p>
       </div>
       <hr className="my-4" />
       <div className="flex flex-col gap-y-6">
         <div className="flex items-center gap-x-4">
           <h3 className="font-semibold text-black">Category:</h3>
-          <div>{data?.category}</div>
+          <div>{data?.product?.category[0]?.name}</div>
         </div>
         <div className="flex items-center gap-x-4">
           <h3 className="font-semibold text-black">Description:</h3>
-          <div>{data?.description}</div>
+          <div>{data?.product?.description}</div>
         </div>
       </div>
       <div className="mt-10 flex items-center gap-x-3">

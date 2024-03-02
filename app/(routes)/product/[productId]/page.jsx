@@ -5,15 +5,19 @@ import Info from "@/components/info";
 import SuggestedProducts from "@/components/inventories/SuggestedProducts";
 import Container from "@/components/ui/container";
 import { useGetInventoriesQuery } from "@/redux/features/inventories/inventoriesApiSlice";
+import { data } from "autoprefixer";
 
 const InventoryDetailsPage = ({ params }) => {
-  const inventoryId = params.inventoryId;
+  const inventoryId = params.productId;
 
-  const { data: products } = useGetInventoriesQuery("getInventories");
-  const product = products?.entities[inventoryId];
-  const category = product?.category;
-
-  const images = product?.image;
+  const { data: inventories } = useGetInventoriesQuery("getInventories");
+  const inventory = inventories?.entities[inventoryId];
+  // const category = inventory?.category;
+  // const category = inventory?.product?.category[0]?.name;
+  const categories = inventory?.product?.category?.map((cat) => {
+    return cat.slug;
+  });
+  const images = inventory?.image;
 
   return (
     <div className="bg-white">
@@ -23,11 +27,14 @@ const InventoryDetailsPage = ({ params }) => {
             {/* Gallery */}
             <Gallery images={images} />
             <div className="mt-10 px-4 sm:mt-16 sm:px-0 lg:mt-0">
-              <Info data={product} />
+              <Info data={inventory} />
             </div>
           </div>
           <hr className="my-10" />
-          <SuggestedProducts title="Related products" category={category} />
+          <SuggestedProducts
+            title="Suggested Products"
+            categories={categories}
+          />
         </div>
       </Container>
     </div>

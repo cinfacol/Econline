@@ -16,7 +16,6 @@ const CategoryPage = async ({ params, searchParams }) => {
     }, */
   });
   const categories = useGetCategoriesQuery("getCategories");
-  // console.log("products", products);
   const category = useGetCategoriesQuery("getCategories", {
     selectFromResult: ({ data }) => ({
       categories: data?.categories?.find((category) =>
@@ -27,8 +26,6 @@ const CategoryPage = async ({ params, searchParams }) => {
     }),
   });
   const category_name = category.categories?.name;
-  console.log("categories", categories);
-  console.log("category", category?.categories?.id);
   return (
     <div className="bg-white">
       <Container>
