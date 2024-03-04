@@ -12,8 +12,6 @@ const InventoryDetailsPage = ({ params }) => {
 
   const { data: inventories } = useGetInventoriesQuery("getInventories");
   const inventory = inventories?.entities[inventoryId];
-  // const category = inventory?.category;
-  // const category = inventory?.product?.category[0]?.name;
   const categories = inventory?.product?.category?.map((cat) => {
     return cat.slug;
   });
