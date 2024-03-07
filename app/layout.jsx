@@ -1,4 +1,6 @@
 import { Navbar, Footer } from "@/components/common";
+import ModalProvider from "@/providers/modal-provider";
+import ToastProvider from "@/providers/toast-provider";
 import { Setup } from "@/components/utils";
 import CustomProvider from "@/redux/provider";
 import { Urbanist } from "next/font/google";
@@ -16,6 +18,8 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={font.className}>
         <CustomProvider>
+          <ToastProvider />
+          <ModalProvider />
           <Setup />
           <Navbar />
           <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">

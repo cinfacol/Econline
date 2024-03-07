@@ -1,7 +1,7 @@
 "use client";
 
 import Container from "@/components/ui/container";
-import ProductCard from "@/components/ui/product-card";
+import ProductCard from "@/components/ui/productCard";
 import NoResults from "@/components/ui/no-results";
 import { useGetCategoriesQuery } from "@/redux/features/categories/categoriesApiSlice";
 import { useGetInventoriesQuery } from "@/redux/features/inventories/inventoriesApiSlice";

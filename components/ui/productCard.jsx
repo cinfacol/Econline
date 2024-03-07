@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import Currency from "@/components/ui/currency";
 import IconButton from "@/components/ui/icon-button";
 import StarRatings from "react-star-ratings";
-// import usePreviewModal from "@/hooks/use-preview-modal";
+import usePreviewModal from "@/hooks/use-preview-modal";
 // import useCart from "@/hooks/use-cart";
 
 const ProductCard = ({ data }) => {
@@ -16,7 +16,7 @@ const ProductCard = ({ data }) => {
   const rate = data?.rating?.map(({ rating }) => (total += rating));
   const resultado = total / raters;
   const resultadoAdjust = resultado.toFixed(1);
-  // const previewModal = usePreviewModal();
+  const previewModal = usePreviewModal();
   // const cart = useCart();
   const router = useRouter();
 
@@ -26,8 +26,7 @@ const ProductCard = ({ data }) => {
 
   const onPreview = (event) => {
     event.stopPropagation();
-
-    // previewModal.onOpen(data);
+    previewModal.onOpen(data);
   };
 
   const onAddToCart = (event) => {

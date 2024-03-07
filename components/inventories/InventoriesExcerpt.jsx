@@ -1,6 +1,6 @@
 import { useGetInventoriesQuery } from "@/redux/features/inventories/inventoriesApiSlice";
 import NoResults from "@/components/ui/no-results";
-import ProductCard from "@/components/ui/product-card";
+import ProductCard from "@/components/ui/productCard";
 
 function InventoriesExcerpt({ productId }) {
   const { inventory } = useGetInventoriesQuery("getInventories", {
