@@ -6,7 +6,7 @@ import Currency from "@/components/ui/currency";
 import { Button } from "@/components/ui/button";
 import StarRatings from "react-star-ratings";
 import { useGetReviewsByProductIdQuery } from "@/redux/features/reviews/ratingsApiSlice";
-// import useCart from "@/hooks/use-cart";
+import useCart from "@/hooks/use-cart";
 
 const Info = ({ data }) => {
   /* const productId = data?.id;
@@ -20,11 +20,11 @@ const Info = ({ data }) => {
   const rate = data?.rating?.map(({ rating }) => (total += rating));
   const resultado = total / raters;
   const resultadoAdjust = resultado.toFixed(1);
-  // const cart = useCart();
+  const cart = useCart();
 
-  /* const onAddToCart = () => {
-    // cart.addItem(data);
-  }; */
+  const onAddToCart = () => {
+    cart.addItem(data);
+  };
 
   return (
     <div>
@@ -91,7 +91,10 @@ const Info = ({ data }) => {
         </div>
       </div>
       <div className="mt-10 flex items-center gap-x-3">
-        <Button onClick={() => ({})} className="flex items-center gap-x-2">
+        <Button
+          onClick={() => ({ onAddToCart })}
+          className="flex items-center gap-x-2"
+        >
           Add To Cart
           <ShoppingCart size={20} />
         </Button>
