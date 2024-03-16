@@ -1,6 +1,6 @@
 import { createEntityAdapter } from "@reduxjs/toolkit";
 import { sub } from "date-fns";
-import { apiSlice } from "@/redux/api/apiSlice";
+import { apiAppSlice } from "@/redux/api/apiAppSlice";
 
 const inventoriesAdapter = createEntityAdapter({
   sortComparer: (a, b) => b.date.localeCompare(a.date),
@@ -8,7 +8,7 @@ const inventoriesAdapter = createEntityAdapter({
 
 const initialState = inventoriesAdapter.getInitialState();
 
-export const inventoriesApiSlice = apiSlice.injectEndpoints({
+export const inventoriesApiSlice = apiAppSlice.injectEndpoints({
   endpoints: (builder) => ({
     getInventories: builder.query({
       query: () => "/inventory/all/",

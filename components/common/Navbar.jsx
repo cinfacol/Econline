@@ -29,7 +29,8 @@ export default function Navbar() {
   const { data: user, isLoading, isFetching } = useRetrieveUserQuery();
 
   const categories = useGetCategoriesQuery("getCategories");
-  const num_cats = categories?.data?.count;
+  const num_cats = categories?.data?.ids?.length;
+
   const handleLogout = () => {
     logout(undefined)
       .unwrap()
@@ -136,7 +137,7 @@ export default function Navbar() {
                     )}
                   >
                     {num_cats !== 0 ? (
-                      <CategoryLink data={categories?.data?.results} />
+                      <CategoryLink data={categories?.data?.ids} />
                     ) : (
                       <NoResults title="Categories" />
                     )}
