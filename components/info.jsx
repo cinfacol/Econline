@@ -75,9 +75,9 @@ const Info = ({ data }) => {
         <span className="text-green-500">Verified</span>
       </div>
       <div className="mt-3 flex items-end justify-between">
-        <p className="text-2xl text-gray-900">
+        <span className="text-2xl text-gray-900">
           <Currency value={data?.retail_price} />
-        </p>
+        </span>
       </div>
       <hr className="my-4" />
       <div className="flex flex-col gap-y-6">

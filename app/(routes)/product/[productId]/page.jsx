@@ -4,18 +4,21 @@ import Gallery from "@/components/gallery";
 import Info from "@/components/info";
 import SuggestedProducts from "@/components/inventories/SuggestedProducts";
 import Container from "@/components/ui/container";
-import { useGetInventoriesQuery } from "@/redux/features/inventories/inventoriesApiSlice";
-import { data } from "autoprefixer";
+import { useGetEntity } from "@/hooks";
 
+// recibe como params el id del producto
 const InventoryDetailsPage = ({ params }) => {
   const inventoryId = params.productId;
 
-  const { data: inventories } = useGetInventoriesQuery("getInventories");
-  const inventory = inventories?.entities[inventoryId];
-  const categories = inventory?.product?.category?.map((cat) => {
+  // useGetEntity es un hook que recibe el id de un producto y devuelve toda la información relacionada con ese producto
+  const entitie = useGetEntity(inventoryId);
+
+  // categories es un array que almacena el slug de todas las categorías del producto referenciado
+  const categories = entitie?.product?.category?.map((cat) => {
     return cat.slug;
   });
-  const images = inventory?.image;
+
+  const images = entitie?.image;
 
   return (
     <div className="bg-white">
@@ -25,7 +28,7 @@ const InventoryDetailsPage = ({ params }) => {
             {/* Gallery */}
             <Gallery images={images} />
             <div className="mt-10 px-4 sm:mt-16 sm:px-0 lg:mt-0">
-              <Info data={inventory} />
+              <Info data={entitie} />
             </div>
           </div>
           <hr className="my-10" />
