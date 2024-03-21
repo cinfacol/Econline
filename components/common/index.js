@@ -1,11 +1,12 @@
 export { default as Banner } from "./Banner";
-export { default as Billboard } from "./billboard";
+export { default as Billboard } from "./Billboard";
 export { default as Footer } from "./Footer";
 export { default as ImageUpload } from "./image-upload";
 export { default as Navbar } from "./Navbar";
 export { default as List } from "./List";
 export { default as NavLink } from "./NavLink";
-export { default as NavbarActions } from "./Navbar-actions";
+export { default as NavbarActions } from "./NavbarActions";
 export { default as SocialButton } from "./SocialButton";
 export { default as SocialButtons } from "./SocialButtons";
 export { default as Spinner } from "./Spinner";
+export { default as CategoryNav } from "./CategoryNav";

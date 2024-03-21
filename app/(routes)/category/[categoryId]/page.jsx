@@ -5,7 +5,6 @@ export const revalidate = 0;
 
 const CategoryPage = ({ params }) => {
   const categoryId = params.categoryId;
-  console.log("params", params);
 
   return (
     <div className="bg-white">

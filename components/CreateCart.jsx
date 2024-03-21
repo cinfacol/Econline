@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { toast } from "react-hot-toast";
 import { persist, createJSONStorage } from "zustand/middleware";
 
-const useCart = create(
+const CreateCart = create(
   persist(
     (set, get) => ({
       items: [],
@@ -30,4 +30,4 @@ const useCart = create(
   )
 );
 
-export default useCart;
+export default CreateCart;

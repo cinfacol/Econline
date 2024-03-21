@@ -17,9 +17,9 @@ const SuggestedProducts = ({ title, categories }) => {
   if (error) return <Error message={error.message} />;
 
   // Extract inventories based on categories
-  const inventories = data?.results?.filter((inventory) => {
+  /* const inventories = data?.results?.filter((inventory) => {
     return categories.includes(inventory.category.name);
-  });
+  }); */
 
   return (
     <div className="space-y-4">

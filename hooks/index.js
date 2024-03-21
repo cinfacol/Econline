@@ -5,3 +5,4 @@ export { default as useResetPassword } from "./use-reset-password";
 export { default as useSocialAuth } from "./use-social-auth";
 export { default as useVerify } from "./use-verify";
 export { default as useGetEntity } from "./use-get-entity";
+export { default as useGetEntityByCategory } from "./useGetEntitiesByCategory";

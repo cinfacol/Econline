@@ -11,9 +11,9 @@ export default function List({ config }) {
             </p>
           </div>
           <div>
-            <p className="text-sm font-semibold leading-6 text-gray-900">
+            <span className="text-sm font-semibold leading-6 text-gray-900">
               {value || <Spinner sm />}
-            </p>
+            </span>
           </div>
         </li>
       ))}

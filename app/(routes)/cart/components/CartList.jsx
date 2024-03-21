@@ -13,7 +13,7 @@ export default function CartList({ title }) {
 
   // Early return for loading and error states
   if (isLoading) return <Spinner lg />;
-  if (error) return <p>Error: {error.message}</p>;
+  if (error) return <p>Error: {error?.data?.detail}</p>;
 
   // Destructure data and handle empty cart case concisely
   const { ids = [] } = data || {}; // Default to empty array

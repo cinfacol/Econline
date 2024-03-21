@@ -4,10 +4,10 @@ import { X } from "lucide-react";
 
 import IconButton from "@/components/ui/icon-button";
 import Currency from "@/components/ui/currency";
-import useCart from "@/hooks/use-cart";
+import CreateCart from "@/components/CreateCart";
 
 const CartItem = ({ data }) => {
-  const cart = useCart();
+  const cart = CreateCart();
 
   const onRemove = () => {
     cart.removeItem(data.id);

@@ -13,13 +13,23 @@ import {
 import { useAppSelector, useAppDispatch } from "@/redux/hooks";
 import { useLogoutMutation } from "@/redux/features/auth/authApiSlice";
 import { logout as setLogout } from "@/redux/features/auth/authSlice";
-import { useGetCategoriesQuery } from "@/redux/features/categories/categoriesApiSlice";
-import { NavLink, NavbarActions } from "@/components/common";
+// import { useGetCategoriesQuery } from "@/redux/features/categories/categoriesApiSlice";
+import { NavLink, NavbarActions, CategoryNav } from "@/components/common";
 import Image from "next/image";
-import CategoryLink from "@/components/Categories/CategoryLink";
-import NoResults from "@/components/ui/no-results";
+// import { useRouter } from "next/navigation";
+import Link from "next/link";
+
+function classNames(...classes) {
+  return classes.filter(Boolean).join(" ");
+}
+
+const navigation = [
+  { name: "Team", href: "/team", current: true },
+  { name: "Store", href: "/product", current: false },
+];
 
 export default function Navbar() {
+  // const router = useRouter();
   const pathname = usePathname();
   const dispatch = useAppDispatch();
 
@@ -28,46 +38,65 @@ export default function Navbar() {
   const { isAuthenticated } = useAppSelector((state) => state.auth);
   const { data: user, isLoading, isFetching } = useRetrieveUserQuery();
 
-  const categories = useGetCategoriesQuery("getCategories");
-  const num_cats = categories?.data?.ids?.length;
+  // const categories = useGetCategoriesQuery("getCategories");
+  // const num_cats = categories?.data?.ids?.length;
 
   const handleLogout = () => {
     logout(undefined)
       .unwrap()
       .then(() => {
+        localStorage.setItem(
+          "cart-storage",
+          '{"state:{"items":[]},"version":0}'
+        );
+        // router.push("/");
         dispatch(setLogout());
       });
   };
 
   const isSelected = (path) => (pathname === path ? true : false);
 
-  function classNames(...classes) {
-    return classes.filter(Boolean).join(" ");
-  }
-
   const authLinks = (isMobile) => (
     <>
-      <NavLink
-        isSelected={isSelected("/dashboard")}
-        isMobile={isMobile}
-        href="/dashboard"
-      >
-        Dashboard
-      </NavLink>
-      <NavLink
-        isSelected={isSelected("/profile")}
-        isMobile={isMobile}
-        href="/profile"
-      >
-        Profile
-      </NavLink>
-      <NavLink
-        isSelected={isSelected("/settings")}
-        isMobile={isMobile}
-        href="/settings"
-      >
-        Settings
-      </NavLink>
+      <Menu.Item>
+        {({ active }) => (
+          <Link
+            href="/dashboard"
+            className={classNames(
+              active ? "bg-gray-100" : "",
+              "block px-4 py-2 text-sm text-gray-700"
+            )}
+          >
+            Dashboard
+          </Link>
+        )}
+      </Menu.Item>
+      <Menu.Item>
+        {({ active }) => (
+          <Link
+            href="/profile"
+            className={classNames(
+              active ? "bg-gray-100" : "",
+              "block px-4 py-2 text-sm text-gray-700"
+            )}
+          >
+            Profile
+          </Link>
+        )}
+      </Menu.Item>
+      <Menu.Item>
+        {({ active }) => (
+          <Link
+            href="/settings"
+            className={classNames(
+              active ? "bg-gray-100" : "",
+              "block px-4 py-2 text-sm text-gray-700"
+            )}
+          >
+            Settings
+          </Link>
+        )}
+      </Menu.Item>
       <NavLink isMobile={isMobile} onClick={handleLogout}>
         Logout
       </NavLink>
@@ -76,20 +105,32 @@ export default function Navbar() {
 
   const guestLinks = (isMobile) => (
     <>
-      <NavLink
-        isSelected={isSelected("/auth/login")}
-        isMobile={isMobile}
-        href="/auth/login"
-      >
-        Login
-      </NavLink>
-      <NavLink
-        isSelected={isSelected("/auth/register")}
-        isMobile={isMobile}
-        href="/auth/register"
-      >
-        Register
-      </NavLink>
+      <Menu.Item>
+        {({ active }) => (
+          <Link
+            href="/auth/login"
+            className={classNames(
+              active ? "bg-gray-100" : "",
+              "block px-4 py-2 text-sm text-gray-700"
+            )}
+          >
+            Login
+          </Link>
+        )}
+      </Menu.Item>
+      <Menu.Item>
+        {({ active }) => (
+          <Link
+            href="/auth/register"
+            className={classNames(
+              active ? "bg-gray-100" : "",
+              "block px-4 py-2 text-sm text-gray-700"
+            )}
+          >
+            Register
+          </Link>
+        )}
+      </Menu.Item>
     </>
   );
 
@@ -109,45 +150,7 @@ export default function Navbar() {
       >
         Store
       </NavLink>
-      <Menu as="div" className="relative ml-3">
-        <NavLink
-          isSelected={isSelected("/categories")}
-          isMobile={isMobile}
-          href=""
-        >
-          <Menu.Button className="">Categories</Menu.Button>
-        </NavLink>
-        <Transition
-          as={Fragment}
-          enter="transition ease-out duration-100"
-          enterFrom="transform opacity-0 scale-95"
-          enterTo="transform opacity-100 scale-100"
-          leave="transition ease-in duration-75"
-          leaveFrom="transform opacity-100 scale-100"
-          leaveTo="transform opacity-0 scale-95"
-        >
-          <Menu.Items className="flex absolute right-0 z-10 mt-2 w-auto origin-top-right rounded-md bg-gray-100 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-            <div className="py-1">
-              <Menu.Item>
-                {({ active }) => (
-                  <div
-                    className={classNames(
-                      active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                      "block px-4 py-2 disabled"
-                    )}
-                  >
-                    {num_cats !== 0 ? (
-                      <CategoryLink data={categories?.data?.ids} />
-                    ) : (
-                      <NoResults title="Categories" />
-                    )}
-                  </div>
-                )}
-              </Menu.Item>
-            </div>
-          </Menu.Items>
-        </Transition>
-      </Menu>
+      <CategoryNav />
     </>
   );
 
@@ -184,7 +187,23 @@ export default function Navbar() {
                 </div>
                 <div className="hidden sm:ml-6 sm:block">
                   <div className="flex space-x-4 pt-2">
-                    {navigationLinks(true)}
+                    {/* {navigationLinks(true)} */}
+                    {navigation.map((item) => (
+                      <Link
+                        key={item.name}
+                        href={item.href}
+                        className={classNames(
+                          item.current
+                            ? "bg-gray-900 text-white"
+                            : "text-gray-300 hover:bg-gray-700 hover:text-white",
+                          "rounded-md px-3 py-2 text-sm font-medium"
+                        )}
+                        aria-current={item.current ? "page" : undefined}
+                      >
+                        {item.name}
+                      </Link>
+                    ))}
+                    <CategoryNav />
                   </div>
                 </div>
               </div>

@@ -46,28 +46,26 @@ const CategoryLink = ({ data }) => {
 
   return (
     <>
-      <div className="group relative flex items-start gap-x-6 rounded-lg p-2 leading-6 bg-gray-200">
-        <div className="flex-auto">
-          <div className="block font-bold text-gray-900">
-            {parentCategoriesWithKeys?.map((item) => (
-              <Link href={`/category/${item.id}`} key={item.key}>
-                <div>{item.name}</div>
-              </Link>
-            ))}
-            <span className="absolute inset-0" />
-          </div>
-        </div>
-      </div>
+      {parentCategoriesWithKeys?.map((item) => (
+        <>
+          <Link
+            href={`/category/${item.id}`}
+            key={item.key}
+            className="block px-4 py-1 font-bold text-gray-700 bg-gray-200 hover:text-gray-900"
+          >
+            {item.name}
+          </Link>
+          <div className="rounded-lg text-smflex-auto ml-6">Sub-category</div>
+        </>
+      ))}
       <div className="rounded-lg text-smflex-auto ml-6">
         {noParentCategoriesWithKeys?.map((sub) => (
           <Link
             href={`/category/${sub.id}`}
-            className="block font-semibold text-gray-900"
+            className="block font-semibold text-gray-700 text-sm pl-2 hover:bg-gray-200 hover:font-bold"
             key={sub.key} // Assign unique key
           >
-            <div className="rounded-lg p-1 text-sm hover:bg-gray-50 hover:text-blue-400">
-              <div>{sub.name}</div>
-            </div>
+            {sub.name}
           </Link>
         ))}
       </div>
