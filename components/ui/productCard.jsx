@@ -34,7 +34,7 @@ const ProductCard = ({ data }) => {
 
     cart.addItem(data);
   };
-  console.log("data_card", data);
+  // console.log("data_card", data);
   return (
     <div
       onClick={handleClick}

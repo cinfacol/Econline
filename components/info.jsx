@@ -21,7 +21,6 @@ const Info = ({ data }) => {
 
     cart.addItem(data);
   };
-  console.log("data_info", data);
 
   return (
     <div>

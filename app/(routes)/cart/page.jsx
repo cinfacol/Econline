@@ -5,8 +5,7 @@ export const metadata = {
 };
 
 const CartPage = () => {
-  // return <CartList title="Shopping Cart" />;
-  return "Shopping Cart";
+  return <CartList title="Shopping Cart" />;
 };
 
 export default CartPage;
