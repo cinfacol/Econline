@@ -5,7 +5,6 @@ import { useGetItemsQuery } from "@/redux/features/cart/cartApiSlice";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import CartItemsExcerpt from "./cartItemsExcerpt";
 
 export default function CartList({ title }) {
   const router = useRouter();
@@ -99,7 +98,7 @@ export default function CartList({ title }) {
                     <li>
                       <button
                         onClick={() => router.push("/shipping")}
-                        className="btn btn-primary w-full"
+                        className="w-full bg-indigo-600 border border-transparent rounded-md shadow-sm py-3 px-4 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 focus:ring-indigo-500"
                       >
                         Proceed to Checkout
                       </button>

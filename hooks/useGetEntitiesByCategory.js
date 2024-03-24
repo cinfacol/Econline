@@ -9,8 +9,4 @@ export default function useGetEntityByCategory(categoryId) {
       inventory: inventory?.entities[categoryId],
     }),
   });
-  // const inventory = inventories;
-  // console.log("inventory_hook", inventories);
-
-  // return inventory;
 }

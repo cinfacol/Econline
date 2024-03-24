@@ -34,7 +34,6 @@ const ProductCard = ({ data }) => {
 
     cart.addItem(data);
   };
-  // console.log("data_card", data);
   return (
     <div
       onClick={handleClick}
@@ -71,7 +70,7 @@ const ProductCard = ({ data }) => {
       <div className="flex flex-wrap items-center space-x-2 mb-2">
         {raters == 0 ? (
           <div className="font-semibold text-amber-400 py-1 px-2 rounded-full">
-            <h1>No Reviews yet</h1>
+            <h1>Not Reviews</h1>
           </div>
         ) : (
           <>
@@ -80,7 +79,7 @@ const ProductCard = ({ data }) => {
               <StarRatings
                 rating={resultado}
                 starRatedColor="#ffb829"
-                numberOfStars={5}
+                numberOfStars={1}
                 starDimension="20px"
                 starSpacing="2px"
                 name="rating"

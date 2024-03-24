@@ -9,7 +9,6 @@ import CreateCart from "@/components/CreateCart";
 
 export default function NavbarActions() {
   const Items = useGetItemsQuery("getItems");
-  // console.log("Items_nav", Items);
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {

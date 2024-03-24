@@ -2,37 +2,44 @@
 
 import { Spinner } from "@/components/common";
 import NoResults from "@/components/ui/no-results";
-import InventoriesExcerpt from "./InventoriesExcerpt";
 import { useGetInventoriesQuery } from "@/redux/features/inventories/inventoriesApiSlice";
+import { useSelector } from "react-redux";
+import ProductCard from "../ui/productCard";
 
-const InventoriesList = ({ title }) => {
-  const { data, isLoading, isSuccess, isError, error } =
-    useGetInventoriesQuery("getInventories");
+export default function InventoriesList({ title }) {
+  const searchTerm = useSelector((state) => state?.inventory?.searchTerm);
+  const categoryTerm = useSelector((state) => state?.inventory?.categoryTerm);
 
-  let content;
-  if (isLoading) {
-    content = <Spinner lg />;
-  } else if (isSuccess) {
-    if (data?.ids?.length !== 0) {
-      content = data?.ids?.map((productId) => (
-        <InventoriesExcerpt key={productId} productId={productId} />
-      ));
-    } else {
-      content = <NoResults title="Products" />;
-    }
-  } else if (isError) {
-    content = <p>{error}</p>;
-  }
-
-  return (
-    <section>
-      <div className="space-y-4">
-        <h3 className="font-bold text-3xl">{title}</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {content}
-        </div>
-      </div>
-    </section>
+  const { data, isLoading, isSuccess, error } = useGetInventoriesQuery(
+    "getInventories",
+    { searchTerm, categoryTerm }
   );
-};
-export default InventoriesList;
+
+  // Early return for loading and error states
+  if (isLoading)
+    return (
+      <>
+        <Spinner lg /> Loading ...
+      </>
+    );
+  if (error) return <p>Error: {error?.data?.detail}</p>;
+
+  // Destructure data and handle empty inventory case concisely
+  const { ids = [] } = data || {}; // Default to empty array
+  const { entities = [] } = data || {}; // Default to empty array
+
+  if (isSuccess)
+    return (
+      <section>
+        <div className="space-y-4">
+          <h3 className="font-bold text-3xl">{title}</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {ids?.map((id) => {
+              const Item = entities[id];
+              return <ProductCard key={Item.id} data={Item} />;
+            })}
+          </div>
+        </div>
+      </section>
+    );
+}

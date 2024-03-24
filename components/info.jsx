@@ -7,8 +7,11 @@ import { Button } from "@/components/ui/button";
 import StarRatings from "react-star-ratings";
 import { useGetReviewsByProductIdQuery } from "@/redux/features/reviews/ratingsApiSlice";
 import CreateCart from "@/components/CreateCart";
+import { useGetEntity } from "@/hooks";
 
-const Info = ({ data }) => {
+const Info = ({ inventoryId }) => {
+  // useGetEntity es un hook que recibe el id de un producto y devuelve toda la información relacionada con ese producto
+  const data = useGetEntity(inventoryId);
   const raters = data?.rating?.length;
   let total = 0;
   const rate = data?.rating?.map(({ rating }) => (total += rating));

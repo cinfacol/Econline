@@ -2,6 +2,11 @@
 import InventoriesList from "@/components/inventories/InventoriesList";
 import Container from "@/components/ui/container";
 
+export const metadata = {
+  title: process.env.NEXT_PUBLIC_APP_NAME || "EcOnline home",
+  description: "Modern Ecommerce App",
+};
+
 export default function Home() {
   return (
     <Container className="bg-white overflow-hidden">
@@ -25,7 +30,7 @@ export default function Home() {
       </div>
       <div className="space-y-10 pb-10">
         <div className="flex flex-col gap-y-8 px-4 sm:px-6 lg:px-8">
-          {<InventoriesList title="Featured Products" />}
+          {<InventoriesList title="Latest Products" />}
         </div>
       </div>
     </Container>

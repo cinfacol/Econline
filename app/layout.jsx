@@ -10,7 +10,7 @@ const font = Urbanist({ subsets: ["latin"] });
 
 export const metadata = {
   title: "EcOnline",
-  description: "Tienda Online home page",
+  description: "Modern Ecommerce App",
 };
 
 export default function RootLayout({ children }) {

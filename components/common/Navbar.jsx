@@ -2,13 +2,14 @@
 
 import { usePathname } from "next/navigation";
 import { useRetrieveUserQuery } from "@/redux/features/auth/authApiSlice";
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import {
   Bars3Icon,
   BellIcon,
   HeartIcon,
   XMarkIcon,
+  MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
 import { useAppSelector, useAppDispatch } from "@/redux/hooks";
 import { useLogoutMutation } from "@/redux/features/auth/authApiSlice";
@@ -37,6 +38,8 @@ export default function Navbar() {
 
   const { isAuthenticated } = useAppSelector((state) => state.auth);
   const { data: user, isLoading, isFetching } = useRetrieveUserQuery();
+
+  const [searchQuery, setSearchQuery] = useState("");
 
   // const categories = useGetCategoriesQuery("getCategories");
   // const num_cats = categories?.data?.ids?.length;
@@ -206,6 +209,23 @@ export default function Navbar() {
                     <CategoryNav />
                   </div>
                 </div>
+              </div>
+              <div className="relative w-full hidden lg:inline-flex lg:w-[400px] h-10 text-base text-gray-200 border-[1px] border-gray-400 items-center gap-2 justify-between px-6 rounded-full">
+                <input
+                  type="text"
+                  placeholder="Search your products here"
+                  className="flex-1 h-full outline-none bg-transparent placeholder:text-gray-400"
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  value={searchQuery}
+                />
+                {searchQuery ? (
+                  <XMarkIcon
+                    onClick={() => setSearchQuery("")}
+                    className="w-5 h-5 hover:text-red-500 duration-200 hover:cursor-pointer"
+                  />
+                ) : (
+                  <MagnifyingGlassIcon className="w-5 h-5 hover:cursor-pointer" />
+                )}
               </div>
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                 {/* Profile dropdown */}
