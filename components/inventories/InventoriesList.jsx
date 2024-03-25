@@ -8,11 +8,11 @@ import ProductCard from "../ui/productCard";
 
 export default function InventoriesList({ title }) {
   const searchTerm = useSelector((state) => state?.inventory?.searchTerm);
-  const categoryTerm = useSelector((state) => state?.inventory?.categoryTerm);
+  const categorySlug = useSelector((state) => state?.inventory?.categorySlug);
 
   const { data, isLoading, isSuccess, error } = useGetInventoriesQuery(
     "getInventories",
-    { searchTerm, categoryTerm }
+    { searchTerm, categorySlug }
   );
 
   // Early return for loading and error states

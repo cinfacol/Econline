@@ -11,12 +11,12 @@ const initialState = inventoriesAdapter.getInitialState();
 export const inventoriesApiSlice = apiAppSlice.injectEndpoints({
   endpoints: (builder) => ({
     getInventories: builder.query({
-      query: ({ searchTerm, categoryTerm }) => {
+      query: ({ searchTerm, categorySlug }) => {
         if (searchTerm) {
-          return `/inventory/search?q=${searchTerm}/`;
+          return `/inventory/search/?q=${searchTerm}/`;
         }
-        if (categoryTerm) {
-          return `/inventory/category/${categoryTerm}/`;
+        if (categorySlug) {
+          return `/inventory/category/${categorySlug}/`;
         }
         return `/inventory/all/`;
       },
