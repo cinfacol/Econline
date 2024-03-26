@@ -16,13 +16,13 @@ export const ProductSearchBar = () => {
   };
 
   return (
-    <div className="relative w-full hidden lg:inline-flex lg:w-[400px] h-10 text-base text-gray-200 border-[1px] border-gray-400 items-center gap-2 justify-between px-6 rounded-full">
+    <div className="relative w-full hidden lg:inline-flex lg:w-[400px] h-10 text-base text-gray-500 border-[1px] border-gray-400 items-center gap-2 justify-between px-6 rounded-full">
       <input
         type="text"
         value={searchTerm}
         onChange={handleInputChange}
         className="flex-1 h-full outline-none bg-transparent placeholder:text-gray-400"
-        placeholder="Search for a product..."
+        placeholder="Search for products..."
       />
       {searchTerm ? (
         <XMarkIcon
