@@ -14,8 +14,7 @@ export const categoriesApiSlice = apiAppSlice.injectEndpoints({
       query: () => "/categories/all/",
       transformResponse: (responseData) => {
         // Manejar la respuesta del API
-        const loadedItems = responseData.results ?? [];
-
+        const loadedItems = responseData.categories ?? [];
         // Agregar fechas si no existen
         loadedItems.forEach((item, idx) => {
           if (!item.date) {

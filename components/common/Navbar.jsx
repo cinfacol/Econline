@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import { useRetrieveUserQuery } from "@/redux/features/auth/authApiSlice";
 import { Fragment, useState } from "react";
-import { Disclosure, Menu, Transition, Dialog } from "@headlessui/react";
+import { Menu, Transition, Dialog } from "@headlessui/react";
 import {
   Bars3Icon,
   MagnifyingGlassIcon,
@@ -11,20 +11,26 @@ import {
   HeartIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import { useAppSelector, useAppDispatch } from "@/redux/hooks";
+import { useAppDispatch } from "@/redux/hooks";
 import { useLogoutMutation } from "@/redux/features/auth/authApiSlice";
 import { logout as setLogout } from "@/redux/features/auth/authSlice";
 import {
   NavLink,
   CartActions,
-  CategoryNav,
   Navigation,
   MobileNavigation,
   ProfileButton,
+  ProductSearchBar,
 } from "@/components/common";
 import Image from "next/image";
 import Link from "next/link";
-import { ProductSearchBar } from "./Searchbar";
+
+const navigation = {
+  pages: [
+    { name: "Team", href: "/" },
+    { name: "Products", href: "/product" },
+  ],
+};
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -32,7 +38,6 @@ function classNames(...classes) {
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
-  // const router = useRouter();
   const pathname = usePathname();
   const dispatch = useAppDispatch();
 
@@ -133,26 +138,6 @@ export default function Navbar() {
     </>
   );
 
-  const navigationLinks = (isMobile) => (
-    <>
-      <NavLink
-        isSelected={isSelected("/team")}
-        isMobile={isMobile}
-        href="/team"
-      >
-        Team
-      </NavLink>
-      <NavLink
-        isSelected={isSelected("/product")}
-        isMobile={isMobile}
-        href="/product"
-      >
-        Store
-      </NavLink>
-      <CategoryNav />
-    </>
-  );
-
   return (
     <div className="bg-white">
       {/* Mobile menu */}
@@ -195,6 +180,18 @@ export default function Navbar() {
 
                 {/* Links */}
                 <MobileNavigation />
+                <div className="space-y-6 border-t border-gray-200 px-4 py-6">
+                  {navigation.pages.map((page) => (
+                    <div key={page.name} className="flow-root">
+                      <Link
+                        href={page.href}
+                        className="-m-2 block p-2 font-medium text-gray-900"
+                      >
+                        {page.name}
+                      </Link>
+                    </div>
+                  ))}
+                </div>
                 <div className="border-t border-gray-200 px-4 py-6">
                   <Link href="/" className="-m-2 flex items-center p-2">
                     <img
@@ -238,7 +235,7 @@ export default function Navbar() {
               {/* Logo */}
               <div className="ml-4 flex lg:ml-0">
                 <Link href="/">
-                  <span className="sr-only">Your Company</span>
+                  <span className="sr-only">Ecommerce EcOnline</span>
                   <Image
                     className="h-8 w-auto"
                     src="/workflow-mark-indigo-600.svg"
@@ -250,7 +247,22 @@ export default function Navbar() {
               </div>
 
               {/* Flyout menus */}
-              <Navigation />
+              <div className="flex h-full space-x-8 ">
+                <Navigation />
+                <div className="hidden lg:ml-8 lg:block lg:self-stretch">
+                  <div className="flex h-full space-x-8 ">
+                    {navigation.pages.map((page) => (
+                      <Link
+                        key={page.name}
+                        href={page.href}
+                        className="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800"
+                      >
+                        {page.name}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </div>
               <div className="mx-auto hidden md:block">
                 {/* Search Bar */}
                 <ProductSearchBar />
@@ -267,7 +279,7 @@ export default function Navbar() {
                   </Link>
                 </div>
                 {/* Search */}
-                <div className="flex">
+                <div className="flex lg:hidden">
                   <Link
                     href="/"
                     className="p-2 text-gray-400 hover:text-gray-500"

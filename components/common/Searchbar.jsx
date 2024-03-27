@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setSearchTerm } from "@/redux/features/inventories/inventorySlice";
 import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
-export const ProductSearchBar = () => {
+const ProductSearchBar = () => {
   const dispatch = useDispatch();
   const searchTerm = useSelector((state) => state?.inventory?.searchTerm);
 
@@ -35,3 +35,4 @@ export const ProductSearchBar = () => {
     </div>
   );
 };
+export default ProductSearchBar;
