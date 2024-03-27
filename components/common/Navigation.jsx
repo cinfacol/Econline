@@ -5,6 +5,7 @@ import { Popover, Transition } from "@headlessui/react";
 import Link from "next/link";
 import { useGetCategoriesQuery } from "@/redux/features/categories/categoriesApiSlice";
 import { Spinner } from "@/components/common";
+import { ChevronDownIcon } from "@heroicons/react/20/solid";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -61,27 +62,36 @@ export default function Navigation() {
                 <Popover.Button
                   className={classNames(
                     open
-                      ? "border-indigo-600 text-indigo-600"
+                      ? "border-indigo-600 text-gray-800 font-extrabold"
                       : "border-transparent text-gray-700 hover:text-gray-800",
                     "relative z-10 -mb-px flex items-center border-b-2 pt-px text-sm font-medium transition-colors duration-200 ease-out"
                   )}
                 >
-                  Categories
+                  <span>Categories</span>
+                  <ChevronDownIcon
+                    className={classNames(
+                      open
+                        ? "text-orange-300"
+                        : "text-gray-700 hover:text-gray-800",
+                      "ml-1 h-5 w-5 transition duration-150 ease-in-out group-hover:text-orange-300/80"
+                    )}
+                    aria-hidden="true"
+                  />
                 </Popover.Button>
               </div>
-              <Popover.Overlay className="fixed inset-0 bg-black opacity-30" />
+              {/* <Popover.Overlay className="fixed inset-0 bg-black opacity-30" /> */}
 
               <Transition
                 as={Fragment}
                 show={open}
                 enter="transition ease-out duration-200"
-                enterFrom="opacity-0"
-                enterTo="opacity-100"
+                enterFrom="opacity-0 translate-y-1"
+                enterTo="opacity-100 translate-y-0"
                 leave="transition ease-in duration-150"
-                leaveFrom="opacity-100"
-                leaveTo="opacity-0"
+                leaveFrom="opacity-100 translate-y-0"
+                leaveTo="opacity-0 translate-y-1"
               >
-                <Popover.Panel className="absolute inset-x-0 top-full text-sm text-gray-500">
+                <Popover.Panel className="absolute inset-x-0 top-full text-sm text-gray-500 z-10 mt-3">
                   {({ close }) => (
                     <>
                       {/* Presentational element used to render the bottom shadow, if we put the shadow on the actual panel it pokes out the top, so we use this shorter element to hide the top of the shadow */}
