@@ -3,7 +3,7 @@ import InventoriesList from "@/components/inventories/InventoriesList";
 import Container from "@/components/ui/container";
 
 export const metadata = {
-  title: process.env.NEXT_PUBLIC_APP_NAME || "EcOnline home",
+  title: process.env.NEXT_PUBLIC_APP_NAME || "Econline home",
   description: "Modern Ecommerce App",
 };
 

@@ -12,27 +12,42 @@ export const inventoriesApiSlice = apiAppSlice.injectEndpoints({
   endpoints: (builder) => ({
     getInventories: builder.query({
       query: ({ searchTerm, categorySlug }) => {
-        if (searchTerm) {
-          return `/inventory/search/?q=${searchTerm}/`;
-        }
-        if (categorySlug) {
-          return `/inventory/category/${categorySlug}/`;
-        }
-        return `/inventory/all/`;
+        const baseUrl = "/inventory/";
+        let url = searchTerm ? `${baseUrl}search/?query=${searchTerm}` : "";
+        url = categorySlug ? `${baseUrl}category/${categorySlug}` : url;
+        url = !url ? `${baseUrl}all/` : url;
+        return url;
       },
       transformResponse: (responseData) => {
-        let min = 1;
-        const loadedInventories = responseData.results.map((inventory) => {
-          if (!inventory?.date)
-            inventory.date = sub(new Date(), { minutes: min++ }).toISOString();
-          return inventory;
-        });
+        // Leverage optional chaining for safer access to nested properties
+        const loadedInventories = responseData?.inventories
+          ? responseData?.inventories?.map((inventory) => {
+              if (!inventory?.date) {
+                // Consider using a configurable offset or randomization for date generation
+                inventory.date = sub(new Date(), {
+                  minutes: Math.floor(Math.random() * 60),
+                }).toISOString(); // 0-59 random minutes
+              }
+              return inventory;
+            })
+          : responseData?.results?.map((inventory) => {
+              if (!inventory?.date) {
+                // Consider using a configurable offset or randomization for date generation
+                inventory.date = sub(new Date(), {
+                  minutes: Math.floor(Math.random() * 60),
+                }).toISOString(); // 0-59 random minutes
+              }
+              return inventory;
+            });
+        loadedInventories || []; // Ensure an empty array if results is undefined
+
         return inventoriesAdapter.setAll(initialState, loadedInventories);
       },
+      // Re-enable `providesTags` for potential caching benefits (uncomment if needed)
       /* providesTags: (result, error, arg) => [
-        "products",
-        ...result?.ids.map((id) => ({ id })),
-      ], */
+            "products",
+            ...result?.ids.map((id) => ({ type: 'Inventory', id })),
+          ], */
     }),
     getInventoriesByCategory: builder.query({
       query: (categories) => {

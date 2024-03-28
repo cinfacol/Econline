@@ -15,7 +15,7 @@ const Info = ({ inventoryId }) => {
   const raters = data?.rating?.length;
   let total = 0;
   const rate = data?.rating?.map(({ rating }) => (total += rating));
-  const resultado = total / raters;
+  const resultado = total / raters || 0;
   const resultadoAdjust = resultado.toFixed(1);
   const cart = CreateCart();
 
@@ -40,7 +40,7 @@ const Info = ({ inventoryId }) => {
       </div>
 
       <div className="flex flex-wrap items-center space-x-2 mb-2">
-        {raters == 0 ? (
+        {!resultado ? (
           <div className="mr-2 text-blue-600 bg-gray-200 py-1 px-2 rounded-full">
             <h1>No Reviews yet</h1>
           </div>
@@ -57,11 +57,9 @@ const Info = ({ inventoryId }) => {
                 name="rating"
               />
             </div>
-
             <span className="text-gray-500">({raters})</span>
           </>
         )}
-
         <svg
           width="6px"
           height="6px"

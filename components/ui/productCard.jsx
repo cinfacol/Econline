@@ -14,7 +14,7 @@ const ProductCard = ({ data }) => {
   const raters = data?.rating?.length;
   let total = 0;
   const rate = data?.rating?.map(({ rating }) => (total += rating));
-  const resultado = total / raters;
+  const resultado = total / raters || 0;
   const resultadoAdjust = resultado.toFixed(1);
   const previewModal = usePreviewModal();
   const cart = CreateCart();
@@ -68,7 +68,7 @@ const ProductCard = ({ data }) => {
       </div>
       {/* Price & Reiew */}
       <div className="flex flex-wrap items-center space-x-2 mb-2">
-        {raters == 0 ? (
+        {!resultado ? (
           <div className="font-semibold text-amber-400 py-1 px-2 rounded-full">
             <h1>Not Reviews</h1>
           </div>
