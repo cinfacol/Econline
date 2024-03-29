@@ -34,7 +34,7 @@ export default function InventoriesList({ title }) {
         <div className="space-y-4">
           <h3 className="font-bold text-3xl">{title}</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {data?.ids?.length === 0 && <NoResults />}
+            {data?.ids?.length === 0 && <NoResults title={"products"} />}
             {ids?.map((id) => {
               const Item = entities[id];
               return <ProductCard key={Item.id} data={Item} />;

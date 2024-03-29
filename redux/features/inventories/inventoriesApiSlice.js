@@ -52,14 +52,14 @@ export const inventoriesApiSlice = apiAppSlice.injectEndpoints({
     getInventoriesByCategory: builder.query({
       query: (categories) => {
         // Join categories into a comma-separated string
-        const categoryString = categories.join(",");
+        const categoryString = categories?.join(",");
 
         return `/inventory/category/${categoryString}/`;
       },
       transformResponse: (responseData) => {
         let min = 1;
-        const loadedInventories = responseData.results.map((inventory) => {
-          if (!inventory?.date) {
+        const loadedInventories = responseData?.results?.map((inventory) => {
+          if (!inventory.date) {
             inventory.date = sub(new Date(), { minutes: min++ }).toISOString();
           }
           return inventory;
