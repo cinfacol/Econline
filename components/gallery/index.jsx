@@ -4,10 +4,10 @@ import NextImage from "next/image";
 import { Tab } from "@headlessui/react";
 
 import GalleryTab from "@/components/gallery/gallery-tab";
-import { useGetEntity } from "@/hooks";
+import { useGetProductQuery } from "@/redux/features/inventories/inventoriesApiSlice";
 
 const Gallery = ({ inventoryId }) => {
-  const entitie = useGetEntity(inventoryId);
+  const { data: entitie } = useGetProductQuery(inventoryId);
   const images = entitie?.image;
   return (
     <Tab.Group as="div" className="flex flex-col-reverse">

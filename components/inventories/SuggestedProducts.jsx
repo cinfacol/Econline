@@ -4,9 +4,9 @@ import NoResults from "@/components/ui/no-results";
 import {
   useGetInventoriesByCategoryQuery,
   useGetInventoriesQuery,
+  useGetProductQuery,
 } from "@/redux/features/inventories/inventoriesApiSlice";
 import Loading from "@/components/inventories/loading";
-import { useGetEntity } from "@/hooks";
 import ProductCard from "../ui/productCard";
 
 // const SuggestedProducts = ({ title, categories, inventoryId }) => {
@@ -16,8 +16,7 @@ const SuggestedProducts = ({ title, inventoryId }) => {
   const { ids = [] } = data || {}; // Default to empty array
   const { entities = [] } = data || {}; // Default to empty array
 
-  // useGetEntity es un hook que recibe el id de un inventory y devuelve toda la información relacionada con ese inventory
-  const entitie = useGetEntity(inventoryId);
+  const { data: entitie } = useGetProductQuery(inventoryId);
 
   // categories es un array que almacena el slug de todas las categorías del inventory -> product referenciado
   const categories = entitie?.product?.category?.map((cat) => {

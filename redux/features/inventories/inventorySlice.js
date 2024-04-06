@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   searchTerm: "",
-  categorySlug: "",
+  categoryTerm: "",
 };
 
 const inventorySlice = createSlice({
@@ -10,13 +10,15 @@ const inventorySlice = createSlice({
   initialState,
   reducers: {
     setSearchTerm: (state, action) => {
+      state.categoryTerm = "";
       state.searchTerm = action.payload;
     },
-    setcategorySlug: (state, action) => {
-      state.categorySlug = action.payload;
+    setCategoryTerm: (state, action) => {
+      state.searchTerm = "";
+      state.categoryTerm = action.payload;
     },
   },
 });
 
-export const { setSearchTerm, setcategorySlug } = inventorySlice.actions;
+export const { setSearchTerm, setCategoryTerm } = inventorySlice.actions;
 export default inventorySlice.reducer;

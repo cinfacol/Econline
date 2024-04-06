@@ -1,12 +1,12 @@
 "use client";
 
-import { useDispatch, useSelector } from "react-redux";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { setSearchTerm } from "@/redux/features/inventories/inventorySlice";
 import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 const ProductSearchBar = () => {
-  const dispatch = useDispatch();
-  const searchTerm = useSelector((state) => state?.inventory?.searchTerm);
+  const dispatch = useAppDispatch();
+  const searchTerm = useAppSelector((state) => state?.inventory?.searchTerm);
 
   const handleInputChange = (event) => {
     dispatch(setSearchTerm(event.target.value));

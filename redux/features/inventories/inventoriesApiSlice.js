@@ -11,10 +11,10 @@ const initialState = inventoriesAdapter.getInitialState();
 export const inventoriesApiSlice = apiAppSlice.injectEndpoints({
   endpoints: (builder) => ({
     getInventories: builder.query({
-      query: ({ searchTerm, categorySlug }) => {
+      query: ({ searchTerm, categoryTerm }) => {
         const baseUrl = "/inventory/";
         let url = searchTerm ? `${baseUrl}search/?query=${searchTerm}` : "";
-        url = categorySlug ? `${baseUrl}category/${categorySlug}` : url;
+        url = categoryTerm ? `${baseUrl}category/${categoryTerm}` : url;
         url = !url ? `${baseUrl}all/` : url;
         return url;
       },
@@ -43,11 +43,13 @@ export const inventoriesApiSlice = apiAppSlice.injectEndpoints({
 
         return inventoriesAdapter.setAll(initialState, loadedInventories);
       },
-      // Re-enable `providesTags` for potential caching benefits (uncomment if needed)
-      /* providesTags: (result, error, arg) => [
-            "products",
-            ...result?.ids.map((id) => ({ type: 'Inventory', id })),
-          ], */
+      // Add tagTypes, providesTags, and invalidatesTags here
+      tagTypes: ["inventory"], // Define global tag type
+      providesTags: (result, error, arg) => [
+        // Tags provided by this query
+        "Inventories", // Global tag
+        ...result?.ids.map((id) => ({ type: "Inventory", id })), // Specific tags per inventory
+      ],
     }),
     getInventoriesByCategory: builder.query({
       query: (categories) => {
@@ -66,6 +68,11 @@ export const inventoriesApiSlice = apiAppSlice.injectEndpoints({
         });
         return inventoriesAdapter.setAll(initialState, loadedInventories);
       },
+    }),
+    getProduct: builder.query({
+      tagTypes: ["products"],
+      query: (inventoryId) => `/inventory/details/${inventoryId}/`,
+      providesTags: ["products"],
     }),
 
     /* getProductsByAgent: builder.query({
@@ -125,6 +132,7 @@ export const inventoriesApiSlice = apiAppSlice.injectEndpoints({
 export const {
   useGetInventoriesQuery,
   useGetInventoriesByCategoryQuery,
+  useGetProductQuery,
   // useGetProductsByAgentQuery,
   // useAddNewProductMutation,
   // useUpdateProductMutation,

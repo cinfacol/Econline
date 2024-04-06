@@ -1,6 +1,7 @@
 // import Banner from "@/components/common/Banner";
 import InventoriesList from "@/components/inventories/InventoriesList";
 import Container from "@/components/ui/container";
+import { RadioButtonCategoryGroup } from "@/components/common/RadioButtonCategoryGroup";
 
 export const metadata = {
   title: process.env.NEXT_PUBLIC_APP_NAME || "Econline home",
@@ -8,10 +9,12 @@ export const metadata = {
 };
 
 export default function Home() {
+  // const categoryTerm = useAppSelector((state) => state.inventory.categoryTerm);
   return (
     <Container className="bg-white overflow-hidden">
       {/* <Billboard data="" /> */}
       {/* <Banner /> */}
+      <RadioButtonCategoryGroup />
       <div className="relative isolate px-6 pt-2 lg:px-8">
         <div className="mx-auto max-w-2xl py-5 sm:py-6 lg:py-12">
           <div className="text-center">

@@ -3,16 +3,19 @@
 import { Spinner } from "@/components/common";
 import NoResults from "@/components/ui/no-results";
 import { useGetInventoriesQuery } from "@/redux/features/inventories/inventoriesApiSlice";
-import { useSelector } from "react-redux";
 import ProductCard from "../ui/productCard";
+import { useAppSelector } from "@/redux/hooks";
+// import { RadioButtonCategoryGroup } from "../common/RadioButtonCategoryGroup";
 
 export default function InventoriesList({ title }) {
-  const searchTerm = useSelector((state) => state?.inventory?.searchTerm);
-  const categorySlug = useSelector((state) => state?.inventory?.categorySlug);
+  const searchTerm = useAppSelector((state) => state?.inventory?.searchTerm);
+  const categoryTerm = useAppSelector(
+    (state) => state?.inventory?.categoryTerm
+  );
 
   const { data, isLoading, isSuccess, error } = useGetInventoriesQuery({
     searchTerm,
-    categorySlug,
+    categoryTerm,
   });
 
   // Early return for loading and error states
