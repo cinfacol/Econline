@@ -6,8 +6,10 @@ import Currency from "@/components/ui/currency";
 import { Button } from "@/components/ui/button";
 import StarRatings from "react-star-ratings";
 import { useGetReviewsByProductIdQuery } from "@/redux/features/reviews/ratingsApiSlice";
+import { useAddItemMutation } from "@/redux/features/cart/cartApiSlice";
 import CreateCart from "@/components/CreateCart";
 import { useGetProductQuery } from "@/redux/features/inventories/inventoriesApiSlice";
+import Link from "next/link";
 
 const Info = ({ inventoryId }) => {
   const { data } = useGetProductQuery(inventoryId);
@@ -16,11 +18,14 @@ const Info = ({ inventoryId }) => {
   const rate = data?.rating?.map(({ rating }) => (total += rating));
   const resultado = total / raters || 0;
   const resultadoAdjust = resultado.toFixed(1);
+  const stock = data?.stock?.units - data?.stock.units_sold;
+  const productId = data?.id;
+  // const newItem = JSON.stringify({ inventory_id: productId });
   const cart = CreateCart();
+  // const [CreateCart, { isLoading, error }] = useAddItemMutation();
 
   const onAddToCart = (event) => {
-    event.stopPropagation();
-
+    event.preventDefault();
     cart.addItem(data);
   };
 
@@ -68,7 +73,11 @@ const Info = ({ inventoryId }) => {
           <circle cx="3" cy="3" r="3" fill="#DBDBDB" />
         </svg>
 
-        <span className="text-green-500">Verified</span>
+        {stock < 0 ? (
+          <span className="text-red-500">Agotado</span>
+        ) : (
+          <span className="text-green-500">En Existencia ({stock})</span>
+        )}
       </div>
       <div className="mt-3 flex items-end justify-between">
         <span className="text-2xl text-gray-900">
@@ -85,9 +94,22 @@ const Info = ({ inventoryId }) => {
           <h3 className="font-semibold text-black">Description:</h3>
           <div>{data?.product?.description}</div>
         </div>
+        <div className="flex items-center gap-x-4">
+          <h3 className="font-semibold text-black">Vendedor:</h3>
+          <div>{data?.user?.full_name}</div>
+          <Link
+            href={`/products/${data?.user?.id}`}
+            className="mr-2 text-blue-600 text-center bg-gray-200 py-1 px-2 rounded-full"
+          >
+            Otros productos del vendedor
+          </Link>
+        </div>
       </div>
       <div className="mt-10 flex items-center gap-x-3">
-        <Button onClick={onAddToCart} className="flex items-center gap-x-2">
+        <Button
+          onClick={onAddToCart}
+          className="flex items-center gap-x-2 space-x-2 bg-lime-600 px-4 py-2 rounded-md text-white hover:text-gray-900 hover:border-black"
+        >
           Add To Cart
           <ShoppingCart size={20} />
         </Button>

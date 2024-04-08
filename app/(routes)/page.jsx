@@ -2,6 +2,7 @@
 import InventoriesList from "@/components/inventories/InventoriesList";
 import Container from "@/components/ui/container";
 import { RadioButtonCategoryGroup } from "@/components/common/RadioButtonCategoryGroup";
+// import { cookies } from "next/headers";
 
 export const metadata = {
   title: process.env.NEXT_PUBLIC_APP_NAME || "Econline home",
@@ -9,6 +10,9 @@ export const metadata = {
 };
 
 export default function Home() {
+  // const cookieStore = cookies();
+  // const access = cookieStore.get("access");
+  // console.log("access", access);
   // const categoryTerm = useAppSelector((state) => state.inventory.categoryTerm);
   return (
     <Container className="bg-white overflow-hidden">

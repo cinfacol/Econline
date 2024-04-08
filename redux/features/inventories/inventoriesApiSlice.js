@@ -43,11 +43,8 @@ export const inventoriesApiSlice = apiAppSlice.injectEndpoints({
 
         return inventoriesAdapter.setAll(initialState, loadedInventories);
       },
-      // Add tagTypes, providesTags, and invalidatesTags here
-      tagTypes: ["inventory"], // Define global tag type
       providesTags: (result, error, arg) => [
-        // Tags provided by this query
-        "Inventories", // Global tag
+        { type: "Inventory", id: "LIST" },
         ...result?.ids.map((id) => ({ type: "Inventory", id })), // Specific tags per inventory
       ],
     }),

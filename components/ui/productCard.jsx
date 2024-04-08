@@ -9,6 +9,7 @@ import IconButton from "@/components/ui/icon-button";
 import StarRatings from "react-star-ratings";
 import usePreviewModal from "@/hooks/use-preview-modal";
 import CreateCart from "@/components/CreateCart";
+// import { useAddItemMutation } from "@/redux/features/cart/cartApiSlice";
 
 const ProductCard = ({ data }) => {
   const raters = data?.rating?.length;
@@ -16,9 +17,13 @@ const ProductCard = ({ data }) => {
   const rate = data?.rating?.map(({ rating }) => (total += rating));
   const resultado = total / raters || 0;
   const resultadoAdjust = resultado.toFixed(1);
+  const stock = data?.stock?.units - data?.stock.units_sold;
+  // const productId = data.id;
+  // const newItem = JSON.stringify({ inventory_id: productId });
   const previewModal = usePreviewModal();
-  const cart = CreateCart();
   const router = useRouter();
+  const cart = CreateCart();
+  // const [CreateCart, { isLoading, error }] = useAddItemMutation();
 
   const handleClick = () => {
     router.push(`/product/${data?.id}`);
@@ -29,11 +34,11 @@ const ProductCard = ({ data }) => {
     previewModal.onOpen(data);
   };
 
-  const onAddToCart = (event) => {
-    event.stopPropagation();
-
+  const onAddToCart = async (event) => {
+    event.preventDefault();
     cart.addItem(data);
   };
+
   return (
     <div
       onClick={handleClick}
@@ -99,7 +104,13 @@ const ProductCard = ({ data }) => {
           <circle cx="3" cy="3" r="3" fill="#DBDBDB" />
         </svg>
 
-        <span className="text-green-500">Verified</span>
+        <span className="text-green-500">
+          {stock < 0 ? (
+            <span className="text-red-500">Agotado</span>
+          ) : (
+            <span className="text-green-500">En Existencia ({stock})</span>
+          )}
+        </span>
       </div>
       <div className="flex items-center justify-between">
         <Currency value={data?.store_price} />

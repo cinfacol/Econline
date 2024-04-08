@@ -7,6 +7,21 @@ const cartAdapter = createEntityAdapter({
   sortComparer: (a, b) => b.date.localeCompare(a.date),
 });
 
+/* export async function getServerSideProps({ req }) {
+  // const { req } = context;
+  const token = req.headers.cookie
+    .split(";")
+    .find((c) => c.trim().startsWith("access="))
+    .split("=")[1];
+  console.log("token", token);
+
+  return {
+    props: {
+      token,
+    },
+  };
+} */
+
 // Definir el estado inicial del carrito
 const initialState = cartAdapter.getInitialState();
 
@@ -32,37 +47,32 @@ export const cartApiSlice = apiAppSlice.injectEndpoints({
       },
     }),
     addItem: builder.mutation({
-      query: (newItem) => {
-        const token = document.cookie.getItem("access");
-        if (!token) {
-          return {
-            error: {
-              message: "Debe iniciar sesión para agregar un item",
-            },
-          };
+      query: ({ newItem }) => ({
+        url: "/cart/add-item/",
+        method: "POST",
+        body: newItem,
+      }),
+      // Actualizar el caché después de una adición exitosa (opcional)
+      onSettled: (data, { addError }) => {
+        if (data.error) {
+          addError(data.error.message);
+          return;
         }
-
-        return {
-          url: "/cart/add-item/",
-          method: "POST",
-          body: newItem,
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            Authorization: `JWT ${token}`,
-          },
-        };
+        // Actualización optimista (asumiendo que la respuesta exitosa incluye el nuevo item)
+        cartAdapter.addOne(data.data, initialState);
       },
-      /* query: (newItem) => ({
+    }),
+    /* addItem: builder.mutation({
+      query: ({ newItem }) => ({
         url: "/cart/add-item/",
         method: "POST",
         body: newItem,
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
-          Authorization: `JWT ${document.cookie.getItem("access")}`,
+          Authorization: `JWT ${document.cookies.getItem("access")}`,
         },
-      }), */
+      }),
       // Update the cache after successful addition (optional)
       onSettled: (data, { addError }) => {
         if (data.error) {
@@ -70,9 +80,9 @@ export const cartApiSlice = apiAppSlice.injectEndpoints({
           return;
         }
         // Optimistic update (assuming successful response includes new item)
-        cartAdapter.addOne(data.data, initialState);
+        // cartAdapter.addOne(data.data, initialState);
       },
-    }),
+    }), */
     updateItem: builder.mutation({
       query: (updatedItem) => ({
         url: "/cart/update-item/",
