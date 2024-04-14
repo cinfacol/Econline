@@ -9,13 +9,15 @@ import { Button } from "@/components/ui/button";
 import CreateCart from "@/components/CreateCart";
 
 export default function CartActions() {
-  const Items = useGetItemsQuery("getItems");
+  const Items = useGetItemsQuery();
   const { isAuthenticated } = useAppSelector((state) => state.auth);
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  // console.log("items", Items);
 
   const router = useRouter();
   const cart = CreateCart();

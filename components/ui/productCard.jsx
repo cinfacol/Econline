@@ -8,8 +8,9 @@ import Currency from "@/components/ui/currency";
 import IconButton from "@/components/ui/icon-button";
 import StarRatings from "react-star-ratings";
 import usePreviewModal from "@/hooks/use-preview-modal";
-import CreateCart from "@/components/CreateCart";
-// import { useAddItemMutation } from "@/redux/features/cart/cartApiSlice";
+// import CreateCart from "@/components/CreateCart";
+import { useAddItemMutation } from "@/redux/features/cart/cartApiSlice";
+import { toast } from "react-hot-toast";
 
 const ProductCard = ({ data }) => {
   const raters = data?.rating?.length;
@@ -17,13 +18,19 @@ const ProductCard = ({ data }) => {
   const rate = data?.rating?.map(({ rating }) => (total += rating));
   const resultado = total / raters || 0;
   const resultadoAdjust = resultado.toFixed(1);
-  const stock = data?.stock?.units - data?.stock.units_sold;
+  const stock = data?.stock?.units - data?.stock?.units_sold;
   // const productId = data.id;
   // const newItem = JSON.stringify({ inventory_id: productId });
   const previewModal = usePreviewModal();
   const router = useRouter();
-  const cart = CreateCart();
+  // const cart = CreateCart();
   // const [CreateCart, { isLoading, error }] = useAddItemMutation();
+  const cart_id = "";
+  const inventory_id = data.id;
+  const count = "";
+  const coupon = "";
+
+  // console.log("data", data);
 
   const handleClick = () => {
     router.push(`/product/${data?.id}`);
@@ -34,9 +41,18 @@ const ProductCard = ({ data }) => {
     previewModal.onOpen(data);
   };
 
-  const onAddToCart = async (event) => {
+  /* const onAddToCart = async (event) => {
     event.preventDefault();
     cart.addItem(data);
+  }; */
+  const onAddToCart = async () => {
+    const finalData = { cart_id, inventory_id, count, coupon };
+    const res = useAddItemMutation(finalData);
+    if (res?.success) {
+      toast.success(res?.message);
+    } else {
+      toast.error(res?.message);
+    }
   };
 
   return (

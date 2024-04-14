@@ -1,6 +1,7 @@
 import { createEntityAdapter } from "@reduxjs/toolkit";
 import { sub } from "date-fns";
 import { apiAppSlice } from "@/redux/api/apiAppSlice";
+import Cookies from "js-cookie";
 
 // Adaptar la estructura de la entidad para el carrito
 const cartAdapter = createEntityAdapter({
@@ -33,7 +34,10 @@ export const cartApiSlice = apiAppSlice.injectEndpoints({
       query: () => "/cart/cart-items/",
       transformResponse: (responseData) => {
         // Manejar la respuesta del API
-        const loadedItems = responseData.cart ?? [];
+        const loadedItems = responseData?.results?.cart_items ?? [];
+
+        // console.log("response_data", responseData);
+        // console.log("loaded_Items", loadedItems);
 
         // Agregar fechas si no existen
         loadedItems.forEach((item, idx) => {
@@ -46,7 +50,7 @@ export const cartApiSlice = apiAppSlice.injectEndpoints({
         return cartAdapter.setAll(initialState, loadedItems);
       },
     }),
-    addItem: builder.mutation({
+    /* addItem: builder.mutation({
       query: ({ newItem }) => ({
         url: "/cart/add-item/",
         method: "POST",
@@ -61,16 +65,16 @@ export const cartApiSlice = apiAppSlice.injectEndpoints({
         // Actualización optimista (asumiendo que la respuesta exitosa incluye el nuevo item)
         cartAdapter.addOne(data.data, initialState);
       },
-    }),
-    /* addItem: builder.mutation({
-      query: ({ newItem }) => ({
+    }), */
+    addItem: builder.mutation({
+      query: (newItem) => ({
         url: "/cart/add-item/",
         method: "POST",
         body: newItem,
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
-          Authorization: `JWT ${document.cookies.getItem("access")}`,
+          Authorization: `JWT ${Cookies.get("access")}`,
         },
       }),
       // Update the cache after successful addition (optional)
@@ -82,7 +86,7 @@ export const cartApiSlice = apiAppSlice.injectEndpoints({
         // Optimistic update (assuming successful response includes new item)
         // cartAdapter.addOne(data.data, initialState);
       },
-    }), */
+    }),
     updateItem: builder.mutation({
       query: (updatedItem) => ({
         url: "/cart/update-item/",

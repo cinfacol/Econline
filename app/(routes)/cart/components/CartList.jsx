@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 
 export default function CartList({ title }) {
   const router = useRouter();
-  const { data, isSuccess, isLoading, error } = useGetItemsQuery("getItems");
+  const { data, isSuccess, isLoading, error } = useGetItemsQuery();
 
   // Early return for loading and error states
   if (isLoading) return <Spinner lg />;
@@ -45,17 +45,17 @@ export default function CartList({ title }) {
                       <tr>
                         <td>
                           <Link
-                            href={`/product/${Item.inventory.id}`}
+                            href={`/product/${Item?.inventory?.id}`}
                             className="flex items-center"
                           >
                             <Image
-                              src={Item.inventory.image[0].image}
-                              alt={Item.inventory.image[0].alt_text}
+                              src={Item?.inventory?.image[0].image}
+                              alt={Item?.inventory?.image[0].alt_text}
                               width={50}
                               height={50}
                             ></Image>
                             <span className="px-2">
-                              {Item.inventory.product.name}
+                              {Item?.inventory?.product?.name}
                             </span>
                           </Link>
                         </td>
@@ -68,7 +68,7 @@ export default function CartList({ title }) {
                           >
                             -
                           </button>
-                          <span className="px-2">{Item.count}</span>
+                          <span className="px-2">{Item?.count}</span>
                           <button
                             className="btn"
                             type="button"
@@ -78,7 +78,7 @@ export default function CartList({ title }) {
                             +
                           </button>
                         </td>
-                        <td>${Item.inventory.store_price}</td>
+                        <td>${Item?.inventory?.store_price}</td>
                       </tr>
                     </tbody>
                   );
