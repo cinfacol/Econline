@@ -2,7 +2,7 @@
 import InventoriesList from "@/components/inventories/InventoriesList";
 import Container from "@/components/ui/container";
 import { RadioButtonCategoryGroup } from "@/components/common/RadioButtonCategoryGroup";
-// import { cookies } from "next/headers";
+import { cookies } from "next/headers";
 
 export const metadata = {
   title: process.env.NEXT_PUBLIC_APP_NAME || "Econline home",
@@ -10,9 +10,8 @@ export const metadata = {
 };
 
 export default function Home() {
-  // const cookieStore = cookies();
-  // const access = cookieStore.get("access");
-  // console.log("access", access);
+  const access = cookies().get("access");
+  const auth = access.value;
   // const categoryTerm = useAppSelector((state) => state.inventory.categoryTerm);
   return (
     <Container className="bg-white overflow-hidden">
@@ -37,7 +36,7 @@ export default function Home() {
       </div>
       <div className="space-y-10 pb-10">
         <div className="flex flex-col gap-y-8 px-4 sm:px-6 lg:px-8">
-          {<InventoriesList title="Latest Products" />}
+          {<InventoriesList title="Latest Products" auth={auth} />}
         </div>
       </div>
     </Container>

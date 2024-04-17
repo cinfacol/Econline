@@ -17,8 +17,6 @@ export default function CartActions() {
     setIsMounted(true);
   }, []);
 
-  // console.log("items", Items);
-
   const router = useRouter();
   const cart = CreateCart();
 

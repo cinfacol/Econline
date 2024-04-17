@@ -30,8 +30,6 @@ export default function MobileNavigation() {
     const Item = item.is_parent === false;
     return Item;
   });
-  // console.log("items", items);
-  // console.log("isParent", isParent);
 
   const num_cats = ids?.length;
   const navigation = {

@@ -1,7 +1,8 @@
 import { createEntityAdapter } from "@reduxjs/toolkit";
 import { sub } from "date-fns";
 import { apiAppSlice } from "@/redux/api/apiAppSlice";
-import Cookies from "js-cookie";
+// import Cookies from "js-cookie";
+// import { getCookie } from "cookies-next";
 
 // Adaptar la estructura de la entidad para el carrito
 const cartAdapter = createEntityAdapter({
@@ -32,12 +33,10 @@ export const cartApiSlice = apiAppSlice.injectEndpoints({
     // Obtener los items del carrito
     getItems: builder.query({
       query: () => "/cart/cart-items/",
+      providesTags: ["Cart"],
       transformResponse: (responseData) => {
         // Manejar la respuesta del API
         const loadedItems = responseData?.results?.cart_items ?? [];
-
-        // console.log("response_data", responseData);
-        // console.log("loaded_Items", loadedItems);
 
         // Agregar fechas si no existen
         loadedItems.forEach((item, idx) => {
@@ -66,15 +65,15 @@ export const cartApiSlice = apiAppSlice.injectEndpoints({
         cartAdapter.addOne(data.data, initialState);
       },
     }), */
-    addItem: builder.mutation({
-      query: (newItem) => ({
+    addItemToCart: builder.mutation({
+      query: (newItem, auth) => ({
         url: "/cart/add-item/",
         method: "POST",
-        body: newItem,
+        body: JSON.stringify(newItem),
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
-          Authorization: `JWT ${Cookies.get("access")}`,
+          Authorization: `JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzEzOTA2MjM4LCJpYXQiOjE3MTMzMDE0MzgsImp0aSI6ImZhOTg5YmQ2YWVhZjQ3ZjFiZWRmNWEyNDRmMTBhYWMyIiwidXNlcl9pZCI6ImNiZjI2OTgwLTk0YjEtNDk0Zi1hYTNiLTNlNWJmYjBkZDNjMiJ9.NRvdJA3FBzIcJu7T2ve052gSeP3voZI8qPkslTO6ssU`,
         },
       }),
       // Update the cache after successful addition (optional)
@@ -86,6 +85,7 @@ export const cartApiSlice = apiAppSlice.injectEndpoints({
         // Optimistic update (assuming successful response includes new item)
         // cartAdapter.addOne(data.data, initialState);
       },
+      invalidatesTags: ["Cart"], // Invalidate 'Cart' tag on mutation
     }),
     updateItem: builder.mutation({
       query: (updatedItem) => ({
@@ -139,7 +139,7 @@ export const cartApiSlice = apiAppSlice.injectEndpoints({
 // Exportar los hooks para acceder a la API
 export const {
   useGetItemsQuery,
-  useAddItemMutation,
+  useAddItemToCartMutation,
   useUpdateItemMutation,
   useRemoveItemMutation,
   useEmptyCartMutation,

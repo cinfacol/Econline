@@ -7,7 +7,7 @@ import ProductCard from "../ui/productCard";
 import { useAppSelector } from "@/redux/hooks";
 // import { RadioButtonCategoryGroup } from "../common/RadioButtonCategoryGroup";
 
-export default function InventoriesList({ title }) {
+export default function InventoriesList({ title, auth }) {
   const searchTerm = useAppSelector((state) => state?.inventory?.searchTerm);
   const categoryTerm = useAppSelector(
     (state) => state?.inventory?.categoryTerm
@@ -40,7 +40,7 @@ export default function InventoriesList({ title }) {
             {data?.ids?.length === 0 && <NoResults title={"products"} />}
             {ids?.map((id) => {
               const Item = entities[id];
-              return <ProductCard key={Item.id} data={Item} />;
+              return <ProductCard key={Item.id} data={Item} auth={auth} />;
             })}
           </div>
         </div>

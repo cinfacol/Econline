@@ -6,7 +6,7 @@ import Currency from "@/components/ui/currency";
 import { Button } from "@/components/ui/button";
 import StarRatings from "react-star-ratings";
 import { useGetReviewsByProductIdQuery } from "@/redux/features/reviews/ratingsApiSlice";
-import { useAddItemMutation } from "@/redux/features/cart/cartApiSlice";
+import { useAddItemToCartMutation } from "@/redux/features/cart/cartApiSlice";
 import CreateCart from "@/components/CreateCart";
 import { useGetProductQuery } from "@/redux/features/inventories/inventoriesApiSlice";
 import Link from "next/link";
@@ -22,7 +22,7 @@ const Info = ({ inventoryId }) => {
   const productId = data?.id;
   // const newItem = JSON.stringify({ inventory_id: productId });
   const cart = CreateCart();
-  // const [CreateCart, { isLoading, error }] = useAddItemMutation();
+  // const [CreateCart, { isLoading, error }] = useAddItemToCartMutation();
 
   const onAddToCart = (event) => {
     event.preventDefault();

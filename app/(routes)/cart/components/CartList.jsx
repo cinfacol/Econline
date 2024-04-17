@@ -68,7 +68,7 @@ export default function CartList({ title }) {
                           >
                             -
                           </button>
-                          <span className="px-2">{Item?.count}</span>
+                          <span className="px-2">{Item?.quantity}</span>
                           <button
                             className="btn"
                             type="button"

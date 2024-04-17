@@ -67,9 +67,8 @@ export const inventoriesApiSlice = apiAppSlice.injectEndpoints({
       },
     }),
     getProduct: builder.query({
-      tagTypes: ["products"],
       query: (inventoryId) => `/inventory/details/${inventoryId}/`,
-      providesTags: ["products"],
+      providesTags: ["Products"],
     }),
 
     /* getProductsByAgent: builder.query({

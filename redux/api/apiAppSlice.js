@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const apiAppSlice = createApi({
   reducerPath: "apiApp",
-  tagTypes: ["Inventories", "Inventory"], // Define global tag type
+  tagTypes: ["Inventories", "Inventory", "Cart", "Products"], // Define global tag type
   baseQuery: fetchBaseQuery({
     baseUrl: `${process.env.NEXT_PUBLIC_HOST}/api`,
     // prepareHeaders: (headers, { getState }) => {

@@ -3,16 +3,28 @@
 import Image from "next/image";
 import { Expand, ShoppingCart } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useAppDispatch } from "@/redux/hooks";
 
 import Currency from "@/components/ui/currency";
 import IconButton from "@/components/ui/icon-button";
 import StarRatings from "react-star-ratings";
 import usePreviewModal from "@/hooks/use-preview-modal";
 // import CreateCart from "@/components/CreateCart";
-import { useAddItemMutation } from "@/redux/features/cart/cartApiSlice";
+import { useAddItemToCartMutation } from "@/redux/features/cart/cartApiSlice";
 import { toast } from "react-hot-toast";
 
-const ProductCard = ({ data }) => {
+export default function ProductCard({ data, auth }) {
+  const dispatch = useAppDispatch();
+  const cart_id = "1e5b1eb5-ef79-43d1-8955-a1a8bf59f9c3";
+  const inventory_id = data.id;
+  const quantity = 1;
+  const coupon = {};
+  const finalData = { cart_id, inventory_id, quantity, coupon };
+  const newItem = finalData;
+
+  const [addItem, { data: cart, isLoading, isSuccess, error }] =
+    useAddItemToCartMutation();
+
   const raters = data?.rating?.length;
   let total = 0;
   const rate = data?.rating?.map(({ rating }) => (total += rating));
@@ -23,14 +35,6 @@ const ProductCard = ({ data }) => {
   // const newItem = JSON.stringify({ inventory_id: productId });
   const previewModal = usePreviewModal();
   const router = useRouter();
-  // const cart = CreateCart();
-  // const [CreateCart, { isLoading, error }] = useAddItemMutation();
-  const cart_id = "";
-  const inventory_id = data.id;
-  const count = "";
-  const coupon = "";
-
-  // console.log("data", data);
 
   const handleClick = () => {
     router.push(`/product/${data?.id}`);
@@ -46,12 +50,13 @@ const ProductCard = ({ data }) => {
     cart.addItem(data);
   }; */
   const onAddToCart = async () => {
-    const finalData = { cart_id, inventory_id, count, coupon };
-    const res = useAddItemMutation(finalData);
-    if (res?.success) {
-      toast.success(res?.message);
+    addItem(newItem, auth);
+    // const res = Items;
+    if (cart?.success) {
+      toast.success("Todo bien");
     } else {
-      toast.error(res?.message);
+      toast.error("Algo no salió bien");
+      // toast.error(message);
     }
   };
 
@@ -133,6 +138,4 @@ const ProductCard = ({ data }) => {
       </div>
     </div>
   );
-};
-
-export default ProductCard;
+}
