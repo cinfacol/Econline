@@ -11,19 +11,25 @@ import StarRatings from "react-star-ratings";
 import usePreviewModal from "@/hooks/use-preview-modal";
 // import CreateCart from "@/components/CreateCart";
 import { useAddItemToCartMutation } from "@/redux/features/cart/cartApiSlice";
+import { useGetItemsQuery } from "@/redux/features/cart/cartApiSlice";
 import { toast } from "react-hot-toast";
 
 export default function ProductCard({ data, auth }) {
+  const { data: cartId } = useGetItemsQuery();
+
   const dispatch = useAppDispatch();
-  const cart_id = "1e5b1eb5-ef79-43d1-8955-a1a8bf59f9c3";
+  const id = cartId.ids[0];
+  const cart_id = cartId.entities[id].cart;
+
   const inventory_id = data.id;
   const quantity = 1;
   const coupon = {};
   const finalData = { cart_id, inventory_id, quantity, coupon };
   const newItem = finalData;
+  const acceso = auth;
 
-  const [addItem, { data: cart, isLoading, isSuccess, error }] =
-    useAddItemToCartMutation();
+  // console.log("data_productCart", data);
+  const [addItem, { isLoading, isSuccess, error }] = useAddItemToCartMutation();
 
   const raters = data?.rating?.length;
   let total = 0;
@@ -50,12 +56,11 @@ export default function ProductCard({ data, auth }) {
     cart.addItem(data);
   }; */
   const onAddToCart = async () => {
-    addItem(newItem, auth);
-    // const res = Items;
-    if (cart?.success) {
+    addItem({ newItem, acceso });
+    if (isSuccess) {
       toast.success("Todo bien");
     } else {
-      toast.error("Algo no salió bien");
+      toast.error(`Error: ${error?.data?.error}`);
       // toast.error(message);
     }
   };

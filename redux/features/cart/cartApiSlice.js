@@ -32,7 +32,9 @@ export const cartApiSlice = apiAppSlice.injectEndpoints({
   endpoints: (builder) => ({
     // Obtener los items del carrito
     getItems: builder.query({
-      query: () => "/cart/cart-items/",
+      query: () => ({
+        url: "/cart/cart-items/",
+      }),
       providesTags: ["Cart"],
       transformResponse: (responseData) => {
         // Manejar la respuesta del API
@@ -49,43 +51,28 @@ export const cartApiSlice = apiAppSlice.injectEndpoints({
         return cartAdapter.setAll(initialState, loadedItems);
       },
     }),
-    /* addItem: builder.mutation({
-      query: ({ newItem }) => ({
-        url: "/cart/add-item/",
-        method: "POST",
-        body: newItem,
-      }),
-      // Actualizar el caché después de una adición exitosa (opcional)
-      onSettled: (data, { addError }) => {
-        if (data.error) {
-          addError(data.error.message);
-          return;
-        }
-        // Actualización optimista (asumiendo que la respuesta exitosa incluye el nuevo item)
-        cartAdapter.addOne(data.data, initialState);
-      },
-    }), */
     addItemToCart: builder.mutation({
-      query: (newItem, auth) => ({
+      query: ({ newItem, acceso }) => ({
         url: "/cart/add-item/",
         method: "POST",
         body: JSON.stringify(newItem),
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
-          Authorization: `JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzEzOTA2MjM4LCJpYXQiOjE3MTMzMDE0MzgsImp0aSI6ImZhOTg5YmQ2YWVhZjQ3ZjFiZWRmNWEyNDRmMTBhYWMyIiwidXNlcl9pZCI6ImNiZjI2OTgwLTk0YjEtNDk0Zi1hYTNiLTNlNWJmYjBkZDNjMiJ9.NRvdJA3FBzIcJu7T2ve052gSeP3voZI8qPkslTO6ssU`,
+          Authorization: `JWT ${acceso}`,
         },
       }),
       // Update the cache after successful addition (optional)
-      onSettled: (data, { addError }) => {
+      /* onSettled: (data, { addError }) => {
         if (data.error) {
           addError(data.error.message);
           return;
         }
         // Optimistic update (assuming successful response includes new item)
         // cartAdapter.addOne(data.data, initialState);
-      },
+      }, */
       invalidatesTags: ["Cart"], // Invalidate 'Cart' tag on mutation
+      extraOptions: { maxRetries: 0 },
     }),
     updateItem: builder.mutation({
       query: (updatedItem) => ({

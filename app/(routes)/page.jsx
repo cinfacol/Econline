@@ -11,8 +11,9 @@ export const metadata = {
 
 export default function Home() {
   const access = cookies().get("access");
-  const auth = access.value;
+  const auth = access?.value;
   // const categoryTerm = useAppSelector((state) => state.inventory.categoryTerm);
+
   return (
     <Container className="bg-white overflow-hidden">
       {/* <Billboard data="" /> */}
