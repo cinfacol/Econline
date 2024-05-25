@@ -1,4 +1,14 @@
-import { create } from "zustand";
+import { useAddItemToCartMutation } from "@/redux/features/cart/cartApiSlice";
+
+const CreateCart = () => {
+  const [addItem, { isLoading, isSuccess, error }] = useAddItemToCartMutation();
+
+  return <div>CreateCart</div>;
+};
+
+export default CreateCart;
+
+/* import { create } from "zustand";
 import { toast } from "react-hot-toast";
 import { persist, createJSONStorage } from "zustand/middleware";
 
@@ -30,4 +40,4 @@ const CreateCart = create(
   )
 );
 
-export default CreateCart;
+export default CreateCart; */

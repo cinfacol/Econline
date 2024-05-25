@@ -18,10 +18,10 @@ export default function ProductCard({ data, auth }) {
   const { data: cartId } = useGetItemsQuery();
 
   const dispatch = useAppDispatch();
-  const id = cartId.ids[0];
-  const cart_id = cartId.entities[id].cart;
+  const id = cartId?.ids[0];
+  const cart_id = cartId?.entities[id]?.cart;
 
-  const inventory_id = data.id;
+  const inventory_id = data?.id;
   const quantity = 1;
   const coupon = {};
   const finalData = { cart_id, inventory_id, quantity, coupon };
