@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import { useAppSelector } from "@/redux/hooks";
 import { useGetItemsQuery } from "@/redux/features/cart/cartApiSlice";
 import { Button } from "@/components/ui/button";
-import CreateCart from "@/components/CreateCart";
 
 export default function CartActions() {
   const Items = useGetItemsQuery();
@@ -18,7 +17,7 @@ export default function CartActions() {
   }, []);
 
   const router = useRouter();
-  const cart = CreateCart();
+  // const cart = CreateCart();
 
   if (!isMounted) {
     return null;

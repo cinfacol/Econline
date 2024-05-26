@@ -1,35 +1,17 @@
 "use client";
 
 import Image from "next/image";
-import { Expand, ShoppingCart } from "lucide-react";
+import { Expand } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useAppDispatch } from "@/redux/hooks";
 
 import Currency from "@/components/ui/currency";
 import IconButton from "@/components/ui/icon-button";
 import StarRatings from "react-star-ratings";
 import usePreviewModal from "@/hooks/use-preview-modal";
-// import CreateCart from "@/components/CreateCart";
-import { useAddItemToCartMutation } from "@/redux/features/cart/cartApiSlice";
-import { useGetItemsQuery } from "@/redux/features/cart/cartApiSlice";
-import { toast } from "react-hot-toast";
+import AddItem from "@/components/AddItem";
 
 export default function ProductCard({ data, auth }) {
-  const { data: cartId } = useGetItemsQuery();
-
-  const dispatch = useAppDispatch();
-  const id = cartId?.ids[0];
-  const cart_id = cartId?.entities[id]?.cart;
-
-  const inventory_id = data?.id;
-  const quantity = 1;
-  const coupon = {};
-  const finalData = { cart_id, inventory_id, quantity, coupon };
-  const newItem = finalData;
   const acceso = auth;
-
-  // console.log("data_productCart", data);
-  const [addItem, { isLoading, isSuccess, error }] = useAddItemToCartMutation();
 
   const raters = data?.rating?.length;
   let total = 0;
@@ -37,8 +19,6 @@ export default function ProductCard({ data, auth }) {
   const resultado = total / raters || 0;
   const resultadoAdjust = resultado.toFixed(1);
   const stock = data?.stock?.units - data?.stock?.units_sold;
-  // const productId = data.id;
-  // const newItem = JSON.stringify({ inventory_id: productId });
   const previewModal = usePreviewModal();
   const router = useRouter();
 
@@ -51,19 +31,7 @@ export default function ProductCard({ data, auth }) {
     previewModal.onOpen(data);
   };
 
-  /* const onAddToCart = async (event) => {
-    event.preventDefault();
-    cart.addItem(data);
-  }; */
-  const onAddToCart = async () => {
-    addItem({ newItem, acceso });
-    if (isSuccess) {
-      toast.success("Todo bien");
-    } else {
-      toast.error(`Error: ${error?.data?.error}`);
-      // toast.error(message);
-    }
-  };
+  const dat = data;
 
   return (
     <div
@@ -83,10 +51,7 @@ export default function ProductCard({ data, auth }) {
               onClick={onPreview}
               icon={<Expand size={20} className="text-gray-600" />}
             />
-            <IconButton
-              onClick={onAddToCart}
-              icon={<ShoppingCart size={20} className="text-gray-600" />}
-            />
+            <AddItem data={dat} access={acceso} />
           </div>
         </div>
       </div>
