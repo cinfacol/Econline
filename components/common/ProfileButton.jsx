@@ -1,8 +1,14 @@
 "use client";
 
 import { useRetrieveUserQuery } from "@/redux/features/auth/authApiSlice";
-import { Menu, Transition } from "@headlessui/react";
-import { Fragment, useState } from "react";
+import {
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuItems,
+  Transition,
+} from "@headlessui/react";
+import { Fragment } from "react";
 import { useAppSelector, useAppDispatch } from "@/redux/hooks";
 import { useLogoutMutation } from "@/redux/features/auth/authApiSlice";
 import { logout as setLogout } from "@/redux/features/auth/authSlice";
@@ -36,50 +42,50 @@ export default function ProfileButton() {
   };
   const authLinks = (isMobile) => (
     <>
-      <Menu.Item disabled>
+      <MenuItem disabled>
         <span className="bg-gray-100 block px-4 py-2 text-center text-gray-700 border-b-2">
           {user.full_name}
         </span>
-      </Menu.Item>
-      <Menu.Item>
-        {({ active }) => (
+      </MenuItem>
+      <MenuItem>
+        {({ focus }) => (
           <Link
             href="/dashboard"
             className={classNames(
-              active ? "bg-gray-100" : "",
+              focus ? "bg-gray-100" : "",
               "block px-4 py-2 text-sm text-gray-700"
             )}
           >
             Dashboard
           </Link>
         )}
-      </Menu.Item>
-      <Menu.Item>
-        {({ active }) => (
+      </MenuItem>
+      <MenuItem>
+        {({ focus }) => (
           <Link
             href="/profile"
             className={classNames(
-              active ? "bg-gray-100" : "",
+              focus ? "bg-gray-100" : "",
               "block px-4 py-2 text-sm text-gray-700"
             )}
           >
             Profile
           </Link>
         )}
-      </Menu.Item>
-      <Menu.Item>
-        {({ active }) => (
+      </MenuItem>
+      <MenuItem>
+        {({ focus }) => (
           <Link
             href="/settings"
             className={classNames(
-              active ? "bg-gray-100" : "",
+              focus ? "bg-gray-100" : "",
               "block px-4 py-2 text-sm text-gray-700"
             )}
           >
             Settings
           </Link>
         )}
-      </Menu.Item>
+      </MenuItem>
       <NavLink isMobile={isMobile} onClick={handleLogout}>
         Logout
       </NavLink>
@@ -88,41 +94,41 @@ export default function ProfileButton() {
 
   const guestLinks = (isMobile) => (
     <>
-      <Menu.Item>
-        {({ active }) => (
+      <MenuItem>
+        {({ focus }) => (
           <Link
             href="/auth/login"
             className={classNames(
-              active ? "bg-gray-100" : "",
+              focus ? "bg-gray-100" : "",
               "block px-4 py-2 text-sm text-gray-700"
             )}
           >
             Login
           </Link>
         )}
-      </Menu.Item>
-      <Menu.Item>
-        {({ active }) => (
+      </MenuItem>
+      <MenuItem>
+        {({ focus }) => (
           <Link
             href="/auth/register"
             className={classNames(
-              active ? "bg-gray-100" : "",
+              focus ? "bg-gray-100" : "",
               "block px-4 py-2 text-sm text-gray-700"
             )}
           >
             Register
           </Link>
         )}
-      </Menu.Item>
+      </MenuItem>
     </>
   );
   return (
     <Menu as="div" className="relative ml-3">
       <div>
-        {isAuthenticated ? (
-          <Menu.Button className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
-            <span className="absolute -inset-1.5" />
-            <span className="sr-only">Open user menu</span>
+        <MenuButton className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
+          <span className="absolute -inset-1.5" />
+          <span className="sr-only">Open user menu</span>
+          {isAuthenticated ? (
             <Image
               className="h-8 w-8 rounded-full"
               width={44}
@@ -134,11 +140,7 @@ export default function ProfileButton() {
               }
               alt=""
             />
-          </Menu.Button>
-        ) : (
-          <Menu.Button className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
-            <span className="absolute -inset-1.5" />
-            <span className="sr-only">Open user menu</span>
+          ) : (
             <Image
               className="h-8 w-8 rounded-full"
               width={44}
@@ -146,8 +148,8 @@ export default function ProfileButton() {
               src="/images/profile_default.png"
               alt=""
             />
-          </Menu.Button>
-        )}
+          )}
+        </MenuButton>
       </div>
       <Transition
         as={Fragment}
@@ -158,9 +160,9 @@ export default function ProfileButton() {
         leaveFrom="transform opacity-100 scale-100"
         leaveTo="transform opacity-0 scale-95"
       >
-        <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+        <MenuItems className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
           {isAuthenticated ? authLinks : guestLinks}
-        </Menu.Items>
+        </MenuItems>
       </Transition>
     </Menu>
   );

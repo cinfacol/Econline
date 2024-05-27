@@ -44,7 +44,7 @@ const ImageUpload = ({ disabled, onChange, onRemove, value }) => {
           </div>
         ))}
       </div>
-      <CldUploadWidget onUpload={onUpload} uploadPreset="ttthutr2">
+      <CldUploadWidget onSuccess={onUpload} uploadPreset="ttthutr2">
         {({ open }) => {
           const onClick = () => {
             open();

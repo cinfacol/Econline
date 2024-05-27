@@ -62,15 +62,10 @@ export const cartApiSlice = apiAppSlice.injectEndpoints({
           Authorization: `JWT ${acceso}`,
         },
       }),
-      // Update the cache after successful addition (optional)
-      /* onSettled: (data, { addError }) => {
-        if (data.error) {
-          addError(data.error.message);
-          return;
-        }
-        // Optimistic update (assuming successful response includes new item)
-        // cartAdapter.addOne(data.data, initialState);
-      }, */
+      // Pick out data and prevent nested properties in a hook or selector
+      transformResponse: (response, meta, arg) => response.data,
+      // Pick out errors and prevent nested properties in a hook or selector
+      transformErrorResponse: (response, meta, arg) => response.data,
       invalidatesTags: ["Cart"], // Invalidate 'Cart' tag on mutation
       extraOptions: { maxRetries: 0 },
     }),

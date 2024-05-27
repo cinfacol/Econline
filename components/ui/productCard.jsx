@@ -35,11 +35,11 @@ export default function ProductCard({ data, auth }) {
 
   return (
     <div
-      onClick={handleClick}
       className="bg-white group cursor-pointer rounded-xl border p-3 space-y-4"
     >
       <div className="aspect-square rounded-xl bg-gray-100 relative">
         <Image
+          onClick={handleClick}
           src={data?.image[0]?.image}
           alt={data?.image[0]?.alt_text}
           fill

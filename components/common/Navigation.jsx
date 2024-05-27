@@ -1,7 +1,13 @@
 "use client";
 
 import { Fragment } from "react";
-import { Popover, Transition } from "@headlessui/react";
+import {
+  Popover,
+  PopoverButton,
+  PopoverGroup,
+  PopoverPanel,
+  Transition,
+} from "@headlessui/react";
 import Link from "next/link";
 import { useGetCategoriesQuery } from "@/redux/features/categories/categoriesApiSlice";
 import { Spinner } from "@/components/common";
@@ -53,13 +59,13 @@ export default function Navigation() {
   };
 
   return (
-    <Popover.Group className="hidden lg:ml-8 lg:block lg:self-stretch">
+    <PopoverGroup className="hidden lg:ml-8 lg:block lg:self-stretch">
       <div className="flex h-full space-x-8">
         <Popover className="flex">
           {({ open }) => (
             <>
               <div className="relative flex">
-                <Popover.Button
+                <PopoverButton
                   className={classNames(
                     open
                       ? "border-indigo-600 text-gray-800 font-extrabold"
@@ -77,7 +83,7 @@ export default function Navigation() {
                     )}
                     aria-hidden="true"
                   />
-                </Popover.Button>
+                </PopoverButton>
               </div>
               {/* <Popover.Overlay className="fixed inset-0 bg-black opacity-30" /> */}
 
@@ -91,7 +97,7 @@ export default function Navigation() {
                 leaveFrom="opacity-100 translate-y-0"
                 leaveTo="opacity-0 translate-y-1"
               >
-                <Popover.Panel className="absolute inset-x-0 top-full text-sm text-gray-500 z-10 mt-3">
+                <PopoverPanel className="absolute inset-x-0 top-full text-sm text-gray-500 z-10 mt-3">
                   {({ close }) => (
                     <>
                       {/* Presentational element used to render the bottom shadow, if we put the shadow on the actual panel it pokes out the top, so we use this shorter element to hide the top of the shadow */}
@@ -172,12 +178,12 @@ export default function Navigation() {
                       </div>
                     </>
                   )}
-                </Popover.Panel>
+                </PopoverPanel>
               </Transition>
             </>
           )}
         </Popover>
       </div>
-    </Popover.Group>
+    </PopoverGroup>
   );
 }

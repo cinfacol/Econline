@@ -1,7 +1,7 @@
 "use client";
 
 import { Fragment } from "react";
-import { Tab } from "@headlessui/react";
+import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import Link from "next/link";
 import { useGetCategoriesQuery } from "@/redux/features/categories/categoriesApiSlice";
 import { Spinner } from "@/components/common";
@@ -56,9 +56,9 @@ export default function MobileNavigation() {
     return classes.filter(Boolean).join(" ");
   }
   return (
-    <Tab.Group as="div" className="mt-2">
+    <TabGroup as="div" className="mt-2">
       <div className="border-b border-gray-200">
-        <Tab.List className="-mb-px flex space-x-8 px-4">
+        <TabList className="-mb-px flex space-x-8 px-4">
           <Tab
             className={({ selected }) =>
               classNames(
@@ -71,10 +71,10 @@ export default function MobileNavigation() {
           >
             Categories
           </Tab>
-        </Tab.List>
+        </TabList>
       </div>
-      <Tab.Panels as={Fragment}>
-        <Tab.Panel className="space-y-10 px-4 pb-8 pt-10">
+      <TabPanels as={Fragment}>
+        <TabPanel className="space-y-10 px-4 pb-8 pt-10">
           <div className="grid grid-cols-2 gap-x-4">
             {navigation.featured.map((item) => (
               <div key={item.name} className="group relative text-sm">
@@ -124,8 +124,8 @@ export default function MobileNavigation() {
               </ul>
             </div>
           ))}
-        </Tab.Panel>
-      </Tab.Panels>
-    </Tab.Group>
+        </TabPanel>
+      </TabPanels>
+    </TabGroup>
   );
 }
