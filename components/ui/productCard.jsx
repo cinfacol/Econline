@@ -8,7 +8,7 @@ import Currency from "@/components/ui/currency";
 import IconButton from "@/components/ui/icon-button";
 import StarRatings from "react-star-ratings";
 import usePreviewModal from "@/hooks/use-preview-modal";
-import AddItem from "@/components/AddItem";
+import AddItem from "@/components/cart/AddItem";
 
 export default function ProductCard({ data, auth }) {
   const acceso = auth;
@@ -34,9 +34,7 @@ export default function ProductCard({ data, auth }) {
   const dat = data;
 
   return (
-    <div
-      className="bg-white group cursor-pointer rounded-xl border p-3 space-y-4"
-    >
+    <div className="bg-white group cursor-pointer rounded-xl border p-3 space-y-4">
       <div className="aspect-square rounded-xl bg-gray-100 relative">
         <Image
           onClick={handleClick}
@@ -58,14 +56,14 @@ export default function ProductCard({ data, auth }) {
       {/* Description */}
       <div>
         <p className="font-semibold text-lg">{data?.product?.name}</p>
-        <p className="text-sm text-gray-500">
-          {data?.product?.category[0]?.name}
+        <p className="text-sm text-gray-500 line-clamp-2">
+          {data?.product?.description}
         </p>
       </div>
       {/* Price & Reiew */}
       <div className="flex flex-wrap items-center space-x-2 mb-2">
         {!resultado ? (
-          <div className="font-semibold text-amber-400 py-1 px-2 rounded-full">
+          <div className="font-semibold text-amber-400 py-1 rounded-full">
             <h1>Not Reviews</h1>
           </div>
         ) : (

@@ -8,6 +8,7 @@ import StarRatings from "react-star-ratings";
 // import { useGetReviewsByProductIdQuery } from "@/redux/features/reviews/ratingsApiSlice";
 import { useGetProductQuery } from "@/redux/features/inventories/inventoriesApiSlice";
 import Link from "next/link";
+import AddItem from "@/components/cart/AddItem";
 
 const Info = ({ inventoryId }) => {
   const { data } = useGetProductQuery(inventoryId);
@@ -108,6 +109,7 @@ const Info = ({ inventoryId }) => {
           onClick={onAddToCart}
           className="flex items-center gap-x-2 space-x-2 bg-lime-600 px-4 py-2 rounded-md text-white hover:text-gray-900 hover:border-black"
         >
+          <AddItem />
           Add To Cart
           <ShoppingCart size={20} />
         </Button>

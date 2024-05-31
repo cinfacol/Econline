@@ -53,7 +53,7 @@ export default function CartList({ title }) {
                               alt={Item?.inventory?.image[0].alt_text}
                               width={50}
                               height={50}
-                            ></Image>
+                            />
                             <span className="px-2">
                               {Item?.inventory?.product?.name}
                             </span>

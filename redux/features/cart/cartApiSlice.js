@@ -9,21 +9,6 @@ const cartAdapter = createEntityAdapter({
   sortComparer: (a, b) => b.date.localeCompare(a.date),
 });
 
-/* export async function getServerSideProps({ req }) {
-  // const { req } = context;
-  const token = req.headers.cookie
-    .split(";")
-    .find((c) => c.trim().startsWith("access="))
-    .split("=")[1];
-  console.log("token", token);
-
-  return {
-    props: {
-      token,
-    },
-  };
-} */
-
 // Definir el estado inicial del carrito
 const initialState = cartAdapter.getInitialState();
 
@@ -86,19 +71,22 @@ export const cartApiSlice = apiAppSlice.injectEndpoints({
       },
     }),
     removeItem: builder.mutation({
-      query: (itemId) => ({
-        url: `/cart/remove-item/${itemId}/`,
-        method: "DELETE",
+      query: ({ itemId, acceso }) => ({
+        url: `/cart/remove-item/`,
+        method: "POST",
+        body: JSON.stringify(itemId),
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `JWT ${acceso}`,
+        },
       }),
-      // Update the cache after successful deletion (optional)
-      onSettled: (data, { setError, addError }) => {
-        if (data.error) {
-          setError(data.error.message);
-          return;
-        }
-        // Optimistic update (assuming successful response confirms deletion)
-        cartAdapter.removeOne(itemId, initialState);
-      },
+      // Pick out data and prevent nested properties in a hook or selector
+      transformResponse: (response, meta, arg) => response.data,
+      // Pick out errors and prevent nested properties in a hook or selector
+      transformErrorResponse: (response, meta, arg) => response.data,
+      invalidatesTags: ["Cart"], // Invalidate 'Cart' tag on mutation
+      extraOptions: { maxRetries: 0 },
     }),
     emptyCart: builder.mutation({
       query: () => ({

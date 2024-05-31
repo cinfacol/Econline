@@ -19,10 +19,10 @@ const Currency = ({ value = 0 }) => {
   }
 
   return (
-    <div className="font-semibold">
+    <p className="font-semibold">
       {formatter.format(Number(value))}
       <span className="text-sm"> USD</span>
-    </div>
+    </p>
   );
 };
 
