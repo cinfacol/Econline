@@ -1,6 +1,8 @@
 import { createEntityAdapter } from "@reduxjs/toolkit";
 import { sub } from "date-fns";
 import { apiAppSlice } from "@/redux/api/apiAppSlice";
+// import Cookies from "js-cookie";
+// import { getCookie } from "cookies-next";
 
 // Adaptar la estructura de la entidad para el carrito
 const cartAdapter = createEntityAdapter({
@@ -15,10 +17,13 @@ export const cartApiSlice = apiAppSlice.injectEndpoints({
   endpoints: (builder) => ({
     // Obtener los items del carrito
     getItems: builder.query({
-      query: () => "/cart/cart-items/",
+      query: () => ({
+        url: "/cart/cart-items/",
+      }),
+      providesTags: ["Cart"],
       transformResponse: (responseData) => {
         // Manejar la respuesta del API
-        const loadedItems = responseData.cart ?? [];
+        const loadedItems = responseData?.results?.cart_items ?? [];
 
         // Agregar fechas si no existen
         loadedItems.forEach((item, idx) => {
@@ -31,47 +36,23 @@ export const cartApiSlice = apiAppSlice.injectEndpoints({
         return cartAdapter.setAll(initialState, loadedItems);
       },
     }),
-    addItem: builder.mutation({
-      query: (newItem) => {
-        const token = document.cookie.getItem("access");
-        if (!token) {
-          return {
-            error: {
-              message: "Debe iniciar sesión para agregar un item",
-            },
-          };
-        }
-
-        return {
-          url: "/cart/add-item/",
-          method: "POST",
-          body: newItem,
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            Authorization: `JWT ${token}`,
-          },
-        };
-      },
-      /* query: (newItem) => ({
+    addItemToCart: builder.mutation({
+      query: ({ newItem, acceso }) => ({
         url: "/cart/add-item/",
         method: "POST",
-        body: newItem,
+        body: JSON.stringify(newItem),
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
-          Authorization: `JWT ${document.cookie.getItem("access")}`,
+          Authorization: `JWT ${acceso}`,
         },
-      }), */
-      // Update the cache after successful addition (optional)
-      onSettled: (data, { addError }) => {
-        if (data.error) {
-          addError(data.error.message);
-          return;
-        }
-        // Optimistic update (assuming successful response includes new item)
-        cartAdapter.addOne(data.data, initialState);
-      },
+      }),
+      // Pick out data and prevent nested properties in a hook or selector
+      transformResponse: (response, meta, arg) => response.data,
+      // Pick out errors and prevent nested properties in a hook or selector
+      transformErrorResponse: (response, meta, arg) => response.data,
+      invalidatesTags: ["Cart"], // Invalidate 'Cart' tag on mutation
+      extraOptions: { maxRetries: 0 },
     }),
     updateItem: builder.mutation({
       query: (updatedItem) => ({
@@ -90,19 +71,22 @@ export const cartApiSlice = apiAppSlice.injectEndpoints({
       },
     }),
     removeItem: builder.mutation({
-      query: (itemId) => ({
-        url: `/cart/remove-item/${itemId}/`,
-        method: "DELETE",
+      query: ({ itemId, acceso }) => ({
+        url: `/cart/remove-item/`,
+        method: "POST",
+        body: JSON.stringify(itemId),
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `JWT ${acceso}`,
+        },
       }),
-      // Update the cache after successful deletion (optional)
-      onSettled: (data, { setError, addError }) => {
-        if (data.error) {
-          setError(data.error.message);
-          return;
-        }
-        // Optimistic update (assuming successful response confirms deletion)
-        cartAdapter.removeOne(itemId, initialState);
-      },
+      // Pick out data and prevent nested properties in a hook or selector
+      transformResponse: (response, meta, arg) => response.data,
+      // Pick out errors and prevent nested properties in a hook or selector
+      transformErrorResponse: (response, meta, arg) => response.data,
+      invalidatesTags: ["Cart"], // Invalidate 'Cart' tag on mutation
+      extraOptions: { maxRetries: 0 },
     }),
     emptyCart: builder.mutation({
       query: () => ({
@@ -125,7 +109,7 @@ export const cartApiSlice = apiAppSlice.injectEndpoints({
 // Exportar los hooks para acceder a la API
 export const {
   useGetItemsQuery,
-  useAddItemMutation,
+  useAddItemToCartMutation,
   useUpdateItemMutation,
   useRemoveItemMutation,
   useEmptyCartMutation,

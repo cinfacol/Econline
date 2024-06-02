@@ -9,8 +9,6 @@ function CommonCats({ categoryId }) {
     useGetInventoriesQuery("getInventories");
 
   const inventories = useGetEntityByCategory(categoryId);
-  // console.log("inventories_common", inventories);
-  // const { data } = useGetInventoriesByCategoryQuery(categories);
 
   return <div>Categorías comunes a: {categoryId}</div>;
 }

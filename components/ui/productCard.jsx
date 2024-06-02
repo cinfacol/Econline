@@ -5,19 +5,24 @@ import { Expand, ShoppingCart } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import Currency from "@/components/ui/currency";
+import { Button } from "@nextui-org/button";
 import IconButton from "@/components/ui/icon-button";
 import StarRatings from "react-star-ratings";
 import usePreviewModal from "@/hooks/use-preview-modal";
-import CreateCart from "@/components/CreateCart";
+import AddItem from "@/components/cart/AddItem";
+import { useAppSelector } from "@/redux/hooks";
 
-const ProductCard = ({ data }) => {
+export default function ProductCard({ data, auth }) {
+  const acceso = auth;
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
+
   const raters = data?.rating?.length;
   let total = 0;
   const rate = data?.rating?.map(({ rating }) => (total += rating));
-  const resultado = total / raters;
+  const resultado = total / raters || 0;
   const resultadoAdjust = resultado.toFixed(1);
+  const stock = data?.stock?.units - data?.stock?.units_sold;
   const previewModal = usePreviewModal();
-  const cart = CreateCart();
   const router = useRouter();
 
   const handleClick = () => {
@@ -29,19 +34,13 @@ const ProductCard = ({ data }) => {
     previewModal.onOpen(data);
   };
 
-  const onAddToCart = (event) => {
-    event.stopPropagation();
+  const dat = data;
 
-    cart.addItem(data);
-  };
-  console.log("data_card", data);
   return (
-    <div
-      onClick={handleClick}
-      className="bg-white group cursor-pointer rounded-xl border p-3 space-y-4"
-    >
+    <div className="bg-white group cursor-pointer rounded-xl border p-3 space-y-4">
       <div className="aspect-square rounded-xl bg-gray-100 relative">
         <Image
+          onClick={handleClick}
           src={data?.image[0]?.image}
           alt={data?.image[0]?.alt_text}
           fill
@@ -49,29 +48,47 @@ const ProductCard = ({ data }) => {
         />
         <div className="opacity-20 group-hover:opacity-100 transition absolute w-full px-6 bottom-5">
           <div className="flex gap-x-6 justify-center">
-            <IconButton
+            <Button
+              isIconOnly
+              color="default"
+              variant="faded"
+              aria-label="ShoppingCart"
               onClick={onPreview}
-              icon={<Expand size={20} className="text-gray-600" />}
-            />
-            <IconButton
-              onClick={onAddToCart}
-              icon={<ShoppingCart size={20} className="text-gray-600" />}
-            />
+            >
+              {<Expand size={20} className="text-gray-600" />}
+            </Button>
+            {isAuthenticated ? (
+              <AddItem data={dat} access={acceso} />
+            ) : (
+              <div>
+                <Button
+                  isIconOnly
+                  color="default"
+                  variant="faded"
+                  aria-label="ShoppingCart"
+                  onClick={() => {
+                    router.push("/auth/login");
+                  }}
+                >
+                  {<ShoppingCart size={20} className="text-gray-600" />}
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </div>
       {/* Description */}
       <div>
         <p className="font-semibold text-lg">{data?.product?.name}</p>
-        <p className="text-sm text-gray-500">
-          {data?.product?.category[0]?.name}
+        <p className="text-sm text-gray-500 line-clamp-2">
+          {data?.product?.description}
         </p>
       </div>
       {/* Price & Reiew */}
       <div className="flex flex-wrap items-center space-x-2 mb-2">
-        {raters == 0 ? (
-          <div className="font-semibold text-amber-400 py-1 px-2 rounded-full">
-            <h1>No Reviews yet</h1>
+        {!resultado ? (
+          <div className="font-semibold text-amber-400 py-1 rounded-full">
+            <h1>Not Reviews</h1>
           </div>
         ) : (
           <>
@@ -80,7 +97,7 @@ const ProductCard = ({ data }) => {
               <StarRatings
                 rating={resultado}
                 starRatedColor="#ffb829"
-                numberOfStars={5}
+                numberOfStars={1}
                 starDimension="20px"
                 starSpacing="2px"
                 name="rating"
@@ -100,13 +117,17 @@ const ProductCard = ({ data }) => {
           <circle cx="3" cy="3" r="3" fill="#DBDBDB" />
         </svg>
 
-        <span className="text-green-500">Verified</span>
+        <span className="text-green-500">
+          {stock < 0 ? (
+            <span className="text-red-500">Agotado</span>
+          ) : (
+            <span className="text-green-500">En Existencia ({stock})</span>
+          )}
+        </span>
       </div>
       <div className="flex items-center justify-between">
         <Currency value={data?.store_price} />
       </div>
     </div>
   );
-};
-
-export default ProductCard;
+}
