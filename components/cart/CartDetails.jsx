@@ -10,6 +10,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Currency from "@/components/ui/currency";
 import toast from "react-hot-toast";
+import { Button } from "../ui/button";
 
 export default function CartDetails({ title, auth }) {
   const router = useRouter();
@@ -259,10 +260,11 @@ export default function CartDetails({ title, auth }) {
                           </div>
                         </div>
                         <div className="mt-6 flex items-center gap-2.5">
-                          <button
+                          <Button
                             data-tooltip-target="favourites-tooltip-1"
                             type="button"
-                            className="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white p-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
+                            className="gap-2 rounded-lg border border-gray-200 bg-white p-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
+                            variant="destructive"
                           >
                             <svg
                               className="h-5 w-5"
@@ -279,7 +281,7 @@ export default function CartDetails({ title, auth }) {
                                 d="M12 6C6.5 1 1 8 5.8 13l6.2 7 6.2-7C23 8 17.5 1 12 6Z"
                               ></path>
                             </svg>
-                          </button>
+                          </Button>
                           <div
                             id="favourites-tooltip-1"
                             role="tooltip"
@@ -291,9 +293,9 @@ export default function CartDetails({ title, auth }) {
                               data-popper-arrow
                             ></div>
                           </div>
-                          <button
+                          <Button
                             type="button"
-                            className="inline-flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium  text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                            // className="inline-flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium  text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
                           >
                             <svg
                               className="-ms-2 me-2 h-5 w-5"
@@ -313,7 +315,7 @@ export default function CartDetails({ title, auth }) {
                               />
                             </svg>
                             Add to cart
-                          </button>
+                          </Button>
                         </div>
                       </div>
                       <div className="space-y-6 overflow-hidden rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
@@ -357,10 +359,11 @@ export default function CartDetails({ title, auth }) {
                           </div>
                         </div>
                         <div className="mt-6 flex items-center gap-2.5">
-                          <button
+                          <Button
                             data-tooltip-target="favourites-tooltip-2"
                             type="button"
-                            className="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white p-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
+                            className="gap-2 rounded-lg border border-gray-200 bg-white p-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
+                            variant="destructive"
                           >
                             <svg
                               className="h-5 w-5"
@@ -377,7 +380,7 @@ export default function CartDetails({ title, auth }) {
                                 d="M12 6C6.5 1 1 8 5.8 13l6.2 7 6.2-7C23 8 17.5 1 12 6Z"
                               ></path>
                             </svg>
-                          </button>
+                          </Button>
                           <div
                             id="favourites-tooltip-2"
                             role="tooltip"
@@ -389,9 +392,9 @@ export default function CartDetails({ title, auth }) {
                               data-popper-arrow
                             ></div>
                           </div>
-                          <button
+                          <Button
                             type="button"
-                            className="inline-flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium  text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                            // className="inline-flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium  text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
                           >
                             <svg
                               className="-ms-2 me-2 h-5 w-5"
@@ -411,7 +414,7 @@ export default function CartDetails({ title, auth }) {
                               />
                             </svg>
                             Add to cart
-                          </button>
+                          </Button>
                         </div>
                       </div>
                       <div className="space-y-6 overflow-hidden rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
@@ -455,10 +458,11 @@ export default function CartDetails({ title, auth }) {
                           </div>
                         </div>
                         <div className="mt-6 flex items-center gap-2.5">
-                          <button
+                          <Button
                             data-tooltip-target="favourites-tooltip-3"
                             type="button"
-                            className="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white p-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
+                            className="gap-2 rounded-lg border border-gray-200 bg-white p-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
+                            variant="destructive"
                           >
                             <svg
                               className="h-5 w-5"
@@ -475,7 +479,7 @@ export default function CartDetails({ title, auth }) {
                                 d="M12 6C6.5 1 1 8 5.8 13l6.2 7 6.2-7C23 8 17.5 1 12 6Z"
                               ></path>
                             </svg>
-                          </button>
+                          </Button>
                           <div
                             id="favourites-tooltip-3"
                             role="tooltip"
@@ -488,9 +492,9 @@ export default function CartDetails({ title, auth }) {
                             ></div>
                           </div>
 
-                          <button
+                          <Button
                             type="button"
-                            className="inline-flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium  text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                            // className="w-full rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium  text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
                           >
                             <svg
                               className="-ms-2 me-2 h-5 w-5"
@@ -510,7 +514,7 @@ export default function CartDetails({ title, auth }) {
                               />
                             </svg>
                             Add to cart
-                          </button>
+                          </Button>
                         </div>
                       </div>
                     </div>
@@ -536,12 +540,9 @@ export default function CartDetails({ title, auth }) {
                           required
                         />
                       </div>
-                      <button
-                        type="submit"
-                        className="flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
-                      >
+                      <Button type="submit" className="">
                         Apply Code
-                      </button>
+                      </Button>
                     </form>
                   </div>
                   <div className="space-y-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 sm:p-6">
@@ -598,12 +599,12 @@ export default function CartDetails({ title, auth }) {
                       </dl>
                     </div>
 
-                    <button
+                    <Button
                       onClick={() => router.push("/shipping")}
-                      className="flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                      // className="flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
                     >
                       Proceed to Checkout
-                    </button>
+                    </Button>
 
                     <div className="flex items-center justify-center gap-2">
                       <span className="text-sm font-normal text-gray-500 dark:text-gray-400">

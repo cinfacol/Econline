@@ -8,7 +8,11 @@ export const metadata = {
 const CartPage = () => {
   const auth = getAuthCookie()?.cookie?.value;
 
-  return <CartDetails title="Shopping Cart" auth={auth} />;
+  return auth ? (
+    <CartDetails title="Shopping Cart" auth={auth} />
+  ) : (
+    console.log("Page Cart, no estás authenticado")
+  );
 };
 
 export default CartPage;

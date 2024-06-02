@@ -13,6 +13,7 @@ import {
   BellIcon,
   HeartIcon,
   XMarkIcon,
+  ShoppingCartIcon,
 } from "@heroicons/react/24/outline";
 import {
   CartActions,
@@ -23,6 +24,9 @@ import {
 } from "@/components/common";
 import Image from "next/image";
 import Link from "next/link";
+import { useAppSelector } from "@/redux/hooks";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 const navigation = {
   pages: [
@@ -37,6 +41,8 @@ function classNames(...classes) {
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
+  const router = useRouter();
 
   return (
     <div className="bg-white">
@@ -65,21 +71,21 @@ export default function Navbar() {
               leaveFrom="translate-x-0"
               leaveTo="-translate-x-full"
             >
-              <DialogPanel className="relative flex w-full max-w-xs flex-col overflow-y-auto bg-white pb-12 shadow-xl">
+              <DialogPanel className="relative flex w-full max-w-xs flex-col overflow-y-auto bg-white pb-6 shadow-xl">
                 <div className="flex px-4 pb-2 pt-5">
-                  <button
+                  <Button
                     type="button"
                     className="relative -m-2 inline-flex items-center justify-center rounded-md p-2 text-gray-400"
+                    variant="destructive"
                     onClick={() => setOpen(false)}
                   >
                     <span className="absolute -inset-0.5" />
                     <span className="sr-only">Close menu</span>
                     <XMarkIcon className="h-6 w-6" aria-hidden="true" />
-                  </button>
+                  </Button>
                 </div>
 
                 {/* Links */}
-                <MobileNavigation />
                 <div className="space-y-6 border-t border-gray-200 px-4 py-6">
                   {navigation.pages.map((page) => (
                     <div key={page.name} className="flow-root">
@@ -92,6 +98,7 @@ export default function Navbar() {
                     </div>
                   ))}
                 </div>
+                <MobileNavigation />
                 <div className="border-t border-gray-200 px-4 py-6">
                   <Link href="/" className="-m-2 flex items-center p-2">
                     <img
@@ -122,15 +129,16 @@ export default function Navbar() {
         >
           <div className="border-b border-gray-200">
             <div className="flex h-16 items-center">
-              <button
+              <Button
                 type="button"
                 className="relative rounded-md bg-white p-2 text-gray-400 lg:hidden"
+                variant="destructive"
                 onClick={() => setOpen(true)}
               >
                 <span className="absolute -inset-0.5" />
                 <span className="sr-only">Open menu</span>
                 <Bars3Icon className="h-6 w-6" aria-hidden="true" />
-              </button>
+              </Button>
 
               {/* Logo */}
               <div className="ml-4 flex lg:ml-0">
@@ -148,7 +156,6 @@ export default function Navbar() {
 
               {/* Flyout menus */}
               <div className="flex h-full space-x-8 ">
-                <Navigation />
                 <div className="hidden lg:ml-8 lg:block lg:self-stretch">
                   <div className="flex h-full space-x-8 ">
                     {navigation.pages.map((page) => (
@@ -162,6 +169,7 @@ export default function Navbar() {
                     ))}
                   </div>
                 </div>
+                <Navigation />
               </div>
               <div className="mx-auto hidden md:block">
                 {/* Search Bar */}
@@ -169,23 +177,21 @@ export default function Navbar() {
               </div>
               <div className="ml-auto flex items-center">
                 {/* Favorites */}
-                <button
+                <Button
                   type="button"
                   className="relative rounded-full p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                  variant="destructive"
                 >
-                  <Link
-                    href="/"
-                    className="p-2 text-gray-400 hover:text-gray-500"
-                  >
+                  <Link href="/" className="text-gray-400 hover:text-gray-500">
                     <span className="sr-only">Favorites</span>
                     <HeartIcon className="h-6 w-6" aria-hidden="true" />
                   </Link>
-                </button>
+                </Button>
                 {/* Search */}
                 <div className="flex lg:hidden">
                   <Link
                     href="/"
-                    className="p-2 text-gray-400 hover:text-gray-500"
+                    className="pl-1 text-gray-400 hover:text-gray-500"
                   >
                     <span className="sr-only">Search</span>
                     <MagnifyingGlassIcon
@@ -195,21 +201,41 @@ export default function Navbar() {
                   </Link>
                 </div>
                 {/* Cart */}
-                <CartActions />
+                {isAuthenticated ? (
+                  <CartActions />
+                ) : (
+                  <div className="flex">
+                    <Button
+                      onClick={() => {
+                        router.push("/auth/login");
+                      }}
+                      className="text-gray-400 hover:text-gray-500"
+                      variant="destructive"
+                    >
+                      <span className="sr-only">items in cart, view bag</span>
+                      <ShoppingCartIcon
+                        className="h-6 w-6"
+                        aria-hidden="true"
+                      />
+                      <span className="ml-1 text-sm font-medium text-gray-400">
+                        0
+                      </span>
+                    </Button>
+                  </div>
+                )}
+
                 {/* Notifications */}
-                <button
+                <Button
                   type="button"
                   className="relative rounded-full p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                  variant="destructive"
                 >
-                  <Link
-                    href="/"
-                    className="p-2 text-gray-400 hover:text-gray-500"
-                  >
+                  <Link href="/" className="text-gray-400 hover:text-gray-500">
                     <span className="absolute -inset-1.5" />
                     <span className="sr-only">View notifications</span>
                     <BellIcon className="h-6 w-6" aria-hidden="true" />
                   </Link>
-                </button>
+                </Button>
                 {/* profileButton */}
                 <ProfileButton />
               </div>

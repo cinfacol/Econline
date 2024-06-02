@@ -5,7 +5,6 @@ import NoResults from "@/components/ui/no-results";
 import { useGetInventoriesQuery } from "@/redux/features/inventories/inventoriesApiSlice";
 import ProductCard from "../ui/productCard";
 import { useAppSelector } from "@/redux/hooks";
-// import { RadioButtonCategoryGroup } from "../common/RadioButtonCategoryGroup";
 
 export default function InventoriesList({ title, auth }) {
   const searchTerm = useAppSelector((state) => state?.inventory?.searchTerm);

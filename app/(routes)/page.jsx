@@ -10,7 +10,7 @@ export const metadata = {
 };
 
 export default function Home() {
-  const auth = getAuthCookie()?.cookie?.value;
+  const auth = getAuthCookie()?.cookie?.value || [];
 
   return (
     <Container className="bg-white overflow-hidden">

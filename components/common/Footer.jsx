@@ -72,7 +72,7 @@ const navigation = {
 };
 
 export default function Footer() {
-  const categories = useGetCategoriesQuery("getCategories");
+  const categories = useGetCategoriesQuery();
   const num_cats = categories?.data?.categories?.length;
 
   const categoriesData = [categories?.data?.categories];

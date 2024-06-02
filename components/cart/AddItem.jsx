@@ -9,13 +9,11 @@ import { ShoppingCart } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useAppSelector } from "@/redux/hooks";
 import { useRouter } from "next/navigation";
+import { Button } from "@nextui-org/button";
 
-const AddItem = ({ data, access }) => {
+const AddItem = ({ data, access, ButtonComponent }) => {
   const { data: cartId } = useGetItemsQuery();
   const [addItem, { isLoading, error }] = useAddItemToCartMutation();
-  const router = useRouter();
-
-  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
 
   if (isLoading) {
     return <h1>Loading...</h1>;
@@ -40,20 +38,29 @@ const AddItem = ({ data, access }) => {
     }
   };
 
-  return (
-    <div>
-      <IconButton
-        onClick={
-          isAuthenticated
-            ? onAddToCart
-            : () => {
-                router.push("/auth/login");
-              }
-        }
-        icon={<ShoppingCart size={20} className="text-gray-600" />}
-      />
-    </div>
-  );
+  const renderButton = () => {
+    // Check if buttonComponent is provided
+    if (ButtonComponent) {
+      return <ButtonComponent onClick={onAddToCart} />;
+    } else {
+      // Use default IconButton if no custom button provided
+      return (
+        <div>
+          <Button
+            isIconOnly
+            color="default"
+            variant="faded"
+            aria-label="ShoppingCart"
+            onClick={onAddToCart}
+          >
+            {<ShoppingCart size={20} className="text-gray-600" />}
+          </Button>
+        </div>
+      );
+    }
+  };
+
+  return <div>{renderButton()}</div>;
 };
 
 export default AddItem;

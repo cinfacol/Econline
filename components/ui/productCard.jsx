@@ -1,17 +1,20 @@
 "use client";
 
 import Image from "next/image";
-import { Expand } from "lucide-react";
+import { Expand, ShoppingCart } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import Currency from "@/components/ui/currency";
+import { Button } from "@nextui-org/button";
 import IconButton from "@/components/ui/icon-button";
 import StarRatings from "react-star-ratings";
 import usePreviewModal from "@/hooks/use-preview-modal";
 import AddItem from "@/components/cart/AddItem";
+import { useAppSelector } from "@/redux/hooks";
 
 export default function ProductCard({ data, auth }) {
   const acceso = auth;
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
 
   const raters = data?.rating?.length;
   let total = 0;
@@ -45,11 +48,32 @@ export default function ProductCard({ data, auth }) {
         />
         <div className="opacity-20 group-hover:opacity-100 transition absolute w-full px-6 bottom-5">
           <div className="flex gap-x-6 justify-center">
-            <IconButton
+            <Button
+              isIconOnly
+              color="default"
+              variant="faded"
+              aria-label="ShoppingCart"
               onClick={onPreview}
-              icon={<Expand size={20} className="text-gray-600" />}
-            />
-            <AddItem data={dat} access={acceso} />
+            >
+              {<Expand size={20} className="text-gray-600" />}
+            </Button>
+            {isAuthenticated ? (
+              <AddItem data={dat} access={acceso} />
+            ) : (
+              <div>
+                <Button
+                  isIconOnly
+                  color="default"
+                  variant="faded"
+                  aria-label="ShoppingCart"
+                  onClick={() => {
+                    router.push("/auth/login");
+                  }}
+                >
+                  {<ShoppingCart size={20} className="text-gray-600" />}
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </div>
