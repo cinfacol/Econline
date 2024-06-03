@@ -4,6 +4,7 @@ export { default as Footer } from "./Footer";
 export { default as ImageUpload } from "./image-upload";
 export { default as Navbar } from "./Navbar";
 export { default as MobileNavigation } from "./MobileNavigation";
+export { default as Modal } from "./Modal";
 export { default as Navigation } from "./Navigation";
 export { default as List } from "./List";
 export { default as NavLink } from "./NavLink";

@@ -4,11 +4,8 @@ import {
   useAddItemToCartMutation,
   useGetItemsQuery,
 } from "@/redux/features/cart/cartApiSlice";
-import IconButton from "@/components/ui/icon-button";
 import { ShoppingCart } from "lucide-react";
 import { toast } from "react-hot-toast";
-import { useAppSelector } from "@/redux/hooks";
-import { useRouter } from "next/navigation";
 import { Button } from "@nextui-org/button";
 
 const AddItem = ({ data, access, ButtonComponent }) => {
@@ -41,7 +38,22 @@ const AddItem = ({ data, access, ButtonComponent }) => {
   const renderButton = () => {
     // Check if buttonComponent is provided
     if (ButtonComponent) {
-      return <ButtonComponent onClick={onAddToCart} />;
+      return (
+        <div>
+          <Button
+            color="primary"
+            variant="shadow"
+            aria-label="Add To Cart"
+            onClick={onAddToCart}
+            className="font-bold"
+          >
+            Add To Cart
+            <span className="px-2">
+              {<ShoppingCart size={20} className="text-white-600" />}
+            </span>
+          </Button>
+        </div>
+      );
     } else {
       // Use default IconButton if no custom button provided
       return (

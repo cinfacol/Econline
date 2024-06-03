@@ -3,7 +3,7 @@
 import { Spinner } from "@/components/common";
 import NoResults from "@/components/ui/no-results";
 import { useGetInventoriesQuery } from "@/redux/features/inventories/inventoriesApiSlice";
-import ProductCard from "../ui/productCard";
+import ProductCard from "./productCard";
 import { useAppSelector } from "@/redux/hooks";
 
 export default function InventoriesList({ title, auth }) {

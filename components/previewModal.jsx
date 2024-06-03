@@ -2,13 +2,13 @@
 
 import usePreviewModal from "@/hooks/use-preview-modal";
 import Gallery from "@/components/gallery";
-import Info from "@/components/info";
+import Info from "@/components/inventories/info";
 import Modal from "@/components/ui/modal";
 
 const PreviewModal = () => {
   const previewModal = usePreviewModal();
   const inventoryId = previewModal?.data?.id;
-
+  const auth = previewModal?.auth;
   if (!inventoryId) {
     return null;
   }
@@ -20,7 +20,7 @@ const PreviewModal = () => {
           <Gallery inventoryId={inventoryId} />
         </div>
         <div className="sm:col-span-8 lg:col-span-7">
-          <Info inventoryId={inventoryId} />
+          <Info inventoryId={inventoryId} auth={auth} />
         </div>
       </div>
     </Modal>

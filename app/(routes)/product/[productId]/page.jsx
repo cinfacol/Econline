@@ -1,10 +1,12 @@
 import Gallery from "@/components/gallery";
-import Info from "@/components/info";
+import Info from "@/components/inventories/info";
 import SuggestedProducts from "@/components/inventories/SuggestedProducts";
 import Container from "@/components/ui/container";
+import { getAuthCookie } from "@/lib/cookies";
 
 // recibe como params el id del producto
 const InventoryDetailsPage = ({ params }) => {
+  const auth = getAuthCookie()?.cookie?.value || [];
   const inventoryId = params.productId;
 
   return (
@@ -15,7 +17,7 @@ const InventoryDetailsPage = ({ params }) => {
             {/* Gallery */}
             <Gallery inventoryId={inventoryId} />
             <div className="mt-10 px-4 sm:mt-16 sm:px-0 lg:mt-0">
-              <Info inventoryId={inventoryId} />
+              <Info inventoryId={inventoryId} auth={auth} />
             </div>
           </div>
           <hr className="my-10" />

@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 
 import Currency from "@/components/ui/currency";
 import { Button } from "@nextui-org/button";
-import IconButton from "@/components/ui/icon-button";
 import StarRatings from "react-star-ratings";
 import usePreviewModal from "@/hooks/use-preview-modal";
 import AddItem from "@/components/cart/AddItem";
@@ -31,7 +30,7 @@ export default function ProductCard({ data, auth }) {
 
   const onPreview = (event) => {
     event.stopPropagation();
-    previewModal.onOpen(data);
+    previewModal.onOpen(data, auth);
   };
 
   const dat = data;

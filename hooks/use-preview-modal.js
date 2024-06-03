@@ -3,7 +3,8 @@ import { create } from "zustand";
 const usePreviewModal = create((set) => ({
   isOpen: false,
   data: undefined,
-  onOpen: (data) => set({ isOpen: true, data }),
+  auth: undefined,
+  onOpen: (data, auth) => set({ isOpen: true, data, auth }),
   onClose: () => set({ isOpen: false }),
 }));
 

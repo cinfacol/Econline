@@ -3,14 +3,19 @@
 import { HeartIcon, ShoppingCart } from "lucide-react";
 
 import Currency from "@/components/ui/currency";
-import { Button } from "@/components/ui/button";
+import { Button } from "@nextui-org/button";
 import StarRatings from "react-star-ratings";
-// import { useGetReviewsByProductIdQuery } from "@/redux/features/reviews/ratingsApiSlice";
 import { useGetProductQuery } from "@/redux/features/inventories/inventoriesApiSlice";
 import Link from "next/link";
 import AddItem from "@/components/cart/AddItem";
+import { useAppSelector } from "@/redux/hooks";
+import { useRouter } from "next/navigation";
+import usePreviewModal from "@/hooks/use-preview-modal";
 
-const Info = ({ inventoryId }) => {
+const Info = ({ inventoryId, auth }) => {
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
+  const router = useRouter();
+  const acceso = auth;
   const { data } = useGetProductQuery(inventoryId);
   const raters = data?.rating?.length;
   let total = 0;
@@ -19,14 +24,7 @@ const Info = ({ inventoryId }) => {
   const resultadoAdjust = resultado.toFixed(1);
   const stock = data?.stock?.units - data?.stock.units_sold;
   const productId = data?.id;
-  // const newItem = JSON.stringify({ inventory_id: productId });
-  // const cart = CreateCart();
-  // const [CreateCart, { isLoading, error }] = useAddItemToCartMutation();
-
-  const onAddToCart = (event) => {
-    event.preventDefault();
-    // cart.addItem(data);
-  };
+  const previewModal = usePreviewModal();
 
   return (
     <div>
@@ -105,14 +103,27 @@ const Info = ({ inventoryId }) => {
         </div>
       </div>
       <div className="mt-10 flex items-center gap-x-3">
-        <Button
-          onClick={onAddToCart}
-          className="flex items-center gap-x-2 space-x-2 bg-lime-600 px-4 py-2 rounded-md text-white hover:text-gray-900 hover:border-black"
-        >
-          <AddItem />
-          Add To Cart
-          <ShoppingCart size={20} />
-        </Button>
+        {isAuthenticated ? (
+          <AddItem data={data} access={acceso} ButtonComponent={true} />
+        ) : (
+          <div>
+            <Button
+              color="primary"
+              variant="shadow"
+              aria-label="Add To Cart"
+              onClick={() => {
+                router.push("/auth/login");
+                previewModal.onClose();
+              }}
+              className="font-bold"
+            >
+              Add To Cart
+              <span className="px-2">
+                {<ShoppingCart size={20} className="text-white-600" />}
+              </span>
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
