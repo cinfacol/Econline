@@ -28,7 +28,7 @@ export default function ProductCard({ data, auth }) {
     router.push(`/product/${data?.id}`);
   };
 
-  const onPreview = (event) => {
+  const onPreviewModal = (event) => {
     event.stopPropagation();
     previewModal.onOpen(data, auth);
   };
@@ -52,7 +52,7 @@ export default function ProductCard({ data, auth }) {
               color="default"
               variant="faded"
               aria-label="ShoppingCart"
-              onClick={onPreview}
+              onClick={onPreviewModal}
             >
               {<Expand size={20} className="text-gray-600" />}
             </Button>

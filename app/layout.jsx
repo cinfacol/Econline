@@ -1,4 +1,4 @@
-import { Navbar, Footer, Modal } from "@/components/common";
+import { Navbar, Footer } from "@/components/common";
 import ModalProvider from "@/providers/modal-provider";
 import ToastProvider from "@/providers/toast-provider";
 import { Setup } from "@/components/utils";

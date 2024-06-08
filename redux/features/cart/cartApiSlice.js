@@ -22,8 +22,9 @@ export const cartApiSlice = apiAppSlice.injectEndpoints({
       }),
       providesTags: ["Cart"],
       transformResponse: (responseData) => {
+        console.log("responseData", responseData);
         // Manejar la respuesta del API
-        const loadedItems = responseData?.results?.cart_items ?? [];
+        const loadedItems = responseData?.cart_items ?? [];
 
         // Agregar fechas si no existen
         loadedItems.forEach((item, idx) => {
