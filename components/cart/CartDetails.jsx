@@ -3,6 +3,7 @@
 import { Spinner } from "@/components/common";
 import {
   useGetItemsQuery,
+  useGetTotalQuery,
   useRemoveItemMutation,
 } from "@/redux/features/cart/cartApiSlice";
 import Image from "next/image";
@@ -15,19 +16,27 @@ import AddItem from "./AddItem";
 
 export default function CartDetails({ title, auth }) {
   const router = useRouter();
+  const acceso = auth;
   const { data, isSuccess, isLoading, error } = useGetItemsQuery();
+  // Destructure data and handle empty cart case concisely
+  const { ids = [] } = data || {}; // Default to empty array
+  const { entities = [] } = data || {}; // Default to empty array
+
+  console.log("data", data);
+  const getCartItems = () => {
+    return ids.map((id) => entities[id] || null); // Return null for missing items
+  };
+  const items = getCartItems();
+  const { data: total } = useGetTotalQuery({ items: items, acceso });
   const [removeItem, { isLoading: loading, error: err }] =
     useRemoveItemMutation();
 
-  const acceso = auth;
+  console.log("items", items);
+  console.log("total", total);
 
   // Early return for loading and error states
   if (isLoading) return <Spinner lg />;
   if (error) return <p>Error: {error?.data?.detail}</p>;
-
-  // Destructure data and handle empty cart case concisely
-  const { ids = [] } = data || {}; // Default to empty array
-  const { entities = [] } = data || {}; // Default to empty array
 
   const handleRemove = async (Item) => {
     const itemId = Item?.inventory?.id;

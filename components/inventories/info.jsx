@@ -76,9 +76,14 @@ const Info = ({ inventoryId, auth }) => {
           <span className="text-green-500">En Existencia ({stock})</span>
         )}
       </div>
-      <div className="mt-3 flex items-end justify-between">
-        <span className="text-2xl text-gray-900">
+      <div className="mt-3 text-lg font-bold text-red-900 dark:text-white">
+        <span className="line-through">
           <Currency value={data?.retail_price} />
+        </span>
+      </div>
+      <div className="flex items-end justify-between">
+        <span className="text-2xl text-gray-900">
+          <Currency value={data?.store_price} />
         </span>
       </div>
       <hr className="my-4" />

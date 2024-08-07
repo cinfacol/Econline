@@ -22,7 +22,6 @@ export const cartApiSlice = apiAppSlice.injectEndpoints({
       }),
       providesTags: ["Cart"],
       transformResponse: (responseData) => {
-        console.log("responseData", responseData);
         // Manejar la respuesta del API
         const loadedItems = responseData?.cart_items ?? [];
 
@@ -101,7 +100,17 @@ export const cartApiSlice = apiAppSlice.injectEndpoints({
     }),
 
     getTotal: builder.query({
-      query: () => "/cart/get-total/",
+      query: ({ items, acceso }) => ({
+        url: `/cart/get-total/`,
+        method: "POST",
+        body: JSON.stringify(items),
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `JWT ${acceso}`,
+        },
+      }),
+      providesTags: ["CartItems"],
       transformResponse: (responseData) => responseData.total, // Extract the total value
     }),
   }),

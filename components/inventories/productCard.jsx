@@ -124,8 +124,15 @@ export default function ProductCard({ data, auth }) {
           )}
         </span>
       </div>
-      <div className="flex items-center justify-between">
-        <Currency value={data?.store_price} />
+      <div className="text-lg font-bold text-red-900 dark:text-white">
+        <span className="line-through">
+          <Currency value={data?.retail_price} />
+        </span>
+      </div>
+      <div className="flex items-center justify-between mt-0">
+        <span className="text-lg text-gray-900">
+          <Currency value={data?.store_price} />
+        </span>
       </div>
     </div>
   );
