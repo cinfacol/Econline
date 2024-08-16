@@ -22,7 +22,7 @@ export default function CartDetails({ title, auth }) {
   const { ids = [] } = data || {}; // Default to empty array
   const { entities = [] } = data || {}; // Default to empty array
 
-  console.log("data", data);
+  // console.log("data", data);
   const getCartItems = () => {
     return ids.map((id) => entities[id] || null); // Return null for missing items
   };
@@ -31,7 +31,7 @@ export default function CartDetails({ title, auth }) {
   const [removeItem, { isLoading: loading, error: err }] =
     useRemoveItemMutation();
 
-  console.log("items", items);
+  // console.log("items", items);
   console.log("total", total);
 
   // Early return for loading and error states
@@ -505,7 +505,7 @@ export default function CartDetails({ title, auth }) {
                             Price
                           </dt>
                           <dd className="text-base font-medium text-gray-900 dark:text-white">
-                            <Currency value={7592} />
+                            <Currency value={total?.total_cost} />
                           </dd>
                         </dl>
 
@@ -513,8 +513,12 @@ export default function CartDetails({ title, auth }) {
                           <dt className="text-base font-normal text-gray-500 dark:text-gray-400">
                             Savings
                           </dt>
-                          <dd className="text-base font-medium text-green-600">
-                            <Currency value={-299} />
+                          <dd className="text-base font-medium text-green-600 line-through">
+                            <Currency
+                              value={
+                                -total?.total_compare_cost + total?.total_cost
+                              }
+                            />
                           </dd>
                         </dl>
 
@@ -532,7 +536,7 @@ export default function CartDetails({ title, auth }) {
                             Tax
                           </dt>
                           <dd className="text-base font-medium text-gray-900 dark:text-white">
-                            <Currency value={799} />
+                            <Currency value={total?.tax_estimate} />
                           </dd>
                         </dl>
                       </div>
@@ -542,7 +546,7 @@ export default function CartDetails({ title, auth }) {
                           Total
                         </dt>
                         <dd className="text-base font-bold text-gray-900 dark:text-white">
-                          <Currency value={8191} />
+                          <Currency value={total?.finalPrice} />
                         </dd>
                       </dl>
                     </div>

@@ -111,7 +111,9 @@ export const cartApiSlice = apiAppSlice.injectEndpoints({
         },
       }),
       providesTags: ["CartItems"],
-      transformResponse: (responseData) => responseData.total, // Extract the total value
+      transformResponse: (responseData) => {
+        return responseData;
+      }, // Extract the total value
     }),
   }),
 });
