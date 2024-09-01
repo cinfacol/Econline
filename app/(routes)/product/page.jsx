@@ -9,7 +9,6 @@ export const metadata = {
 
 export default function ProductPage() {
   const auth = getAuthCookie()?.cookie?.value;
-  console.log("auth", auth);
 
   return (
     <section className="py-12">

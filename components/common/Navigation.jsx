@@ -21,7 +21,7 @@ export default function Navigation() {
   const { data, isSuccess, isLoading, error } = useGetCategoriesQuery();
 
   if (isLoading) return <Spinner lg />;
-  if (error) return <p>Error: {error?.data?.detail}</p>;
+  if (error) return <p className="pt-4 mt-1">{error?.data?.error}</p>;
 
   // Destructure data and handle empty cart case concisely
   const { ids = [] } = data || {}; // Default to empty array

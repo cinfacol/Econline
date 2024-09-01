@@ -12,6 +12,7 @@ export default function LoginForm() {
       labelId: "email",
       type: "email",
       value: email,
+      placeholder: "Enter a registered email *",
       required: true,
     },
     {
@@ -19,6 +20,7 @@ export default function LoginForm() {
       labelId: "password",
       type: "password",
       value: password,
+      placeholder: "******** *",
       link: {
         linkText: "Forgot password?",
         linkUrl: "/password-reset",

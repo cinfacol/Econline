@@ -14,25 +14,21 @@ import toast from "react-hot-toast";
 import { Button } from "@nextui-org/button";
 import AddItem from "./AddItem";
 
-export default function CartDetails({ title, auth }) {
+export default function CartDetails({ title }) {
   const router = useRouter();
-  const acceso = auth;
   const { data, isSuccess, isLoading, error } = useGetItemsQuery();
   // Destructure data and handle empty cart case concisely
   const { ids = [] } = data || {}; // Default to empty array
   const { entities = [] } = data || {}; // Default to empty array
 
-  // console.log("data", data);
   const getCartItems = () => {
     return ids.map((id) => entities[id] || null); // Return null for missing items
   };
   const items = getCartItems();
-  const { data: total } = useGetTotalQuery({ items: items, acceso });
+  const { data: total } = useGetTotalQuery({ items: items });
   const [removeItem, { isLoading: loading, error: err }] =
     useRemoveItemMutation();
 
-  // console.log("items", items);
-  console.log("total", total);
 
   // Early return for loading and error states
   if (isLoading) return <Spinner lg />;
@@ -41,7 +37,7 @@ export default function CartDetails({ title, auth }) {
   const handleRemove = async (Item) => {
     const itemId = Item?.inventory?.id;
     try {
-      await removeItem({ itemId, acceso })
+      await removeItem({ itemId })
         .unwrap()
         .then((payload) => toast.success("Product removed successfully"))
         .catch((error) => toast.error(`${error.error}`));
@@ -95,6 +91,7 @@ export default function CartDetails({ title, auth }) {
                                 <button
                                   type="button"
                                   id="decrement-button"
+                                  onClick={() => {}}
                                   data-input-counter-decrement="counter-input"
                                   className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-gray-300 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700"
                                 >
@@ -127,6 +124,7 @@ export default function CartDetails({ title, auth }) {
                                 <button
                                   type="button"
                                   id="increment-button"
+                                  onClick={() => {}}
                                   data-input-counter-increment="counter-input"
                                   className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-gray-300 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700"
                                 >

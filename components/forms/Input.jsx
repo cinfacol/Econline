@@ -5,6 +5,7 @@ export default function Input({
   type,
   onChange,
   value,
+  placeholder,
   children,
   link,
   required = false,
@@ -37,6 +38,7 @@ export default function Input({
           type={type}
           onChange={onChange}
           value={value}
+          placeholder={placeholder}
           required={required}
         />
       </div>

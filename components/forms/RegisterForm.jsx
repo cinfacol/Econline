@@ -17,11 +17,12 @@ export default function RegisterForm() {
   } = useRegister();
 
   const config = [
-{
+    {
       labelText: "Username",
       labelId: "username",
       type: "text",
       value: username,
+      placeholder: "Enter your Nickname *",
       required: true,
     },
     {
@@ -29,6 +30,7 @@ export default function RegisterForm() {
       labelId: "first_name",
       type: "text",
       value: first_name,
+      placeholder: "Enter your first name *",
       required: true,
     },
     {
@@ -36,6 +38,7 @@ export default function RegisterForm() {
       labelId: "last_name",
       type: "text",
       value: last_name,
+      placeholder: "Enter your last name *",
       required: true,
     },
     {
@@ -43,6 +46,7 @@ export default function RegisterForm() {
       labelId: "email",
       type: "email",
       value: email,
+      placeholder: "Enter a valid email *",
       required: true,
     },
     {
@@ -50,6 +54,7 @@ export default function RegisterForm() {
       labelId: "password",
       type: "password",
       value: password,
+      placeholder: "******** *",
       required: true,
     },
     {
@@ -57,6 +62,7 @@ export default function RegisterForm() {
       labelId: "re_password",
       type: "password",
       value: re_password,
+      placeholder: "******** *",
       required: true,
     },
   ];

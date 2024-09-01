@@ -12,7 +12,6 @@ export const apiAppSlice = createApi({
     //   if (token) {
     //     headers.set("authorization", `JWT ${token}`);
     //   }
-    //   console.log("token", token);
     //   return headers;
     // },
     credentials: "include",

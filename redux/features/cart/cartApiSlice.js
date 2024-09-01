@@ -71,14 +71,13 @@ export const cartApiSlice = apiAppSlice.injectEndpoints({
       },
     }),
     removeItem: builder.mutation({
-      query: ({ itemId, acceso }) => ({
+      query: ({ itemId }) => ({
         url: `/cart/remove-item/`,
         method: "POST",
         body: JSON.stringify(itemId),
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
-          Authorization: `JWT ${acceso}`,
         },
       }),
       // Pick out data and prevent nested properties in a hook or selector
@@ -100,14 +99,13 @@ export const cartApiSlice = apiAppSlice.injectEndpoints({
     }),
 
     getTotal: builder.query({
-      query: ({ items, acceso }) => ({
+      query: ({ items }) => ({
         url: `/cart/get-total/`,
         method: "POST",
         body: JSON.stringify(items),
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
-          Authorization: `JWT ${acceso}`,
         },
       }),
       providesTags: ["CartItems"],

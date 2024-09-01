@@ -6,7 +6,7 @@ import { useGetCategoriesQuery } from "@/redux/features/categories/categoriesApi
 
 export const RadioButtonCategoryGroup = () => {
   const dispatch = useAppDispatch();
-  const { data } = useGetCategoriesQuery({});
+  const { data } = useGetCategoriesQuery();
 
   const handleCategoryChange = (event) => {
     dispatch(setCategoryTerm(event.target.value));
