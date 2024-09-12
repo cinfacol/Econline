@@ -1,23 +1,26 @@
 "use client";
 
 import NextImage from "next/image";
-import { Tab } from "@headlessui/react";
+import { TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 
 import GalleryTab from "@/components/gallery/gallery-tab";
+import { useGetProductQuery } from "@/redux/features/inventories/inventoriesApiSlice";
 
-const Gallery = ({ images = [] }) => {
+const Gallery = ({ inventoryId }) => {
+  const { data: entitie } = useGetProductQuery(inventoryId);
+  const images = entitie?.image;
   return (
-    <Tab.Group as="div" className="flex flex-col-reverse">
+    <TabGroup as="div" className="flex flex-col-reverse">
       <div className="mx-auto mt-6 hidden w-full max-w-2xl sm:block lg:max-w-none">
-        <Tab.List className="grid grid-cols-4 gap-6">
-          {images.map((image) => (
+        <TabList className="grid grid-cols-4 gap-6">
+          {images?.map((image) => (
             <GalleryTab key={image?.id} image={image} />
           ))}
-        </Tab.List>
+        </TabList>
       </div>
-      <Tab.Panels className="aspect-square w-full">
-        {images.map((image) => (
-          <Tab.Panel key={image?.id}>
+      <TabPanels className="aspect-square w-full">
+        {images?.map((image) => (
+          <TabPanel key={image?.id}>
             <div className="aspect-square relative h-full w-full sm:rounded-lg overflow-hidden">
               <NextImage
                 fill
@@ -26,10 +29,10 @@ const Gallery = ({ images = [] }) => {
                 className="object-fill object-center"
               />
             </div>
-          </Tab.Panel>
+          </TabPanel>
         ))}
-      </Tab.Panels>
-    </Tab.Group>
+      </TabPanels>
+    </TabGroup>
   );
 };
 

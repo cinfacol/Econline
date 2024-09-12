@@ -17,6 +17,7 @@ export default function Form({
           type={input.type}
           onChange={onChange}
           value={input.value}
+          placeholder={input.placeholder}
           link={input.link}
           required={input.required}
         >

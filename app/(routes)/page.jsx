@@ -1,12 +1,22 @@
 // import Banner from "@/components/common/Banner";
 import InventoriesList from "@/components/inventories/InventoriesList";
 import Container from "@/components/ui/container";
+import { RadioButtonCategoryGroup } from "@/components/common/RadioButtonCategoryGroup";
+import { getAuthCookie } from "@/lib/cookies";
+
+export const metadata = {
+  title: "Econline home" || process.env.NEXT_PUBLIC_APP_NAME,
+  description: "Modern Ecommerce App",
+};
 
 export default function Home() {
+  const auth = getAuthCookie()?.cookie?.value || [];
+
   return (
     <Container className="bg-white overflow-hidden">
       {/* <Billboard data="" /> */}
       {/* <Banner /> */}
+      <RadioButtonCategoryGroup />
       <div className="relative isolate px-6 pt-2 lg:px-8">
         <div className="mx-auto max-w-2xl py-5 sm:py-6 lg:py-12">
           <div className="text-center">
@@ -25,7 +35,7 @@ export default function Home() {
       </div>
       <div className="space-y-10 pb-10">
         <div className="flex flex-col gap-y-8 px-4 sm:px-6 lg:px-8">
-          {<InventoriesList title="Featured Products" />}
+          {<InventoriesList title="Latest Products" auth={auth} />}
         </div>
       </div>
     </Container>

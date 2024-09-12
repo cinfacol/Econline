@@ -1,291 +1,248 @@
 "use client";
 
-import { usePathname } from "next/navigation";
-import { useRetrieveUserQuery } from "@/redux/features/auth/authApiSlice";
-import { Fragment } from "react";
-import { Disclosure, Menu, Transition } from "@headlessui/react";
+import { Fragment, useState } from "react";
+import {
+  Transition,
+  TransitionChild,
+  Dialog,
+  DialogPanel,
+} from "@headlessui/react";
 import {
   Bars3Icon,
+  MagnifyingGlassIcon,
   BellIcon,
   HeartIcon,
   XMarkIcon,
+  ShoppingCartIcon,
 } from "@heroicons/react/24/outline";
-import { useAppSelector, useAppDispatch } from "@/redux/hooks";
-import { useLogoutMutation } from "@/redux/features/auth/authApiSlice";
-import { logout as setLogout } from "@/redux/features/auth/authSlice";
-// import { useGetCategoriesQuery } from "@/redux/features/categories/categoriesApiSlice";
-import { NavLink, NavbarActions, CategoryNav } from "@/components/common";
+import {
+  CartActions,
+  Navigation,
+  MobileNavigation,
+  ProfileButton,
+  ProductSearchBar,
+} from "@/components/common";
 import Image from "next/image";
-// import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useAppSelector } from "@/redux/hooks";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+
+const navigation = {
+  pages: [
+    { name: "Team", href: "/" },
+    { name: "Products", href: "/product" },
+  ],
+};
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-const navigation = [
-  { name: "Team", href: "/team", current: true },
-  { name: "Store", href: "/product", current: false },
-];
-
 export default function Navbar() {
-  // const router = useRouter();
-  const pathname = usePathname();
-  const dispatch = useAppDispatch();
-
-  const [logout] = useLogoutMutation();
-
+  const [open, setOpen] = useState(false);
   const { isAuthenticated } = useAppSelector((state) => state.auth);
-  const { data: user, isLoading, isFetching } = useRetrieveUserQuery();
-
-  // const categories = useGetCategoriesQuery("getCategories");
-  // const num_cats = categories?.data?.ids?.length;
-
-  const handleLogout = () => {
-    logout(undefined)
-      .unwrap()
-      .then(() => {
-        localStorage.setItem(
-          "cart-storage",
-          '{"state:{"items":[]},"version":0}'
-        );
-        // router.push("/");
-        dispatch(setLogout());
-      });
-  };
-
-  const isSelected = (path) => (pathname === path ? true : false);
-
-  const authLinks = (isMobile) => (
-    <>
-      <Menu.Item>
-        {({ active }) => (
-          <Link
-            href="/dashboard"
-            className={classNames(
-              active ? "bg-gray-100" : "",
-              "block px-4 py-2 text-sm text-gray-700"
-            )}
-          >
-            Dashboard
-          </Link>
-        )}
-      </Menu.Item>
-      <Menu.Item>
-        {({ active }) => (
-          <Link
-            href="/profile"
-            className={classNames(
-              active ? "bg-gray-100" : "",
-              "block px-4 py-2 text-sm text-gray-700"
-            )}
-          >
-            Profile
-          </Link>
-        )}
-      </Menu.Item>
-      <Menu.Item>
-        {({ active }) => (
-          <Link
-            href="/settings"
-            className={classNames(
-              active ? "bg-gray-100" : "",
-              "block px-4 py-2 text-sm text-gray-700"
-            )}
-          >
-            Settings
-          </Link>
-        )}
-      </Menu.Item>
-      <NavLink isMobile={isMobile} onClick={handleLogout}>
-        Logout
-      </NavLink>
-    </>
-  );
-
-  const guestLinks = (isMobile) => (
-    <>
-      <Menu.Item>
-        {({ active }) => (
-          <Link
-            href="/auth/login"
-            className={classNames(
-              active ? "bg-gray-100" : "",
-              "block px-4 py-2 text-sm text-gray-700"
-            )}
-          >
-            Login
-          </Link>
-        )}
-      </Menu.Item>
-      <Menu.Item>
-        {({ active }) => (
-          <Link
-            href="/auth/register"
-            className={classNames(
-              active ? "bg-gray-100" : "",
-              "block px-4 py-2 text-sm text-gray-700"
-            )}
-          >
-            Register
-          </Link>
-        )}
-      </Menu.Item>
-    </>
-  );
-
-  const navigationLinks = (isMobile) => (
-    <>
-      <NavLink
-        isSelected={isSelected("/team")}
-        isMobile={isMobile}
-        href="/team"
-      >
-        Team
-      </NavLink>
-      <NavLink
-        isSelected={isSelected("/product")}
-        isMobile={isMobile}
-        href="/product"
-      >
-        Store
-      </NavLink>
-      <CategoryNav />
-    </>
-  );
+  const router = useRouter();
 
   return (
-    <Disclosure as="nav" className="bg-gray-800">
-      {({ open }) => (
-        <>
-          <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
-            <div className="relative flex h-16 items-center justify-between">
-              <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
-                {/* Mobile menu button*/}
-                <Disclosure.Button className="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
-                  <span className="absolute -inset-0.5" />
-                  <span className="sr-only">Open main menu</span>
-                  {open ? (
-                    <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
-                  ) : (
-                    <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
-                  )}
-                </Disclosure.Button>
-              </div>
-              <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-                <div className="flex flex-shrink-0 items-center">
-                  <NavLink href="/" isBanner>
-                    <span className="sr-only">Tienda Online</span>
-                    <Image
-                      className="h-8 w-auto sm:h-10"
-                      src="/workflow-mark-indigo-600.svg"
-                      height={8}
-                      width={8}
-                      alt=""
-                    />
-                  </NavLink>
+    <div className="bg-white">
+      {/* Mobile menu */}
+      <Transition show={open} as={Fragment}>
+        <Dialog as="div" className="relative z-40 lg:hidden" onClose={setOpen}>
+          <TransitionChild
+            as={Fragment}
+            enter="transition-opacity ease-linear duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="transition-opacity ease-linear duration-300"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black bg-opacity-25" />
+          </TransitionChild>
+
+          <div className="fixed inset-0 z-40 flex">
+            <TransitionChild
+              as={Fragment}
+              enter="transition ease-in-out duration-300 transform"
+              enterFrom="-translate-x-full"
+              enterTo="translate-x-0"
+              leave="transition ease-in-out duration-300 transform"
+              leaveFrom="translate-x-0"
+              leaveTo="-translate-x-full"
+            >
+              <DialogPanel className="relative flex w-full max-w-xs flex-col overflow-y-auto bg-white pb-6 shadow-xl">
+                <div className="flex px-4 pb-2 pt-5">
+                  <Button
+                    type="button"
+                    className="relative -m-2 inline-flex items-center justify-center rounded-md p-2 text-gray-400"
+                    variant="destructive"
+                    onClick={() => setOpen(false)}
+                  >
+                    <span className="absolute -inset-0.5" />
+                    <span className="sr-only">Close menu</span>
+                    <XMarkIcon className="h-6 w-6" aria-hidden="true" />
+                  </Button>
                 </div>
-                <div className="hidden sm:ml-6 sm:block">
-                  <div className="flex space-x-4 pt-2">
-                    {/* {navigationLinks(true)} */}
-                    {navigation.map((item) => (
+
+                {/* Links */}
+                <div className="space-y-6 border-t border-gray-200 px-4 py-6">
+                  {navigation.pages.map((page) => (
+                    <div key={page.name} className="flow-root">
                       <Link
-                        key={item.name}
-                        href={item.href}
-                        className={classNames(
-                          item.current
-                            ? "bg-gray-900 text-white"
-                            : "text-gray-300 hover:bg-gray-700 hover:text-white",
-                          "rounded-md px-3 py-2 text-sm font-medium"
-                        )}
-                        aria-current={item.current ? "page" : undefined}
+                        href={page.href}
+                        className="-m-2 block p-2 font-medium text-gray-900"
                       >
-                        {item.name}
+                        {page.name}
+                      </Link>
+                    </div>
+                  ))}
+                </div>
+                <MobileNavigation />
+                <div className="border-t border-gray-200 px-4 py-6">
+                  <Link href="/" className="-m-2 flex items-center p-2">
+                    <img
+                      src="https://tailwindui.com/img/flags/flag-canada.svg"
+                      alt=""
+                      className="block h-auto w-5 flex-shrink-0"
+                    />
+                    <span className="ml-3 block text-base font-medium text-gray-900">
+                      CAD
+                    </span>
+                    <span className="sr-only">, change currency</span>
+                  </Link>
+                </div>
+              </DialogPanel>
+            </TransitionChild>
+          </div>
+        </Dialog>
+      </Transition>
+
+      <header className="relative bg-white">
+        <p className="flex h-10 items-center justify-center bg-indigo-600 px-4 text-sm font-medium text-white sm:px-6 lg:px-8">
+          Get free delivery on orders over $100
+        </p>
+
+        <nav
+          aria-label="Top"
+          className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"
+        >
+          <div className="border-b border-gray-200">
+            <div className="flex h-16 items-center">
+              <Button
+                type="button"
+                className="relative rounded-md bg-white p-2 text-gray-400 lg:hidden"
+                variant="destructive"
+                onClick={() => setOpen(true)}
+              >
+                <span className="absolute -inset-0.5" />
+                <span className="sr-only">Open menu</span>
+                <Bars3Icon className="h-6 w-6" aria-hidden="true" />
+              </Button>
+
+              {/* Logo */}
+              <div className="ml-4 flex lg:ml-0">
+                <Link href="/">
+                  <span className="sr-only">Ecommerce EcOnline</span>
+                  <Image
+                    className="h-8 w-auto"
+                    src="/workflow-mark-indigo-600.svg"
+                    height={8}
+                    width={8}
+                    alt=""
+                  />
+                </Link>
+              </div>
+
+              {/* Flyout menus */}
+              <div className="flex h-full space-x-8 ">
+                <div className="hidden lg:ml-8 lg:block lg:self-stretch">
+                  <div className="flex h-full space-x-8 ">
+                    {navigation.pages.map((page) => (
+                      <Link
+                        key={page.name}
+                        href={page.href}
+                        className="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800"
+                      >
+                        {page.name}
                       </Link>
                     ))}
-                    <CategoryNav />
                   </div>
                 </div>
+                <Navigation />
               </div>
-              <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                {/* Profile dropdown */}
-                <div className="text-white">
-                  {isAuthenticated ? user?.first_name : "Guess"}
-                </div>
-                <Menu as="div" className="relative ml-3">
-                  <div>
-                    {isAuthenticated ? (
-                      <Menu.Button className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
-                        <span className="absolute -inset-1.5" />
-                        <span className="sr-only">Open user menu</span>
-                        <Image
-                          className="h-8 w-8 rounded-full"
-                          width={44}
-                          height={44}
-                          src={
-                            user?.profile_photo
-                              ? user?.profile_photo
-                              : "/images/profile_default.png"
-                          }
-                          alt=""
-                        />
-                      </Menu.Button>
-                    ) : (
-                      <Menu.Button className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
-                        <span className="absolute -inset-1.5" />
-                        <span className="sr-only">Open user menu</span>
-                        <Image
-                          className="h-8 w-8 rounded-full"
-                          width={44}
-                          height={44}
-                          src="/images/profile_default.png"
-                          alt=""
-                        />
-                      </Menu.Button>
-                    )}
-                  </div>
-                  <Transition
-                    as={Fragment}
-                    enter="transition ease-out duration-100"
-                    enterFrom="transform opacity-0 scale-95"
-                    enterTo="transform opacity-100 scale-100"
-                    leave="transition ease-in duration-75"
-                    leaveFrom="transform opacity-100 scale-100"
-                    leaveTo="transform opacity-0 scale-95"
+              <div className="mx-auto hidden md:block">
+                {/* Search Bar */}
+                <ProductSearchBar />
+              </div>
+              <div className="ml-auto flex items-center">
+                {/* Favorites */}
+                <Button
+                  type="button"
+                  className="relative rounded-full p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                  variant="destructive"
+                >
+                  <Link href="/" className="text-gray-400 hover:text-gray-500">
+                    <span className="sr-only">Favorites</span>
+                    <HeartIcon className="h-6 w-6" aria-hidden="true" />
+                  </Link>
+                </Button>
+                {/* Search */}
+                <div className="flex lg:hidden">
+                  <Link
+                    href="/"
+                    className="pl-1 text-gray-400 hover:text-gray-500"
                   >
-                    <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                      {isAuthenticated ? authLinks : guestLinks}
-                    </Menu.Items>
-                  </Transition>
-                </Menu>
-                <button
+                    <span className="sr-only">Search</span>
+                    <MagnifyingGlassIcon
+                      className="h-6 w-6"
+                      aria-hidden="true"
+                    />
+                  </Link>
+                </div>
+                {/* Cart */}
+                {isAuthenticated ? (
+                  <CartActions />
+                ) : (
+                  <div className="flex">
+                    <Button
+                      onClick={() => {
+                        router.push("/auth/login");
+                      }}
+                      className="text-gray-400 hover:text-gray-500"
+                      variant="destructive"
+                    >
+                      <span className="sr-only">items in cart, view bag</span>
+                      <ShoppingCartIcon
+                        className="h-6 w-6"
+                        aria-hidden="true"
+                      />
+                      <span className="ml-1 text-sm font-medium text-gray-400">
+                        0
+                      </span>
+                    </Button>
+                  </div>
+                )}
+
+                {/* Notifications */}
+                <Button
                   type="button"
-                  className="relative rounded-full bg-gray-800 p-1 text-gray-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                  className="relative rounded-full p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                  variant="destructive"
                 >
-                  <span className="absolute -inset-1.5" />
-                  <span className="sr-only">Favorites</span>
-                  <HeartIcon className="h-6 w-6" aria-hidden="true" />
-                </button>
-                <NavbarActions />
-                <button
-                  type="button"
-                  className="relative rounded-full bg-gray-800 p-1 text-gray-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
-                >
-                  <span className="absolute -inset-1.5" />
-                  <span className="sr-only">View notifications</span>
-                  <BellIcon className="h-6 w-6" aria-hidden="true" />
-                </button>
+                  <Link href="/" className="text-gray-400 hover:text-gray-500">
+                    <span className="absolute -inset-1.5" />
+                    <span className="sr-only">View notifications</span>
+                    <BellIcon className="h-6 w-6" aria-hidden="true" />
+                  </Link>
+                </Button>
+                {/* profileButton */}
+                <ProfileButton />
               </div>
             </div>
           </div>
-
-          <Disclosure.Panel className="sm:hidden">
-            <div className="space-y-1 px-2 pb-3 pt-2">
-              {navigationLinks(true)}
-            </div>
-          </Disclosure.Panel>
-        </>
-      )}
-    </Disclosure>
+        </nav>
+      </header>
+    </div>
   );
 }

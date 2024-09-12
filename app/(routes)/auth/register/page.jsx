@@ -7,7 +7,7 @@ export const metadata = {
   description: "Tienda Online register page",
 };
 
-export default function Page() {
+export default function SignUp() {
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
@@ -26,10 +26,10 @@ export default function Page() {
         <SocialButtons />
 
         <p className="mt-10 text-center text-sm text-gray-500">
-          Already have an account?{" "}
+          Already have an account?
           <Link
             href="/auth/login"
-            className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
+            className="font-semibold ml-2 leading-6 text-indigo-600 hover:text-indigo-500"
           >
             Login here
           </Link>

@@ -1,6 +1,7 @@
 "use client";
 
 import StarRatings from "react-star-ratings";
+import Link from "next/link";
 
 const Filters = () => {
   let queryParams;
@@ -19,12 +20,12 @@ const Filters = () => {
 
   return (
     <aside className="md:w-1/3 lg:w-1/4 px-4">
-      <a
+      <Link
         className="md:hidden mb-5  w-full text-center px-4 py-2 inline-block text-lg text-gray-700 bg-white shadow-sm border border-gray-200 rounded-md hover:bg-gray-100 hover:text-blue-600"
-        href="#"
+        href="/"
       >
         Filter by
-      </a>
+      </Link>
       <div className="hidden md:block px-6 py-4 border border-gray-200 bg-white rounded shadow-sm">
         <h3 className="font-semibold mb-2">Price ($)</h3>
         <div className="grid md:grid-cols-3 gap-x-2">

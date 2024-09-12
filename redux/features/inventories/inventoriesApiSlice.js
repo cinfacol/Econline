@@ -11,38 +11,64 @@ const initialState = inventoriesAdapter.getInitialState();
 export const inventoriesApiSlice = apiAppSlice.injectEndpoints({
   endpoints: (builder) => ({
     getInventories: builder.query({
-      query: () => "/inventory/all/",
+      query: ({ searchTerm, categoryTerm }) => {
+        const baseUrl = "/inventory/";
+        let url = searchTerm ? `${baseUrl}search/?query=${searchTerm}` : "";
+        url = categoryTerm ? `${baseUrl}category/${categoryTerm}` : url;
+        url = !url ? `${baseUrl}all/` : url;
+        return url;
+      },
       transformResponse: (responseData) => {
-        let min = 1;
-        const loadedInventories = responseData.results.map((inventory) => {
-          if (!inventory?.date)
-            inventory.date = sub(new Date(), { minutes: min++ }).toISOString();
-          return inventory;
-        });
+        // Leverage optional chaining for safer access to nested properties
+        const loadedInventories = responseData?.inventories
+          ? responseData?.inventories?.map((inventory) => {
+              if (!inventory?.date) {
+                // Consider using a configurable offset or randomization for date generation
+                inventory.date = sub(new Date(), {
+                  minutes: Math.floor(Math.random() * 60),
+                }).toISOString(); // 0-59 random minutes
+              }
+              return inventory;
+            })
+          : responseData?.results?.map((inventory) => {
+              if (!inventory?.date) {
+                // Consider using a configurable offset or randomization for date generation
+                inventory.date = sub(new Date(), {
+                  minutes: Math.floor(Math.random() * 60),
+                }).toISOString(); // 0-59 random minutes
+              }
+              return inventory;
+            });
+        loadedInventories || []; // Ensure an empty array if results is undefined
+
         return inventoriesAdapter.setAll(initialState, loadedInventories);
       },
-      /* providesTags: (result, error, arg) => [
-        "products",
-        ...result?.ids.map((id) => ({ id })),
-      ], */
+      providesTags: (result, error, arg) => [
+        { type: "Inventory", id: "LIST" },
+        ...result?.ids.map((id) => ({ type: "Inventory", id })), // Specific tags per inventory
+      ],
     }),
     getInventoriesByCategory: builder.query({
       query: (categories) => {
         // Join categories into a comma-separated string
-        const categoryString = categories.join(",");
+        const categoryString = categories?.join(",");
 
         return `/inventory/category/${categoryString}/`;
       },
       transformResponse: (responseData) => {
         let min = 1;
-        const loadedInventories = responseData.results.map((inventory) => {
-          if (!inventory?.date) {
+        const loadedInventories = responseData?.results?.map((inventory) => {
+          if (!inventory.date) {
             inventory.date = sub(new Date(), { minutes: min++ }).toISOString();
           }
           return inventory;
         });
         return inventoriesAdapter.setAll(initialState, loadedInventories);
       },
+    }),
+    getProduct: builder.query({
+      query: (inventoryId) => `/inventory/details/${inventoryId}/`,
+      providesTags: ["Products"],
     }),
 
     /* getProductsByAgent: builder.query({
@@ -102,6 +128,7 @@ export const inventoriesApiSlice = apiAppSlice.injectEndpoints({
 export const {
   useGetInventoriesQuery,
   useGetInventoriesByCategoryQuery,
+  useGetProductQuery,
   // useGetProductsByAgentQuery,
   // useAddNewProductMutation,
   // useUpdateProductMutation,

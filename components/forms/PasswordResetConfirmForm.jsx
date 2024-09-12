@@ -14,6 +14,7 @@ export default function PasswordResetConfirmForm({ uid, token }) {
       type: "password",
       onChange,
       value: new_password,
+      placeholder: "Enter a new password *",
       required: true,
     },
     {
@@ -22,6 +23,7 @@ export default function PasswordResetConfirmForm({ uid, token }) {
       type: "password",
       onChange,
       value: re_new_password,
+      placeholder: "Repeat a preview password *",
       required: true,
     },
   ];
