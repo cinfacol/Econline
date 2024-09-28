@@ -70,7 +70,7 @@ const Info = ({ inventoryId, auth }) => {
           <circle cx="3" cy="3" r="3" fill="#DBDBDB" />
         </svg>
 
-        {stock < 0 ? (
+        {stock <= 0 ? (
           <span className="text-red-500">Agotado</span>
         ) : (
           <span className="text-green-500">En Existencia ({stock})</span>

@@ -1,5 +1,6 @@
 "use client";
 
+import cloudinaryImageLoader from "@/actions/imageLoader";
 import { Spinner } from "@/components/common";
 import { useGetItemsQuery } from "@/redux/features/cart/cartApiSlice";
 import Image from "next/image";
@@ -49,6 +50,7 @@ export default function CartList({ title }) {
                             className="flex items-center"
                           >
                             <Image
+                              loader={cloudinaryImageLoader}
                               src={Item?.inventory?.image[0].image}
                               alt={Item?.inventory?.image[0].alt_text}
                               width={50}

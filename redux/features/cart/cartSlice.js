@@ -15,9 +15,9 @@ const cartSlice = createSlice({
   reducers: {
     incrementQty: (state, action) => {
       const cartId = action.payload;
-      const cartItem = state.find((item) => item.id === cartId);
+      const cartItem = state.cartItems.find((item) => item.id === cartId);
       if (cartItem) {
-        cartItem.cartItemQty += 1;
+        cartItem.quantity += 1;
       }
     },
     /* decrementQty: (state, action) => {

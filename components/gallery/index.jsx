@@ -5,6 +5,7 @@ import { TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 
 import GalleryTab from "@/components/gallery/gallery-tab";
 import { useGetProductQuery } from "@/redux/features/inventories/inventoriesApiSlice";
+import cloudinaryImageLoader from "@/actions/imageLoader";
 
 const Gallery = ({ inventoryId }) => {
   const { data: entitie } = useGetProductQuery(inventoryId);
@@ -23,6 +24,7 @@ const Gallery = ({ inventoryId }) => {
           <TabPanel key={image?.id}>
             <div className="aspect-square relative h-full w-full sm:rounded-lg overflow-hidden">
               <NextImage
+                loader={cloudinaryImageLoader}
                 fill
                 src={image?.image}
                 alt={image?.alt_text}

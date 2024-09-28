@@ -13,6 +13,7 @@ import Currency from "@/components/ui/currency";
 import toast from "react-hot-toast";
 import { Button } from "@nextui-org/button";
 import AddItem from "./AddItem";
+import cloudinaryImageLoader from "@/actions/imageLoader";
 
 export default function CartDetails({ title }) {
   const router = useRouter();
@@ -28,7 +29,6 @@ export default function CartDetails({ title }) {
   const { data: total } = useGetTotalQuery({ items: items });
   const [removeItem, { isLoading: loading, error: err }] =
     useRemoveItemMutation();
-
 
   // Early return for loading and error states
   if (isLoading) return <Spinner lg />;
@@ -76,6 +76,7 @@ export default function CartDetails({ title }) {
                               className="shrink-0 md:order-1"
                             >
                               <Image
+                                loader={cloudinaryImageLoader}
                                 src={Item?.inventory?.image[0].image}
                                 alt={Item?.inventory?.image[0].alt_text}
                                 width={100}
@@ -148,7 +149,10 @@ export default function CartDetails({ title }) {
                               <div className="text-end md:order-4 md:w-32">
                                 <div className="text-base font-bold text-gray-900 dark:text-white">
                                   <Currency
-                                    value={Item?.inventory?.store_price}
+                                    value={
+                                      Item?.inventory?.store_price *
+                                      Item?.quantity
+                                    }
                                   />
                                 </div>
                               </div>
@@ -168,10 +172,14 @@ export default function CartDetails({ title }) {
                               </Link>
 
                               <div className="flex items-center gap-4">
-                                <button
-                                  type="button"
-                                  className="inline-flex items-center text-sm font-medium text-gray-500 hover:text-gray-900 hover:underline dark:text-gray-400 dark:hover:text-white"
+                                <Button
+                                  color="success"
+                                  variant="shadow"
+                                  aria-label="Apply Code"
+                                  className="font-bold"
+                                  onClick={() => {}}
                                 >
+                                  Add to
                                   <svg
                                     className="me-1.5 h-5 w-5"
                                     aria-hidden="true"
@@ -189,33 +197,17 @@ export default function CartDetails({ title }) {
                                       d="M12.01 6.001C6.5 1 1 8 5.782 13.001L12.011 20l6.23-7C23 8 17.5 1 12.01 6.002Z"
                                     />
                                   </svg>
-                                  Add to Favorites
-                                </button>
+                                </Button>
 
-                                <button
-                                  type="button"
-                                  className="inline-flex items-center text-sm font-medium text-red-600 hover:underline dark:text-red-500"
+                                <Button
+                                  color="warning"
+                                  variant="shadow"
+                                  aria-label="Apply Code"
+                                  className="font-bold"
                                   onClick={(e) => handleRemove(Item, e)}
                                 >
-                                  <svg
-                                    className="me-1.5 h-5 w-5"
-                                    aria-hidden="true"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="24"
-                                    height="24"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <path
-                                      stroke="currentColor"
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth="2"
-                                      d="M6 18 17.94 6M18 18 6.06 6"
-                                    />
-                                  </svg>
                                   Remove
-                                </button>
+                                </Button>
                               </div>
                             </div>
                           </div>
@@ -514,7 +506,7 @@ export default function CartDetails({ title }) {
                           <dd className="text-base font-medium text-green-600 line-through">
                             <Currency
                               value={
-                                -total?.total_compare_cost + total?.total_cost
+                                total?.total_cost - total?.total_compare_cost
                               }
                             />
                           </dd>
@@ -525,7 +517,7 @@ export default function CartDetails({ title }) {
                             Store Pickup
                           </dt>
                           <dd className="text-base font-medium text-gray-900 dark:text-white">
-                            <Currency value={99} />
+                            <Currency value={0} />
                           </dd>
                         </dl>
 
@@ -544,7 +536,9 @@ export default function CartDetails({ title }) {
                           Total
                         </dt>
                         <dd className="text-base font-bold text-gray-900 dark:text-white">
-                          <Currency value={total?.finalPrice} />
+                          <Currency
+                            value={total?.total_cost + total?.tax_estimate}
+                          />
                         </dd>
                       </dl>
                     </div>

@@ -2,6 +2,7 @@ import NextImage from "next/image";
 import { Tab } from "@headlessui/react";
 
 import { cn } from "@/lib/utils";
+import cloudinaryImageLoader from "@/actions/imageLoader";
 
 const GalleryTab = ({ image }) => {
   return (
@@ -10,6 +11,7 @@ const GalleryTab = ({ image }) => {
         <div>
           <span className="absolute h-full w-full aspect-square inset-0 overflow-hidden rounded-md">
             <NextImage
+            loader={cloudinaryImageLoader}
               fill
               src={image?.image}
               alt={image?.alt_text}

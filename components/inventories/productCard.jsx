@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { Expand, ShoppingCart } from "lucide-react";
 import { useRouter } from "next/navigation";
+import cloudinaryImageLoader from "@/actions/imageLoader";
 
 import Currency from "@/components/ui/currency";
 import { Button } from "@nextui-org/button";
@@ -39,10 +40,13 @@ export default function ProductCard({ data, auth }) {
     <div className="bg-white group cursor-pointer rounded-xl border p-3 space-y-4">
       <div className="aspect-square rounded-xl bg-gray-100 relative">
         <Image
+          loader={cloudinaryImageLoader}
           onClick={handleClick}
           src={data?.image[0]?.image}
           alt={data?.image[0]?.alt_text}
-          fill
+          // fill
+          width="500"
+          height="500"
           className="aspect-square object-fill rounded-md"
         />
         <div className="opacity-20 group-hover:opacity-100 transition absolute w-full px-6 bottom-5">
@@ -117,7 +121,7 @@ export default function ProductCard({ data, auth }) {
         </svg>
 
         <span className="text-green-500">
-          {stock < 0 ? (
+          {stock <= 0 ? (
             <span className="text-red-500">Agotado</span>
           ) : (
             <span className="text-green-500">En Existencia ({stock})</span>
