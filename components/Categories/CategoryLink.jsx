@@ -5,14 +5,22 @@ import { useGetCategoriesQuery } from "@/redux/features/categories/categoriesApi
 
 // categoryLink { data } recibe los ids de todas las categorías encontradas
 const CategoryLink = ({ data }) => {
-  const cat = data?.map((categoryId) => {
+  // Llama al hook para obtener las categorías
+  const { data: categoriesData } = useGetCategoriesQuery("getCategories");
+
+  // Suponiendo que data contiene los ids de las categorías
+  const cat = data
+    .map((categoryId) => categoriesData?.entities[categoryId])
+    .filter(Boolean);
+
+  /* const cat = data?.map((categoryId) => {
     const { category } = useGetCategoriesQuery("getCategories", {
       selectFromResult: ({ data }) => ({
         category: data?.entities[categoryId],
       }),
     });
     return category;
-  });
+  }); */
 
   const parentData = cat?.filter((item) => item.is_parent);
   const noParentData = cat?.filter((item) => !item.is_parent);

@@ -20,13 +20,13 @@ export default function RootLayout({ children }) {
       <body className={font.className}>
         <CustomProvider>
           <NextUIProvider>
-            <ToastProvider />
             <ModalProvider />
             <Setup />
             <Navbar />
             <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
               {children}
             </div>
+            <ToastProvider />
             <Footer />
           </NextUIProvider>
         </CustomProvider>

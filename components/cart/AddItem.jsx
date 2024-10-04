@@ -5,7 +5,7 @@ import {
   useGetItemsQuery,
 } from "@/redux/features/cart/cartApiSlice";
 import { ShoppingCart } from "lucide-react";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 import { Button } from "@nextui-org/button";
 
 const AddItem = ({ data, access, ButtonComponent }) => {
@@ -28,7 +28,7 @@ const AddItem = ({ data, access, ButtonComponent }) => {
     try {
       await addItem({ newItem, acceso })
         .unwrap()
-        .then((payload) => toast.success("Product added successfully"))
+        .then((payload) => toast.success("Product added to Cart successfully"))
         .catch((error) => toast.error(`${error.error}`));
     } catch (err) {
       toast.error(`Error: ${error?.data?.error}`);

@@ -1,6 +1,7 @@
 "use client";
 
 import { Spinner } from "@/components/common";
+import { useDispatch, useSelector } from "react-redux";
 import {
   useGetItemsQuery,
   useGetTotalQuery,
@@ -10,13 +11,18 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Currency from "@/components/ui/currency";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import { Button } from "@nextui-org/button";
 import AddItem from "./AddItem";
 import cloudinaryImageLoader from "@/actions/imageLoader";
+import {
+  decreaseQuantity,
+  increaseQuantity,
+} from "@/redux/features/cart/cartSlice";
 
 export default function CartDetails({ title }) {
   const router = useRouter();
+  const dispatch = useDispatch();
   const { data, isSuccess, isLoading, error } = useGetItemsQuery();
   // Destructure data and handle empty cart case concisely
   const { ids = [] } = data || {}; // Default to empty array
@@ -92,7 +98,9 @@ export default function CartDetails({ title }) {
                                 <button
                                   type="button"
                                   id="decrement-button"
-                                  onClick={() => {}}
+                                  onClick={() =>
+                                    dispatch(decreaseQuantity(Item))
+                                  }
                                   data-input-counter-decrement="counter-input"
                                   className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-gray-300 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700"
                                 >
@@ -125,7 +133,9 @@ export default function CartDetails({ title }) {
                                 <button
                                   type="button"
                                   id="increment-button"
-                                  onClick={() => {}}
+                                  onClick={() =>
+                                    dispatch(increaseQuantity(Item))
+                                  }
                                   data-input-counter-increment="counter-input"
                                   className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-gray-300 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700"
                                 >

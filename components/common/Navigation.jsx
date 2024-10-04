@@ -39,7 +39,7 @@ export default function Navigation() {
         name: "New Arrivals",
         href: "/",
         imageSrc:
-          "https://tailwindui.com/img/ecommerce-images/mega-menu-category-01.jpg",
+          "https://images.unsplash.com/photo-1485217988980-11786ced9454?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&h=528&q=80",
         imageAlt:
           "Models sitting back to back, wearing Basic Tee in black and bone.",
       },
@@ -47,7 +47,7 @@ export default function Navigation() {
         name: "Basic Tees",
         href: "/",
         imageSrc:
-          "https://tailwindui.com/img/ecommerce-images/mega-menu-category-02.jpg",
+          "https://images.unsplash.com/photo-1670272505284-8faba1c31f7d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&h=528&q=80",
         imageAlt:
           "Close up of Basic Tee fall bundle with off-white, ochre, olive, and black tees.",
       },

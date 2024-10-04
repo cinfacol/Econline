@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useActivationMutation } from "@/redux/features/auth/authApiSlice";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 
 export default function Page({ params }) {
   const router = useRouter();

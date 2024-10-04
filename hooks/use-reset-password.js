@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useResetPasswordMutation } from "@/redux/features/auth/authApiSlice";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 
 export default function useResetPassword() {
   const [resetPassword, { isLoading }] = useResetPasswordMutation();

@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 import { useAppDispatch } from "@/redux/hooks";
 import { useLoginMutation } from "@/redux/features/auth/authApiSlice";
 import { setAuth } from "@/redux/features/auth/authSlice";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 
 export default function useLogin() {
   const router = useRouter();
@@ -30,7 +30,7 @@ export default function useLogin() {
       .unwrap()
       .then(() => {
         dispatch(setAuth());
-        toast.success("Logged in");
+        toast.success("Logged in successfully");
         router.push("/dashboard");
       })
       .catch(() => {

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useRegisterMutation } from "@/redux/features/auth/authApiSlice";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 
 export default function useRegister() {
   const router = useRouter();
@@ -16,7 +16,8 @@ export default function useRegister() {
     re_password: "",
   });
 
-  const { username, first_name, last_name, email, password, re_password } = formData;
+  const { username, first_name, last_name, email, password, re_password } =
+    formData;
 
   const onChange = (event) => {
     const { name, value } = event.target;

@@ -1,7 +1,13 @@
-import { Toaster } from "react-hot-toast";
+"use client";
+import { Toaster } from "sonner";
 
-const ToastProvider = () => {
-  return <Toaster />;
+const ToastProvider = ({ children }) => {
+  return (
+    <>
+      <Toaster />
+      {children}
+    </>
+  );
 };
 
 export default ToastProvider;

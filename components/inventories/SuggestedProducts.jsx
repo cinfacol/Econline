@@ -28,7 +28,8 @@ const SuggestedProducts = ({ title, inventoryId }) => {
 
   // Handle loading and error states
   if (isLoading) return <Loading />;
-  if (error) return <Error message={error.message} />;
+  // if (error) return <Error message={error.message} />;
+  if (error) return <p>Error: {error.message}</p>;
 
   return (
     <div className="space-y-4">

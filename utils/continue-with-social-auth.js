@@ -1,4 +1,4 @@
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 
 export default async function continueWithSocialAuth(provider, redirect) {
   try {
