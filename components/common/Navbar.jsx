@@ -22,6 +22,7 @@ import {
   ProfileButton,
   ProductSearchBar,
 } from "@/components/common";
+import { toast } from "sonner";
 import Image from "next/image";
 import Link from "next/link";
 import { useAppSelector } from "@/redux/hooks";
@@ -102,12 +103,12 @@ export default function Navbar() {
                 <div className="border-t border-gray-200 px-4 py-6">
                   <Link href="/" className="-m-2 flex items-center p-2">
                     <img
-                      src="https://tailwindui.com/img/flags/flag-canada.svg"
+                      src="/images/flag.svg"
                       alt=""
                       className="block h-auto w-5 flex-shrink-0"
                     />
                     <span className="ml-3 block text-base font-medium text-gray-900">
-                      CAD
+                      COL
                     </span>
                     <span className="sr-only">, change currency</span>
                   </Link>
@@ -207,6 +208,7 @@ export default function Navbar() {
                   <div className="flex">
                     <Button
                       onClick={() => {
+                        toast.warning("You must logged in first");
                         router.push("/auth/login");
                       }}
                       className="text-gray-400 hover:text-gray-500"
