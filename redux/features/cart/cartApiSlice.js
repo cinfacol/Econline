@@ -1,8 +1,6 @@
 import { createEntityAdapter } from "@reduxjs/toolkit";
 import { sub } from "date-fns";
 import { apiAppSlice } from "@/redux/api/apiAppSlice";
-// import Cookies from "js-cookie";
-// import { getCookie } from "cookies-next";
 
 // Adaptar la estructura de la entidad para el carrito
 const cartAdapter = createEntityAdapter({

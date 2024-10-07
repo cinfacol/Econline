@@ -1,4 +1,4 @@
-import { apiSlice } from "../../api/apiSlice";
+import { apiSlice } from "@/redux/api/apiSlice";
 
 const authApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -24,6 +24,16 @@ const authApiSlice = apiSlice.injectEndpoints({
         body: { email, password },
       }),
     }),
+    /* getAuthData: builder.query({
+      query: ({ token }) => ({
+        url: "api/auth-details",
+        // this is the default but I'm leaving it here for reference
+        method: "GET",
+        headers: {
+          Authorization: `JWT ${token}`,
+        },
+      }),
+    }), */
     register: builder.mutation({
       query: ({
         username,
@@ -78,6 +88,7 @@ export const {
   useRetrieveUserQuery,
   useSocialAuthenticateMutation,
   useLoginMutation,
+  // useGetAuthDataQuery,
   useRegisterMutation,
   useVerifyMutation,
   useLogoutMutation,

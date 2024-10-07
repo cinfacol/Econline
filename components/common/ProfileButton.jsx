@@ -11,7 +11,7 @@ import {
 import { Fragment } from "react";
 import { useAppSelector, useAppDispatch } from "@/redux/hooks";
 import { useLogoutMutation } from "@/redux/features/auth/authApiSlice";
-import { logout as setLogout } from "@/redux/features/auth/authSlice";
+import { logOut as setLogOut } from "@/redux/features/auth/authSlice";
 import { NavLink } from "@/components/common";
 import Link from "next/link";
 import Image from "next/image";
@@ -28,16 +28,11 @@ export default function ProfileButton() {
   const { isAuthenticated } = useAppSelector((state) => state.auth);
   const { data: user, isLoading, isFetching } = useRetrieveUserQuery();
 
-  const handleLogout = () => {
+  const handleLogOut = () => {
     logout(undefined)
       .unwrap()
       .then(() => {
-        localStorage.setItem(
-          "cart-storage",
-          '{"state:{"items":[]},"version":0}'
-        );
-        // router.push("/");
-        dispatch(setLogout());
+        dispatch(setLogOut());
       });
   };
   const authLinks = (isMobile) => (
@@ -86,7 +81,7 @@ export default function ProfileButton() {
           </Link>
         )}
       </MenuItem>
-      <NavLink isMobile={isMobile} onClick={handleLogout}>
+      <NavLink isMobile={isMobile} onClick={handleLogOut}>
         Logout
       </NavLink>
     </>
