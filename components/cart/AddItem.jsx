@@ -16,7 +16,7 @@ const AddItem = ({ data, access, ButtonComponent }) => {
     return <h1>Loading...</h1>;
   }
 
-  const acceso = access;
+  const token = access;
 
   const onAddToCart = async () => {
     const id = cartId?.ids[0];
@@ -26,7 +26,7 @@ const AddItem = ({ data, access, ButtonComponent }) => {
     const coupon = {};
     const newItem = { cart_id, inventory_id, quantity, coupon };
     try {
-      await addItem({ newItem, acceso })
+      await addItem({ newItem, token })
         .unwrap()
         .then((payload) => toast.success("Product added to Cart successfully"))
         .catch((error) => toast.error(`${error.error}`));

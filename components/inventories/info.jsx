@@ -15,7 +15,7 @@ import usePreviewModal from "@/hooks/use-preview-modal";
 const Info = ({ inventoryId, auth }) => {
   const { isAuthenticated } = useAppSelector((state) => state.auth);
   const router = useRouter();
-  const acceso = auth;
+  const token = auth;
   const { data } = useGetProductQuery(inventoryId);
   const raters = data?.rating?.length;
   let total = 0;
@@ -109,7 +109,7 @@ const Info = ({ inventoryId, auth }) => {
       </div>
       <div className="mt-10 flex items-center gap-x-3">
         {isAuthenticated ? (
-          <AddItem data={data} access={acceso} ButtonComponent={true} />
+          <AddItem data={data} access={token} ButtonComponent={true} />
         ) : (
           <div>
             <Button

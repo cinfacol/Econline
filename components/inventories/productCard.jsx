@@ -13,7 +13,7 @@ import AddItem from "@/components/cart/AddItem";
 import { useAppSelector } from "@/redux/hooks";
 
 export default function ProductCard({ data, auth }) {
-  const acceso = auth;
+  const token = auth;
   const { isAuthenticated } = useAppSelector((state) => state.auth);
 
   const raters = data?.rating?.length;
@@ -61,7 +61,7 @@ export default function ProductCard({ data, auth }) {
               {<Expand size={20} className="text-gray-600" />}
             </Button>
             {isAuthenticated ? (
-              <AddItem data={dat} access={acceso} />
+              <AddItem data={dat} access={token} />
             ) : (
               <div>
                 <Button

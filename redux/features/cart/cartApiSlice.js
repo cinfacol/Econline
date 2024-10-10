@@ -35,14 +35,14 @@ export const cartApiSlice = apiAppSlice.injectEndpoints({
       },
     }),
     addItemToCart: builder.mutation({
-      query: ({ newItem, acceso }) => ({
+      query: ({ newItem, token }) => ({
         url: "/cart/add-item/",
         method: "POST",
         body: JSON.stringify(newItem),
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
-          Authorization: `JWT ${acceso}`,
+          Authorization: `JWT ${token}`,
         },
       }),
       // Pick out data and prevent nested properties in a hook or selector
