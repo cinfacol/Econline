@@ -1,10 +1,11 @@
 "use client";
 
 import { Spinner } from "@/components/common";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import {
   useGetItemsQuery,
-  useGetTotalQuery,
+  useDecQtyMutation,
+  useIncQtyMutation,
   useRemoveItemMutation,
 } from "@/redux/features/cart/cartApiSlice";
 import Image from "next/image";
@@ -15,42 +16,80 @@ import { toast } from "sonner";
 import { Button } from "@nextui-org/button";
 import AddItem from "./AddItem";
 import cloudinaryImageLoader from "@/actions/imageLoader";
-import {
-  decreaseQuantity,
-  increaseQuantity,
-} from "@/redux/features/cart/cartSlice";
 
 export default function CartDetails({ title }) {
   const router = useRouter();
   const dispatch = useDispatch();
   const { data, isSuccess, isLoading, error } = useGetItemsQuery();
-  // Destructure data and handle empty cart case concisely
-  const { ids = [] } = data || {}; // Default to empty array
-  const { entities = [] } = data || {}; // Default to empty array
-
-  const getCartItems = () => {
-    return ids.map((id) => entities[id] || null); // Return null for missing items
-  };
-  const items = getCartItems();
-  const { data: total } = useGetTotalQuery({ items: items });
   const [removeItem, { isLoading: loading, error: err }] =
     useRemoveItemMutation();
+  const [decQty, { error: er }] = useDecQtyMutation();
+  const [incQty, { error: e }] = useIncQtyMutation();
 
-  // Early return for loading and error states
-  if (isLoading) return <Spinner lg />;
-  if (error) return <p>Error: {error?.data?.detail}</p>;
+  // Destructure data and handle empty cart case concisely
+  const { ids = [], entities = {} } = data || {};
+
+  // Calculate cart items
+  const items = ids.map((id) => entities[id] || null).filter(Boolean);
+
+  // Calculate totals
+  const subTotal = items.reduce(
+    (acc, item) => acc + item.inventory.store_price * item.quantity,
+    0
+  );
+  const taxes = items.reduce(
+    (acc, item) =>
+      acc + item.inventory.taxe * item.inventory.store_price * item.quantity,
+    0
+  );
+  const save = items.reduce(
+    (acc, item) =>
+      acc +
+      (item.inventory.retail_price - item.inventory.store_price) *
+        item.quantity,
+    0
+  );
 
   const handleRemove = async (Item) => {
     const itemId = Item?.inventory?.id;
     try {
-      await removeItem({ itemId })
-        .unwrap()
-        .then((payload) => toast.success("Product removed successfully"))
-        .catch((error) => toast.error(`${error.error}`));
-    } catch (err) {
+      await removeItem({ itemId }).unwrap();
+      toast.success("Product removed successfully");
+    } catch (error) {
       toast.error(`Error: ${error?.data?.error}`);
     }
   };
+
+  const handleIncQty = async (inventoryId) => {
+    try {
+      await incQty({ inventoryId }).unwrap();
+      toast.success("Product successfully increased");
+    } catch (error) {
+      toast.error(`Error: ${error?.data?.error}`);
+    }
+  };
+
+  const handleDecQty = async (inventoryId) => {
+    try {
+      await decQty({ inventoryId }).unwrap();
+      toast.success("Product successfully decreased");
+    } catch (error) {
+      toast.error(`Error: ${error?.data?.error}`);
+    }
+  };
+
+  // Render loading and error states at the end
+  if (isLoading || loading) return <Spinner lg />;
+  if (error || err || er || e)
+    return (
+      <p>
+        Error:{" "}
+        {error?.data?.detail ||
+          err?.data?.detail ||
+          er?.data?.detail ||
+          e?.data?.detail}
+      </p>
+    );
 
   if (isSuccess)
     return (
@@ -71,6 +110,7 @@ export default function CartDetails({ title }) {
                   <div className="space-y-2">
                     {ids?.map((id) => {
                       const Item = entities[id];
+                      const inventoryId = Item?.inventory?.id;
                       return (
                         <div
                           key={Item.id}
@@ -95,31 +135,57 @@ export default function CartDetails({ title }) {
                             </label>
                             <div className="flex items-center justify-between md:order-3 md:justify-end">
                               <div className="flex items-center">
-                                <button
-                                  type="button"
-                                  id="decrement-button"
-                                  onClick={() =>
-                                    dispatch(decreaseQuantity(Item))
-                                  }
-                                  data-input-counter-decrement="counter-input"
-                                  className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-gray-300 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700"
-                                >
-                                  <svg
-                                    className="h-2.5 w-2.5 text-gray-900 dark:text-white"
-                                    aria-hidden="true"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 18 2"
+                                {Item?.quantity <= 1 ? (
+                                  <button
+                                    type="button"
+                                    id="decrement-button"
+                                    onClick={() => handleDecQty(inventoryId)}
+                                    data-input-counter-decrement="counter-input"
+                                    className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-gray-300 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700 cursor-not-allowed"
+                                    disabled
                                   >
-                                    <path
-                                      stroke="currentColor"
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth="2"
-                                      d="M1 1h16"
-                                    />
-                                  </svg>
-                                </button>
+                                    <svg
+                                      className="h-2.5 w-2.5 text-gray-900 dark:text-white"
+                                      aria-hidden="true"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      fill="none"
+                                      viewBox="0 0 18 2"
+                                    >
+                                      <path
+                                        stroke="currentColor"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth="2"
+                                        d="M1 1h16"
+                                      />
+                                    </svg>
+                                  </button>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    id="decrement-button"
+                                    onClick={() => handleDecQty(inventoryId)}
+                                    data-input-counter-decrement="counter-input"
+                                    className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-gray-300 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700"
+                                  >
+                                    <svg
+                                      className="h-2.5 w-2.5 text-gray-900 dark:text-white"
+                                      aria-hidden="true"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      fill="none"
+                                      viewBox="0 0 18 2"
+                                    >
+                                      <path
+                                        stroke="currentColor"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth="2"
+                                        d="M1 1h16"
+                                      />
+                                    </svg>
+                                  </button>
+                                )}
+
                                 <input
                                   type="text"
                                   id="counter-input"
@@ -127,15 +193,12 @@ export default function CartDetails({ title }) {
                                   className="w-10 shrink-0 border-0 bg-transparent text-center text-sm font-medium text-gray-900 focus:outline-none focus:ring-0 dark:text-white"
                                   placeholder=""
                                   value={Item?.quantity}
-                                  onChange={() => {}}
                                   required
                                 />
                                 <button
                                   type="button"
                                   id="increment-button"
-                                  onClick={() =>
-                                    dispatch(increaseQuantity(Item))
-                                  }
+                                  onClick={() => handleIncQty(inventoryId)}
                                   data-input-counter-increment="counter-input"
                                   className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-gray-300 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700"
                                 >
@@ -182,33 +245,6 @@ export default function CartDetails({ title }) {
                               </Link>
 
                               <div className="flex items-center gap-4">
-                                <Button
-                                  color="success"
-                                  variant="shadow"
-                                  aria-label="Apply Code"
-                                  className="font-bold"
-                                  onClick={() => {}}
-                                >
-                                  Add to
-                                  <svg
-                                    className="me-1.5 h-5 w-5"
-                                    aria-hidden="true"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="24"
-                                    height="24"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <path
-                                      stroke="currentColor"
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth="2"
-                                      d="M12.01 6.001C6.5 1 1 8 5.782 13.001L12.011 20l6.23-7C23 8 17.5 1 12.01 6.002Z"
-                                    />
-                                  </svg>
-                                </Button>
-
                                 <Button
                                   color="warning"
                                   variant="shadow"
@@ -502,10 +538,10 @@ export default function CartDetails({ title }) {
                       <div className="space-y-2">
                         <dl className="flex items-center justify-between gap-4">
                           <dt className="text-base font-normal text-gray-500 dark:text-gray-400">
-                            Price
+                            Sub Total
                           </dt>
                           <dd className="text-base font-medium text-gray-900 dark:text-white">
-                            <Currency value={total?.total_cost} />
+                            <Currency value={subTotal} />
                           </dd>
                         </dl>
 
@@ -514,19 +550,15 @@ export default function CartDetails({ title }) {
                             Savings
                           </dt>
                           <dd className="text-base font-medium text-green-600 line-through">
-                            <Currency
-                              value={
-                                total?.total_cost - total?.total_compare_cost
-                              }
-                            />
+                            <Currency value={save} />
                           </dd>
                         </dl>
 
                         <dl className="flex items-center justify-between gap-4">
                           <dt className="text-base font-normal text-gray-500 dark:text-gray-400">
-                            Store Pickup
+                            Coupon
                           </dt>
-                          <dd className="text-base font-medium text-gray-900 dark:text-white">
+                          <dd className="text-base font-medium text-green-600 dark:text-white line-through">
                             <Currency value={0} />
                           </dd>
                         </dl>
@@ -536,7 +568,7 @@ export default function CartDetails({ title }) {
                             Tax
                           </dt>
                           <dd className="text-base font-medium text-gray-900 dark:text-white">
-                            <Currency value={total?.tax_estimate} />
+                            <Currency value={taxes} />
                           </dd>
                         </dl>
                       </div>
@@ -546,9 +578,7 @@ export default function CartDetails({ title }) {
                           Total
                         </dt>
                         <dd className="text-base font-bold text-gray-900 dark:text-white">
-                          <Currency
-                            value={total?.total_cost + total?.tax_estimate}
-                          />
+                          <Currency value={subTotal + taxes} />
                         </dd>
                       </dl>
                     </div>

@@ -1,6 +1,5 @@
 "use client";
 import { useAppDispatch } from "@/redux/hooks";
-// import { clearCart } from '../features/cart/cartSlice';
 import { closeModal } from "@/redux/features/modal/modalSlice";
 import { Button } from "@nextui-org/button";
 

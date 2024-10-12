@@ -52,21 +52,31 @@ export const cartApiSlice = apiAppSlice.injectEndpoints({
       invalidatesTags: ["Cart"], // Invalidate 'Cart' tag on mutation
       extraOptions: { maxRetries: 0 },
     }),
-    updateItem: builder.mutation({
-      query: (updatedItem) => ({
-        url: "/cart/update-item/",
+    decQty: builder.mutation({
+      query: (inventoryId) => ({
+        url: "/cart/decrease-quantity/",
         method: "PUT",
-        body: updatedItem,
+        body: inventoryId,
       }),
-      // Update the cache after successful update (optional)
-      onSettled: (data, { setError, addError }) => {
-        if (data.error) {
-          setError(data.error.message);
-          return;
-        }
-        // Optimistic update (assuming successful response includes updated item)
-        cartAdapter.updateOne(data.data.id, data.data, initialState);
-      },
+      // Pick out data and prevent nested properties in a hook or selector
+      transformResponse: (response, meta, arg) => response.data,
+      // Pick out errors and prevent nested properties in a hook or selector
+      transformErrorResponse: (response, meta, arg) => response.data,
+      invalidatesTags: ["Cart"], // Invalidate 'Cart' tag on mutation
+      extraOptions: { maxRetries: 0 },
+    }),
+    incQty: builder.mutation({
+      query: (inventoryId) => ({
+        url: "/cart/increase-quantity/",
+        method: "PUT",
+        body: inventoryId,
+      }),
+      // Pick out data and prevent nested properties in a hook or selector
+      transformResponse: (response, meta, arg) => response.data,
+      // Pick out errors and prevent nested properties in a hook or selector
+      transformErrorResponse: (response, meta, arg) => response.data,
+      invalidatesTags: ["Cart"], // Invalidate 'Cart' tag on mutation
+      extraOptions: { maxRetries: 0 },
     }),
     removeItem: builder.mutation({
       query: ({ itemId }) => ({
@@ -85,32 +95,6 @@ export const cartApiSlice = apiAppSlice.injectEndpoints({
       invalidatesTags: ["Cart"], // Invalidate 'Cart' tag on mutation
       extraOptions: { maxRetries: 0 },
     }),
-    emptyCart: builder.mutation({
-      query: () => ({
-        url: "/cart/empty-cart/",
-        method: "POST",
-      }),
-      // Invalidate the cart cache after successful emptying
-      onSettled: () => {
-        cartAdapter.setAll(initialState, []);
-      },
-    }),
-
-    getTotal: builder.query({
-      query: ({ items }) => ({
-        url: `/cart/get-total/`,
-        method: "POST",
-        body: JSON.stringify(items),
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-      }),
-      providesTags: ["CartItems"],
-      transformResponse: (responseData) => {
-        return responseData;
-      }, // Extract the total value
-    }),
   }),
 });
 
@@ -118,8 +102,7 @@ export const cartApiSlice = apiAppSlice.injectEndpoints({
 export const {
   useGetItemsQuery,
   useAddItemToCartMutation,
-  useUpdateItemMutation,
+  useDecQtyMutation,
+  useIncQtyMutation,
   useRemoveItemMutation,
-  useEmptyCartMutation,
-  useGetTotalQuery,
 } = cartApiSlice;
