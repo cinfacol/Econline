@@ -5,19 +5,11 @@ import Link from "next/link";
 import { CheckoutForm } from "@/components/forms";
 
 const ShippingForm = ({
-  full_name,
-  address_line_1,
-  address_line_2,
-  city,
-  state_province_region,
-  postal_zip_code,
-  telephone_number,
-  countries,
   onChange,
   buy,
   user,
   // profile,
-  // renderShipping,
+  renderShipping,
   original_price,
   total_amount,
   total_compare_amount,
@@ -41,7 +33,7 @@ const ShippingForm = ({
       </h2>
       <dl className="mt-6 space-y-4">
         <div className="flex items-center justify-between">
-          {/* {renderShipping()} */}
+          {renderShipping()}
         </div>
         <div className="flex items-center justify-between">
           {

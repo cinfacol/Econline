@@ -1,16 +1,24 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useAppSelector } from "@/redux/hooks";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
+import Currency from "@/components/ui/currency";
+import { Button } from "@nextui-org/button";
+import {
+  useGetItemsQuery,
+  useGetShippingOptionsQuery,
+} from "@/redux/features/cart/cartApiSlice";
+import { useRetrieveUserQuery } from "@/redux/features/auth/authApiSlice";
+import cloudinaryImageLoader from "@/actions/imageLoader";
 // import DropIn from "braintree-web-drop-in-react";
 import { toast } from "sonner";
 
 import ShippingForm from "@/components/checkout/ShippingForm";
 
 // import { check_coupon } from "../../features/services/coupons/coupons.service";
-import { useGetShippingOptionsQuery } from "@/redux/features/cart/cartApiSlice";
 /* import {
   get_payment_total,
   get_client_token,
@@ -23,11 +31,30 @@ const Checkout = () => {
   const dispatch = useDispatch();
 
   const router = useRouter();
+  const { data: user, isLoading: loading, isFetching } = useRetrieveUserQuery();
+  const { data, isSuccess, isLoading, error } = useGetItemsQuery();
+  const {
+    data: dat,
+    isSuccess: isSuc,
+    isLoading: isLoad,
+    error: erro,
+  } = useGetShippingOptionsQuery("shipping");
+  // Destructure data and handle empty cart case concisely
+  const { ids: Ids = [], entities: Enty = {} } = dat || {};
 
-  // const user = useSelector((state) => state.auth.user.user);
+  // Calculate shipping items
+  const ship_items = Ids.map((id) => Enty[id] || null).filter(Boolean);
+
+  /* const Deliver = ship_items.map((ship_item) => ship_item?.name);
+  console.log("deliver", Deliver[1]); */
+
+  // Destructure data and handle empty cart case concisely
+  const { ids = [], entities = {} } = data || {};
+
+  // Calculate cart items
+  const items = ids.map((id) => entities[id] || null).filter(Boolean);
   // const refresh = useSelector(state => state.auth.refresh)
   const { isAuthenticated } = useAppSelector((state) => state.auth);
-  // const items = useSelector((state) => state.cart.items);
   // const shipping = useSelector((state) => state.shipping.shipping);
   // const loading = useSelector((state) => state.payment.status);
   /* const {
@@ -156,41 +183,16 @@ const Checkout = () => {
 
   // const [render, setRender] = useState(false);
 
-  if (!isAuthenticated) return router.push("/");
+  // if (!isAuthenticated) return router.push("/");
 
-  /* const showItems = () => {
-    return (
-      <div>
-        {items &&
-          items !== null &&
-          items !== undefined &&
-          items.length !== 0 &&
-          items.map((item, index) => {
-            let count = item.count;
-            return (
-              <div key={index}>
-                <CartItem
-                  item={item}
-                  count={count}
-                  render={render}
-                  setRender={setRender}
-                  setAlert={displayNotification}
-                />
-              </div>
-            );
-          })}
-      </div>
-    );
-  }; */
-
-  /* const renderShipping = () => {
+  const renderShipping = () => {
     return (
       <div className="mb-5">
-        {shipping &&
-          shipping !== null &&
-          shipping !== undefined &&
-          shipping.length !== 0 &&
-          shipping.map((shipping_option, index) => (
+        {ship_items &&
+          ship_items !== null &&
+          ship_items !== undefined &&
+          ship_items.length !== 0 &&
+          ship_items.map((shipping_option, index) => (
             <div key={index}>
               <input
                 onChange={(e) => onChange(e)}
@@ -207,13 +209,13 @@ const Checkout = () => {
           ))}
       </div>
     );
-  }; */
+  };
 
   const renderPaymentInfo = () => {
     /* if (!clientToken) {
       if (!isAuthenticated) {
         <Link
-          href="/login"
+          href="/auth/login"
           className="w-full bg-gray-600 border border-transparent rounded-md shadow-sm py-3 px-4 text-base font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 focus:ring-gray-500"
         >
           Login
@@ -268,9 +270,76 @@ const Checkout = () => {
               <h2 id="cart-heading" className="sr-only">
                 Items in your shopping cart
               </h2>
-              <ul className="border-t border-b border-gray-200 divide-y divide-gray-200">
-                {/* {showItems()} */}
-              </ul>
+              <div className="space-y-2">
+                {ids?.map((id) => {
+                  const Item = entities[id];
+                  const inventoryId = Item?.inventory?.id;
+                  return (
+                    <div
+                      key={Item.id}
+                      className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6"
+                    >
+                      <div className="space-y-4 md:flex md:items-center md:justify-between md:gap-6 md:space-y-0">
+                        <Link
+                          href={`/product/${Item?.inventory?.id}`}
+                          className="shrink-0 md:order-1"
+                        >
+                          <Image
+                            loader={cloudinaryImageLoader}
+                            src={Item?.inventory?.image[0].image}
+                            alt={Item?.inventory?.image[0].alt_text}
+                            width="100"
+                            height="100"
+                            className="aspect-square object-fill rounded-md"
+                            sizes="100px"
+                          />
+                        </Link>
+
+                        <label htmlFor="counter-input" className="sr-only">
+                          Quantity:
+                        </label>
+                        <div className="flex items-center justify-between md:order-3 md:justify-end">
+                          <div className="flex items-center">
+                            <input
+                              type="text"
+                              id="counter-input"
+                              onChange={() => {}}
+                              data-input-counter
+                              className="w-10 shrink-0 border-0 bg-transparent text-center text-sm font-medium text-gray-900 focus:outline-none focus:ring-0 dark:text-white"
+                              placeholder=""
+                              value={Item?.quantity}
+                              required
+                            />
+                          </div>
+                          <div className="text-end md:order-4 md:w-32">
+                            <div className="text-base font-bold text-gray-900 dark:text-white">
+                              <Currency
+                                value={
+                                  Item?.inventory?.store_price * Item?.quantity
+                                }
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="w-full min-w-0 flex-1 space-y-4 md:order-2 md:max-w-md">
+                          <Link
+                            href={`/product/${Item?.inventory?.id}`}
+                            className="text-base font-medium text-gray-900 hover:underline dark:text-white"
+                          >
+                            <span className="px-2 font-semibold text-lg">
+                              {Item?.inventory?.product?.name}
+                            </span>
+                            <p className="px-2 text-sm text-gray-500 line-clamp-2">
+                              {Item?.inventory?.product?.description}
+                            </p>
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </section>
 
             {/* Order summary */}
@@ -286,8 +355,8 @@ const Checkout = () => {
               // countries={countries}
               onChange={onChange}
               // buy={buy}
-              // user={user}
-              // renderShipping={renderShipping}
+              user={user}
+              renderShipping={renderShipping}
               // original_price={original_price}
               // total_amount={total_amount}
               // total_after_coupon={total_after_coupon}
