@@ -10,7 +10,11 @@ export const metadata = {
 };
 
 export default async function Home() {
-  const auth = (await getAuthCookie()) || [];
+  const auth = await getAuthCookie();
+
+  let access = "";
+
+  auth != undefined ? (access = auth.cookie["value"]) : (access = []);
 
   return (
     <Container className="bg-white overflow-hidden">
@@ -35,7 +39,7 @@ export default async function Home() {
       </div>
       <div className="space-y-10 pb-10">
         <div className="flex flex-col gap-y-8 px-4 sm:px-6 lg:px-8">
-          {<InventoriesList title="Latest Products" auth={auth} />}
+          {<InventoriesList title={metadata.title} auth={access} />}
         </div>
       </div>
     </Container>

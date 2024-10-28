@@ -8,8 +8,7 @@ import {
 import Loading from "@/components/inventories/loading";
 import ProductCard from "./productCard";
 
-// const SuggestedProducts = ({ title, categories, inventoryId }) => {
-const SuggestedProducts = ({ title, inventoryId }) => {
+const SuggestedProducts = ({ title, inventoryId, auth }) => {
   const { data: product } = useGetProductQuery(inventoryId);
 
   const categorySlug = product?.product?.category?.map((cat) => cat?.slug);
@@ -36,7 +35,7 @@ const SuggestedProducts = ({ title, inventoryId }) => {
           const Item = entities[id];
 
           if (Item.id !== inventoryId) {
-            return <ProductCard key={Item?.id} data={Item} />;
+            return <ProductCard key={Item?.id} data={Item} auth={auth} />;
           }
         })}
       </div>

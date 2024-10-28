@@ -11,7 +11,6 @@ export default function InventoriesList({ title, auth }) {
   const categoryTerm = useAppSelector(
     (state) => state?.inventory?.categoryTerm
   );
-  const access = auth.cookie["value"];
 
   const { data, isLoading, isSuccess, error } = useGetInventoriesQuery({
     searchTerm,
@@ -40,7 +39,7 @@ export default function InventoriesList({ title, auth }) {
             {data?.ids?.length === 0 && <NoResults title={"products"} />}
             {ids?.map((id) => {
               const Item = entities[id];
-              return <ProductCard key={Item.id} data={Item} auth={access} />;
+              return <ProductCard key={Item.id} data={Item} auth={auth} />;
             })}
           </div>
         </div>
