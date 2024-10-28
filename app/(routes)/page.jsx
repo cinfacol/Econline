@@ -2,15 +2,15 @@
 import InventoriesList from "@/components/inventories/InventoriesList";
 import Container from "@/components/ui/container";
 import { RadioButtonCategoryGroup } from "@/components/common/RadioButtonCategoryGroup";
-import { getAuthCookie } from "@/lib/cookies";
+import getAuthCookie from "@/lib/cookies";
 
 export const metadata = {
   title: "Econline home" || process.env.NEXT_PUBLIC_APP_NAME,
   description: "Modern Ecommerce App",
 };
 
-export default function Home() {
-  const auth = getAuthCookie()?.cookie?.value || [];
+export default async function Home() {
+  const auth = (await getAuthCookie()) || [];
 
   return (
     <Container className="bg-white overflow-hidden">

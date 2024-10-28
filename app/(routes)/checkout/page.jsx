@@ -43,19 +43,16 @@ const Checkout = () => {
   const { ids: Ids = [], entities: Enty = {} } = dat || {};
 
   // Calculate shipping items
-  const ship_items = Ids.map((id) => Enty[id] || null).filter(Boolean);
-
-  /* const Deliver = ship_items.map((ship_item) => ship_item?.name);
-  console.log("deliver", Deliver[1]); */
+  const shipping = Ids.map((id) => Enty[id] || null).filter(Boolean);
 
   // Destructure data and handle empty cart case concisely
   const { ids = [], entities = {} } = data || {};
 
   // Calculate cart items
   const items = ids.map((id) => entities[id] || null).filter(Boolean);
+
   // const refresh = useSelector(state => state.auth.refresh)
   const { isAuthenticated } = useAppSelector((state) => state.auth);
-  // const shipping = useSelector((state) => state.shipping.shipping);
   // const loading = useSelector((state) => state.payment.status);
   /* const {
     clientToken,
@@ -183,16 +180,14 @@ const Checkout = () => {
 
   // const [render, setRender] = useState(false);
 
-  // if (!isAuthenticated) return router.push("/");
-
   const renderShipping = () => {
     return (
       <div className="mb-5">
-        {ship_items &&
-          ship_items !== null &&
-          ship_items !== undefined &&
-          ship_items.length !== 0 &&
-          ship_items.map((shipping_option, index) => (
+        {shipping &&
+          shipping !== null &&
+          shipping !== undefined &&
+          shipping.length !== 0 &&
+          shipping.map((shipping_option, index) => (
             <div key={index}>
               <input
                 onChange={(e) => onChange(e)}
@@ -363,8 +358,8 @@ const Checkout = () => {
               // total_compare_amount={total_compare_amount}
               // estimated_tax={estimated_tax}
               // shipping_cost={shipping_cost}
-              // shipping_id={shipping_id}
-              // shipping={shipping}
+              shipping_id={shipping_id}
+              shipping={shipping}
               renderPaymentInfo={renderPaymentInfo}
               // coupon={coupon}
               // apply_coupon={apply_coupon}

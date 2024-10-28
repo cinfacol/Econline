@@ -2,11 +2,12 @@ import Gallery from "@/components/gallery";
 import Info from "@/components/inventories/info";
 import SuggestedProducts from "@/components/inventories/SuggestedProducts";
 import Container from "@/components/ui/container";
-import { getAuthCookie } from "@/lib/cookies";
+import getAuthCookie from "@/lib/cookies";
 
 // recibe como params el id del producto
-const InventoryDetailsPage = ({ params }) => {
-  const auth = getAuthCookie()?.cookie?.value || [];
+const InventoryDetailsPage = async (props) => {
+  const params = await props.params;
+  const auth = await getAuthCookie() || [];
   const inventoryId = params.productId;
 
   return (

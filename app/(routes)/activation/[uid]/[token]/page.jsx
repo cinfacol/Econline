@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import { useActivationMutation } from "@/redux/features/auth/authApiSlice";
 import { toast } from "sonner";
 
-export default function Page({ params }) {
+export default function Page(props) {
+  const params = use(props.params);
   const router = useRouter();
   const [activation] = useActivationMutation();
 

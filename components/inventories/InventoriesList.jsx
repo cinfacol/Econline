@@ -11,7 +11,7 @@ export default function InventoriesList({ title, auth }) {
   const categoryTerm = useAppSelector(
     (state) => state?.inventory?.categoryTerm
   );
-  const access = auth;
+  const access = auth.cookie["value"];
 
   const { data, isLoading, isSuccess, error } = useGetInventoriesQuery({
     searchTerm,

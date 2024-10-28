@@ -3,7 +3,8 @@ import CommonCats from "@/components/Categories/CommonCats";
 
 export const revalidate = 0;
 
-const CategoryPage = ({ params }) => {
+const CategoryPage = async props => {
+  const params = await props.params;
   const categoryId = params.categoryId;
 
   return (

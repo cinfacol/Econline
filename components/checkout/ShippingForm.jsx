@@ -152,7 +152,7 @@ const ShippingForm = ({
           </div>
         )}
       </dl>
-      <form onSubmit={(e) => buy(e)}>
+      <div onSubmit={(e) => buy(e)}>
         <div className=" px-4 py-5  mt-4 sm:px-6">
           <h3 className="text-lg leading-6 font-medium text-gray-900">
             Shipping Address:
@@ -160,7 +160,7 @@ const ShippingForm = ({
         </div>
         <CheckoutForm />
         {renderPaymentInfo()}
-      </form>
+      </div>
     </section>
   );
 };

@@ -252,7 +252,7 @@ export default function CartDetails({ title }) {
                                   variant="shadow"
                                   aria-label="Apply Code"
                                   className="font-bold"
-                                  onClick={(e) => handleRemove(Item, e)}
+                                  onClick={() => handleRemove(Item)}
                                 >
                                   Remove
                                 </Button>

@@ -1,14 +1,14 @@
 import Filters from "@/components/layouts/Filters";
 import InventoriesList from "@/components/inventories/InventoriesList";
-import { getAuthCookie } from "@/lib/cookies";
+import getAuthCookie from "@/lib/cookies";
 
 export const metadata = {
   title: "Products" || process.env.NEXT_PUBLIC_APP_NAME,
   description: "Products Page in a Modern Ecommerce App",
 };
 
-export default function ProductPage() {
-  const auth = getAuthCookie()?.cookie?.value;
+export default async function ProductPage() {
+  const auth = await getAuthCookie();
 
   return (
     <section className="py-12">
