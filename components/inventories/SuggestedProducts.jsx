@@ -12,23 +12,19 @@ import ProductCard from "./productCard";
 const SuggestedProducts = ({ title, inventoryId }) => {
   const { data: product } = useGetProductQuery(inventoryId);
 
-  // categories es un array que almacena todas las categorías del product referenciado
-  const categorySlug = product?.product?.category?.map((cat) => {
-    // key: cat.id,
-    return cat?.slug;
-  });
+  const categorySlug = product?.product?.category?.map((cat) => cat?.slug);
 
   const {
     data: category,
     error,
     isLoading,
   } = useGetInventoriesByCategoryQuery(categorySlug);
-  const { ids = [] } = category || {};
-  const { entities = [] } = category || {};
+
+  // Destructure data and handle empty category case concisely
+  const { ids = [], entities = {} } = category || {};
 
   // Handle loading and error states
   if (isLoading) return <Loading />;
-  // if (error) return <Error message={error.message} />;
   if (error) return <p>Error: {error.message}</p>;
 
   return (
@@ -40,7 +36,7 @@ const SuggestedProducts = ({ title, inventoryId }) => {
           const Item = entities[id];
 
           if (Item.id !== inventoryId) {
-            return <ProductCard key={Item?.index} data={Item} />;
+            return <ProductCard key={Item?.id} data={Item} />;
           }
         })}
       </div>

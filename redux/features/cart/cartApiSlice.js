@@ -95,6 +95,27 @@ export const cartApiSlice = apiAppSlice.injectEndpoints({
       invalidatesTags: ["Cart"], // Invalidate 'Cart' tag on mutation
       extraOptions: { maxRetries: 0 },
     }),
+    // Obtener los items del Envío
+    getShippingOptions: builder.query({
+      query: () => ({
+        url: "/shipping/get-shipping-options/",
+      }),
+      providesTags: ["Cart"],
+      transformResponse: (responseData) => {
+        // Manejar la respuesta del API
+        const loadedItems = responseData?.shipping_options ?? [];
+
+        // Agregar fechas si no existen
+        loadedItems.forEach((item, idx) => {
+          if (!item.date) {
+            item.date = sub(new Date(), { minutes: idx + 1 }).toISOString();
+          }
+        });
+
+        // Devolver el estado actualizado
+        return cartAdapter.setAll(initialState, loadedItems);
+      },
+    }),
   }),
 });
 
@@ -105,4 +126,5 @@ export const {
   useDecQtyMutation,
   useIncQtyMutation,
   useRemoveItemMutation,
+  useGetShippingOptionsQuery,
 } = cartApiSlice;

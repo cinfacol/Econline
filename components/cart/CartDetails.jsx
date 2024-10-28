@@ -1,12 +1,12 @@
 "use client";
 
 import { Spinner } from "@/components/common";
-import { useDispatch } from "react-redux";
 import {
   useGetItemsQuery,
   useDecQtyMutation,
   useIncQtyMutation,
   useRemoveItemMutation,
+  useGetShippingOptionsQuery,
 } from "@/redux/features/cart/cartApiSlice";
 import Image from "next/image";
 import Link from "next/link";
@@ -16,15 +16,31 @@ import { toast } from "sonner";
 import { Button } from "@nextui-org/button";
 import AddItem from "./AddItem";
 import cloudinaryImageLoader from "@/actions/imageLoader";
+import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
 
 export default function CartDetails({ title }) {
   const router = useRouter();
-  const dispatch = useDispatch();
   const { data, isSuccess, isLoading, error } = useGetItemsQuery();
+  const {
+    data: dat,
+    isSuccess: isSuc,
+    isLoading: isLoad,
+    error: erro,
+  } = useGetShippingOptionsQuery("shipping");
   const [removeItem, { isLoading: loading, error: err }] =
     useRemoveItemMutation();
   const [decQty, { error: er }] = useDecQtyMutation();
   const [incQty, { error: e }] = useIncQtyMutation();
+
+  // Destructure data and handle empty cart case concisely
+  const { ids: Ids = [], entities: Enty = {} } = dat || {};
+
+  // Calculate cart items
+  const ship_items = Ids.map((id) => Enty[id] || null).filter(Boolean);
+  console.log("ship_items-name", ship_items);
+
+  const Deliver = ship_items.map((ship_item) => ship_item?.name);
+  console.log("deliver", Deliver[1]);
 
   // Destructure data and handle empty cart case concisely
   const { ids = [], entities = {} } = data || {};
@@ -80,11 +96,12 @@ export default function CartDetails({ title }) {
 
   // Render loading and error states at the end
   if (isLoading || loading) return <Spinner lg />;
-  if (error || err || er || e)
+  if (error || err || erro || er || e)
     return (
       <p>
         Error:{" "}
         {error?.data?.detail ||
+          erro?.data?.detail ||
           err?.data?.detail ||
           er?.data?.detail ||
           e?.data?.detail}
@@ -125,8 +142,10 @@ export default function CartDetails({ title }) {
                                 loader={cloudinaryImageLoader}
                                 src={Item?.inventory?.image[0].image}
                                 alt={Item?.inventory?.image[0].alt_text}
-                                width={100}
-                                height={100}
+                                width="100"
+                                height="100"
+                                className="aspect-square object-fill rounded-md"
+                                sizes="100px"
                               />
                             </Link>
 
@@ -189,6 +208,7 @@ export default function CartDetails({ title }) {
                                 <input
                                   type="text"
                                   id="counter-input"
+                                  onChange={() => {}}
                                   data-input-counter
                                   className="w-10 shrink-0 border-0 bg-transparent text-center text-sm font-medium text-gray-900 focus:outline-none focus:ring-0 dark:text-white"
                                   placeholder=""
@@ -505,15 +525,15 @@ export default function CartDetails({ title }) {
                     <form className="space-y-4">
                       <div>
                         <label
-                          htmlFor="voucher"
+                          htmlFor="coupon"
                           className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
                         >
                           {" "}
-                          Do you have a voucher or gift card?{" "}
+                          Do you have a coupon or gift card?{" "}
                         </label>
                         <input
                           type="text"
-                          id="voucher"
+                          id="coupon"
                           className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"
                           placeholder=""
                           required
@@ -555,6 +575,27 @@ export default function CartDetails({ title }) {
                         </dl>
 
                         <dl className="flex items-center justify-between gap-4">
+                          <dt className="flex items-center text-sm text-gray-600">
+                            Shipping
+                            <Link
+                              href="/"
+                              className="ml-2 flex-shrink-0 text-gray-400 hover:text-gray-500"
+                            >
+                              <span className="sr-only">
+                                Learn more about how shipping is calculated
+                              </span>
+                              <QuestionMarkCircleIcon
+                                className="h-5 w-5"
+                                aria-hidden="true"
+                              />
+                            </Link>
+                          </dt>
+                          <dd className="text-base font-medium text-gray-900 dark:text-white">
+                            <Currency value={5} />
+                          </dd>
+                        </dl>
+
+                        <dl className="flex items-center justify-between gap-4">
                           <dt className="text-base font-normal text-gray-500 dark:text-gray-400">
                             Coupon
                           </dt>
@@ -587,7 +628,7 @@ export default function CartDetails({ title }) {
                       variant="shadow"
                       aria-label="Apply Code"
                       className="font-bold"
-                      onClick={() => router.push("/shipping")}
+                      onClick={() => router.push("/checkout")}
                     >
                       Proceed to Checkout
                     </Button>

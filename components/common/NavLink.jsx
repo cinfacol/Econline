@@ -1,14 +1,11 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { forwardRef } from "react";
 
-export default function NavLink({
-  isSelected,
-  isMobile,
-  isBanner,
-  href,
-  children,
-  ...rest
-}) {
+const NavLink = forwardRef(function NavLink(
+  { isSelected, isMobile, isBanner, href, children, ...rest },
+  ref
+) {
   const className = cn(
     rest.className,
     "text-white rounded-md px-3 py-2 font-medium",
@@ -24,15 +21,22 @@ export default function NavLink({
 
   if (!href) {
     return (
-      <span className={className} role="button" onClick={rest.onClick}>
+      <span
+        className={className}
+        role="button"
+        onClick={rest.onClick}
+        ref={ref}
+      >
         {children}
       </span>
     );
   }
 
   return (
-    <Link className={className} href={href}>
+    <Link className={className} href={href} ref={ref}>
       {children}
     </Link>
   );
-}
+});
+
+export default NavLink;
