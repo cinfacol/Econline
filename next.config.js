@@ -5,7 +5,7 @@ const nextConfig = {
       {
         protocol: "http",
         hostname: "localhost",
-        port: "8080",
+        port: "9090",
         pathname: "/mediafiles/**",
       },
       {
