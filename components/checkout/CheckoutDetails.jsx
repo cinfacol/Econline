@@ -44,6 +44,7 @@ const CheckoutDetails = ({ title }) => {
 
   // Calculate shipping items
   const shipping = Ids.map((id) => Enty[id] || null).filter(Boolean);
+  console.log("shipping:", shipping);
 
   // Destructure data and handle empty cart case concisely
   const { ids = [], entities = {} } = data || {};
