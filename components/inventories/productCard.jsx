@@ -12,7 +12,7 @@ import usePreviewModal from "@/hooks/use-preview-modal";
 import AddItem from "@/components/cart/AddItem";
 import { useAppSelector } from "@/redux/hooks";
 
-export default function ProductCard({ data, auth }) {
+const ProductCard = ({ data, auth }) => {
   const token = auth;
   const { isAuthenticated } = useAppSelector((state) => state.auth);
 
@@ -42,12 +42,14 @@ export default function ProductCard({ data, auth }) {
         <Image
           loader={cloudinaryImageLoader}
           onClick={handleClick}
-          src={data?.image[0]?.image}
+          src={data?.image[0]?.image || "/placeholder.png"}
           alt={data?.image[0]?.alt_text}
-          // fill
-          width="500"
-          height="500"
-          className="aspect-square object-fill rounded-md"
+          fill
+          sizes="(max-width: 500px) 100vw, (max-width: 768px) 50vw, 33vw"
+          className="object-cover rounded-xl"
+          priority={false}
+          quality={80}
+          loading="lazy"
         />
         <div className="opacity-20 group-hover:opacity-100 transition absolute w-full px-6 bottom-5">
           <div className="flex gap-x-6 justify-center">
@@ -140,4 +142,6 @@ export default function ProductCard({ data, auth }) {
       </div>
     </div>
   );
-}
+};
+
+export default ProductCard;

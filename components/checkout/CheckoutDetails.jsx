@@ -12,6 +12,9 @@ import {
   useGetShippingOptionsQuery,
 } from "@/redux/features/cart/cartApiSlice";
 import { useRetrieveUserQuery } from "@/redux/features/auth/authApiSlice";
+import { useProcessPaymentMutation } from "@/redux/features/payment/paymentApiSlice";
+import { useGetClientTokenQuery } from "@/redux/features/payment/paymentApiSlice";
+import { useGetPaymentTotalQuery } from "@/redux/features/payment/paymentApiSlice";
 import cloudinaryImageLoader from "@/actions/imageLoader";
 // import DropIn from "braintree-web-drop-in-react";
 import { toast } from "sonner";
@@ -44,7 +47,6 @@ const CheckoutDetails = ({ title }) => {
 
   // Calculate shipping items
   const shipping = Ids.map((id) => Enty[id] || null).filter(Boolean);
-  console.log("shipping:", shipping);
 
   // Destructure data and handle empty cart case concisely
   const { ids = [], entities = {} } = data || {};

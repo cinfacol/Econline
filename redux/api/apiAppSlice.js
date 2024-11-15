@@ -9,6 +9,8 @@ export const apiAppSlice = createApi({
     "CartItems",
     "Products",
     "Payment",
+    "User",
+    "Auth",
   ], // Define global tag type
   baseQuery: fetchBaseQuery({
     baseUrl: `${process.env.NEXT_PUBLIC_HOST}/api`,

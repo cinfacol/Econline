@@ -1,62 +1,104 @@
 import { createEntityAdapter } from "@reduxjs/toolkit";
 import { apiAppSlice } from "@/redux/api/apiAppSlice";
 
-// Adaptar la estructura de la entidad para pagos
+// Adaptador para la estructura de pagos
 const paymentAdapter = createEntityAdapter({
   sortComparer: (a, b) => b.date.localeCompare(a.date),
 });
 
-// Definir el estado inicial de pagos
+// Estado inicial
 const initialState = paymentAdapter.getInitialState();
 
-// Implementar la lógica de la API para pagos
+// Headers comunes para las peticiones
+const COMMON_HEADERS = {
+  Accept: "application/json",
+  "Content-Type": "application/json",
+};
+
+// Interfaz para los datos de pago
+const createPaymentData = ({
+  nonce,
+  shipping_id,
+  full_name,
+  address_line_1,
+  address_line_2,
+  city,
+  state_province_region,
+  postal_zip_code,
+  country_region,
+  telephone_number,
+}) => ({
+  nonce,
+  shipping_id,
+  full_name,
+  address_line_1,
+  address_line_2,
+  city,
+  state_province_region,
+  postal_zip_code,
+  country_region,
+  telephone_number,
+});
+
+// Slice de la API de pagos
 export const paymentApiSlice = apiAppSlice.injectEndpoints({
   endpoints: (builder) => ({
-    // Obtener el total a pagar
     getPaymentTotal: builder.query({
-      query: () => ({
-        url: "/payments/get-payment-total/",
+      query: ({ token, shipping_id }) => ({
+        url: `/payments/get-payment-total`,
         method: "GET",
+        params: { shipping_id },
+        headers: {
+          ...COMMON_HEADERS,
+          Authorization: `JWT ${token}`,
+        },
       }),
       transformResponse: (response) => response.total,
       providesTags: ["Payment"],
     }),
 
-    // Obtener token de pago
-    getToken: builder.query({
-      query: () => ({
-        url: "/payments/get-token/",
+    getClientToken: builder.query({
+      query: ({ token }) => ({
+        url: "/payments/get-token",
         method: "GET",
         headers: {
-          Accept: "application/json",
+          ...COMMON_HEADERS,
+          Authorization: `JWT ${token}`,
         },
       }),
       transformResponse: (response) => response.token,
       providesTags: ["Payment"],
     }),
 
-    // Realizar el pago
-    makePayment: builder.mutation({
-      query: (paymentData) => ({
-        url: "/payments/make-payment/",
+    processPayment: builder.mutation({
+      query: ({ token, paymentData }) => ({
+        url: "/payments/make-payment",
         method: "POST",
-        body: JSON.stringify(paymentData),
+        body: createPaymentData(paymentData),
         headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
+          ...COMMON_HEADERS,
+          Authorization: `JWT ${token}`,
         },
       }),
       transformResponse: (response) => response.data,
-      transformErrorResponse: (response) => response.data,
+      transformErrorResponse: (error) => {
+        return {
+          status: error?.status,
+          message: error?.data?.message || "Error procesando el pago",
+        };
+      },
       invalidatesTags: ["Payment", "Cart"],
       extraOptions: { maxRetries: 0 },
     }),
 
-    // Verificar estado del pago
     verifyPayment: builder.query({
-      query: (paymentId) => ({
-        url: `/payments/verify-payment/${paymentId}/`,
+      query: ({ token, paymentId }) => ({
+        url: `/payments/verify-payment/${paymentId}`,
         method: "GET",
+        headers: {
+          ...COMMON_HEADERS,
+          Authorization: `JWT ${token}`,
+        },
       }),
       transformResponse: (response) => response.status,
       providesTags: ["Payment"],
@@ -64,10 +106,10 @@ export const paymentApiSlice = apiAppSlice.injectEndpoints({
   }),
 });
 
-// Exportar los hooks para acceder a la API
+// Hooks exportados
 export const {
   useGetPaymentTotalQuery,
-  useGetTokenQuery,
-  useMakePaymentMutation,
+  useGetClientTokenQuery,
+  useProcessPaymentMutation,
   useVerifyPaymentQuery,
 } = paymentApiSlice;

@@ -8,7 +8,7 @@ import {
   MenuItems,
   Transition,
 } from "@headlessui/react";
-import { Fragment } from "react";
+import { Fragment, useEffect } from "react";
 import { useAppSelector, useAppDispatch } from "@/redux/hooks";
 import { useLogoutMutation } from "@/redux/features/auth/authApiSlice";
 import { logOut as setLogOut } from "@/redux/features/auth/authSlice";
@@ -35,37 +35,68 @@ export default function ProfileButton() {
   const [logout] = useLogoutMutation();
 
   const { isAuthenticated } = useAppSelector((state) => state.auth);
-  const { data: user, isLoading, isFetching } = useRetrieveUserQuery();
+  const {
+    data: user,
+    isLoading,
+    error,
+  } = useRetrieveUserQuery(undefined, {
+    skip: !isAuthenticated,
+    pollingInterval: 300000, // Revalidar cada 5 minutos
+    refetchOnMountOrArgChange: true,
+  });
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error.message || "Error al cargar información del usuario");
+    }
+  }, [error]);
 
   const router = useRouter();
 
-  const handleLogOut = async () => {
-    await logout({})
-      .unwrap()
-      .then(() => {
-        dispatch(setLogOut());
-        toast.success("Logout Successful!");
+  // Manejar estados de carga y error
+  const renderUserInfo = () => {
+    if (isLoading) {
+      return (
+        <div className="hidden md:flex items-center space-x-2">
+          <div className="h-4 w-24 bg-gray-600 animate-pulse rounded"></div>
+        </div>
+      );
+    }
 
-        // Redirect to home page.
-        // router.push("/");
-      })
-      .catch((rawError) => {
-        const error = rawError;
-        console.error("Error during signup:", error);
-        // Handle the error.
-        const serverErrorMessage = error?.data?.error;
-        const message = serverErrorMessage || "An unknown error occurred";
+    if (isAuthenticated && user) {
+      return (
+        <div className="hidden md:flex flex-col items-end">
+          <span className="text-sm font-medium text-gray-200 truncate max-w-[150px]">
+            {user.full_name}
+          </span>
+          <span className="text-xs text-gray-400 truncate max-w-[150px]">
+            {user.email}
+          </span>
+        </div>
+      );
+    }
 
-        // Update the local state with the error message.
-        console.log("Server-side error during Logout", message);
-        toast.error("Error during Logout. Please try again.");
-      });
+    return null;
   };
+
+  const handleLogOut = async () => {
+    try {
+      await logout({}).unwrap();
+      dispatch(setLogOut());
+      toast.success("¡Sesión cerrada exitosamente!");
+      router.push("/");
+    } catch (error) {
+      console.error("Error durante el cierre de sesión:", error);
+      const message = error?.data?.error || "Ocurrió un error desconocido";
+      toast.error(`Error al cerrar sesión: ${message}`);
+    }
+  };
+
   const authLinks = (isMobile) => (
     <>
       <MenuItem disabled>
         <span className="bg-gray-100 block px-4 py-2 text-center text-gray-700 border-b-2">
-          {user.full_name}
+          {user?.full_name}
         </span>
       </MenuItem>
       <MenuItem>
@@ -193,28 +224,14 @@ export default function ProfileButton() {
     <Menu as="div" className="relative ml-3">
       <MenuButton className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
         <span className="absolute -inset-1.5" />
-        <span className="sr-only">Open user menu</span>
-        {isAuthenticated ? (
-          <Image
-            className="h-8 w-8 rounded-full"
-            width={44}
-            height={44}
-            src={
-              user?.profile_photo
-                ? user?.profile_photo
-                : "/images/profile_default.png"
-            }
-            alt=""
-          />
-        ) : (
-          <Image
-            className="h-8 w-8 rounded-full"
-            width={44}
-            height={44}
-            src="/images/profile_default.png"
-            alt=""
-          />
-        )}
+        <span className="sr-only">Abrir menú de usuario</span>
+        <Image
+          className="h-8 w-8 rounded-full"
+          width={44}
+          height={44}
+          src={user?.profile_photo || "/images/profile_default.png"}
+          alt={user?.full_name || "Usuario"}
+        />
       </MenuButton>
       <Transition
         as={Fragment}
