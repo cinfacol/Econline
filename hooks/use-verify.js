@@ -6,6 +6,7 @@ import { useVerifyMutation } from "@/redux/features/auth/authApiSlice";
 export default function useVerify() {
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
+  console.log("isAuthenticated", isAuthenticated);
 
   const [verify] = useVerifyMutation();
 
@@ -16,7 +17,13 @@ export default function useVerify() {
         .unwrap()
         .then(() => {
           dispatch(setAuth());
+        })
+        .catch((error) => {
+          console.error("Error al verificar el token:", error);
+          // Aquí podrías despachar una acción para manejar el error
         });
+    } else {
+      console.log("useVerify - No estás autenticado");
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, verify, dispatch]);
 }

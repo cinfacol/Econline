@@ -8,7 +8,7 @@ import {
   MenuItems,
   Transition,
 } from "@headlessui/react";
-import { Fragment, useEffect } from "react";
+import { Fragment, useEffect, useCallback } from "react";
 import { useAppSelector, useAppDispatch } from "@/redux/hooks";
 import { useLogoutMutation } from "@/redux/features/auth/authApiSlice";
 import { logOut as setLogOut } from "@/redux/features/auth/authSlice";
@@ -26,7 +26,7 @@ import {
 } from "lucide-react";
 
 function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
+  return classes.join(" ");
 }
 
 export default function ProfileButton() {
@@ -53,6 +53,8 @@ export default function ProfileButton() {
 
   const router = useRouter();
 
+  const { profile_photo, full_name, email } = user || {};
+
   // Manejar estados de carga y error
   const renderUserInfo = () => {
     if (isLoading) {
@@ -67,10 +69,10 @@ export default function ProfileButton() {
       return (
         <div className="hidden md:flex flex-col items-end">
           <span className="text-sm font-medium text-gray-200 truncate max-w-[150px]">
-            {user.full_name}
+            {full_name}
           </span>
           <span className="text-xs text-gray-400 truncate max-w-[150px]">
-            {user.email}
+            {email}
           </span>
         </div>
       );
@@ -79,173 +81,123 @@ export default function ProfileButton() {
     return null;
   };
 
-  const handleLogOut = async () => {
+  const handleLogOut = useCallback(async () => {
     try {
       await logout({}).unwrap();
       dispatch(setLogOut());
       toast.success("¡Sesión cerrada exitosamente!");
       router.push("/");
     } catch (error) {
-      console.error("Error durante el cierre de sesión:", error);
       const message = error?.data?.error || "Ocurrió un error desconocido";
       toast.error(`Error al cerrar sesión: ${message}`);
     }
-  };
+  }, [logout, dispatch, router]);
 
-  const authLinks = (isMobile) => (
-    <>
-      <MenuItem disabled>
-        <span className="bg-gray-100 block px-4 py-2 text-center text-gray-700 border-b-2">
-          {user?.full_name}
-        </span>
-      </MenuItem>
-      <MenuItem>
-        {({ focus }) => (
-          <NavLink
-            href="/dashboard"
-            className={classNames(
-              focus ? "bg-gray-100" : "",
-              "flex px-4 py-2 text-sm text-gray-700"
-            )}
-          >
-            <span className="group flex w-full items-center gap-2 data-[focus]:bg-white/10">
-              <LayoutDashboardIcon className="size-4 mr-2 text-xs text-gray/50 group-data-[focus]:inline" />
-              Dashboard
-              <kbd className="ml-auto hidd font-sans text-xs text-gray/50 group-data-[focus]:inline">
-                ⌘D
-              </kbd>
-            </span>
-          </NavLink>
-        )}
-      </MenuItem>
-      <MenuItem>
-        {({ focus }) => (
-          <NavLink
-            href="/profile"
-            className={classNames(
-              focus ? "bg-gray-100" : "",
-              "flex px-4 py-2 text-sm text-gray-700"
-            )}
-          >
-            <span className="group flex w-full items-center gap-2 data-[focus]:bg-white/10">
-              <UserPenIcon className="size-4 mr-2 text-xs text-gray/50 group-data-[focus]:inline" />
-              Profile
-              <kbd className="ml-auto hidd font-sans text-xs text-gray/50 group-data-[focus]:inline">
-                ⌘P
-              </kbd>
-            </span>
-          </NavLink>
-        )}
-      </MenuItem>
-      <MenuItem>
-        {({ focus }) => (
-          <NavLink
-            href="/settings"
-            className={classNames(
-              focus ? "bg-gray-100" : "",
-              "flex px-4 py-2 text-sm text-gray-700"
-            )}
-          >
-            <span className="group flex w-full items-center gap-2 data-[focus]:bg-white/10">
-              <SettingsIcon className="size-4 mr-2 text-xs text-gray/50 group-data-[focus]:inline" />
-              Settings
-              <kbd className="ml-auto hidd font-sans text-xs text-gray/50 group-data-[focus]:inline">
-                ⌘S
-              </kbd>
-            </span>
-          </NavLink>
-        )}
-      </MenuItem>
-      <MenuItem>
-        {({ focus }) => (
-          <NavLink
-            className={classNames(
-              focus ? "bg-gray-100" : "",
-              "flex px-4 py-2 text-sm text-gray-700"
-            )}
-            onClick={handleLogOut}
-          >
-            <span className="group flex w-full items-center gap-2 data-[focus]:bg-white/10">
-              <LogOutIcon className="size-4 mr-2 text-xs text-gray/50 group-data-[focus]:inline" />
-              LogOut
-              <kbd className="ml-auto hidd font-sans text-xs text-gray/50 group-data-[focus]:inline">
-                ⌘L
-              </kbd>
-            </span>
-          </NavLink>
-        )}
-      </MenuItem>
-    </>
-  );
+  const menuItems = isAuthenticated
+    ? [
+        {
+          label: user?.full_name,
+          disabled: true,
+        },
+        {
+          label: "Dashboard",
+          href: "/dashboard",
+          icon: (
+            <LayoutDashboardIcon className="size-4 mr-2 text-xs text-gray/50" />
+          ),
+        },
+        {
+          label: "Profile",
+          href: "/profile",
+          icon: <UserPenIcon className="size-4 mr-2 text-xs text-gray/50" />,
+        },
+        {
+          label: "Settings",
+          href: "/settings",
+          icon: <SettingsIcon className="size-4 mr-2 text-xs text-gray/50" />,
+        },
+        {
+          label: "LogOut",
+          onClick: handleLogOut,
+          icon: <LogOutIcon className="size-4 mr-2 text-xs text-gray/50" />,
+        },
+      ]
+    : [
+        {
+          label: "Login",
+          href: "/auth/login",
+          icon: <KeySquareIcon className="size-4 mr-2 text-xs text-gray/50" />,
+        },
+        {
+          label: "Register",
+          href: "/auth/register",
+          icon: <UserPlus className="size-4 mr-2 text-xs text-gray/50" />,
+        },
+      ];
 
-  const guestLinks = (isMobile) => (
-    <>
-      <MenuItem>
-        {({ focus }) => (
-          <NavLink
-            href="/auth/login"
-            className={classNames(
-              focus ? "bg-gray-100" : "",
-              "flex px-4 py-2 text-sm text-gray-700"
-            )}
-          >
-            <span className="group flex w-full items-center gap-2 data-[focus]:bg-white/10">
-              <KeySquareIcon className="size-4 mr-2 text-xs text-gray/50 group-data-[focus]:inline" />
-              Login
-              <kbd className="ml-auto font-sans text-xs text-gray/50 group-data-[focus]:inline">
-                ⌘L
-              </kbd>
-            </span>
-          </NavLink>
-        )}
-      </MenuItem>
-      <MenuItem>
-        {({ focus }) => (
-          <NavLink
-            href="/auth/register"
-            className={classNames(
-              focus ? "bg-gray-100" : "",
-              "flex px-4 py-2 text-sm text-gray-700"
-            )}
-          >
-            <span className="group flex w-full items-center gap-2 data-[focus]:bg-white/10">
-              <UserPlus className="size-4 mr-2 text-xs text-gray/50 group-data-[focus]:inline" />
-              Register
-              <kbd className="ml-auto font-sans text-xs text-gray/50 group-data-[focus]:inline">
-                ⌘R
-              </kbd>
-            </span>
-          </NavLink>
-        )}
-      </MenuItem>
-    </>
-  );
   return (
     <Menu as="div" className="relative ml-3">
-      <MenuButton className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
-        <span className="absolute -inset-1.5" />
-        <span className="sr-only">Abrir menú de usuario</span>
-        <Image
-          className="h-8 w-8 rounded-full"
-          width={44}
-          height={44}
-          src={user?.profile_photo || "/images/profile_default.png"}
-          alt={user?.full_name || "Usuario"}
-        />
-      </MenuButton>
-      <Transition
-        as={Fragment}
-        enter="transition ease-out duration-100"
-        enterFrom="transform opacity-0 scale-95"
-        enterTo="transform opacity-100 scale-100"
-        leave="transition ease-in duration-75"
-        leaveFrom="transform opacity-100 scale-100"
-        leaveTo="transform opacity-0 scale-95"
-      >
-        <MenuItems className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-          {isAuthenticated ? authLinks : guestLinks}
-        </MenuItems>
-      </Transition>
+      {({ close }) => (
+        <>
+          <MenuButton className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
+            <span className="absolute -inset-1.5" />
+            <span className="sr-only">Abrir menú de usuario</span>
+            <Image
+              className="h-8 w-8 rounded-full"
+              width={44}
+              height={44}
+              src={profile_photo || "/images/profile_default.png"}
+              alt={full_name || "Usuario"}
+            />
+          </MenuButton>
+          <Transition
+            as={Fragment}
+            enter="transition ease-out duration-100"
+            enterFrom="transform opacity-0 scale-95"
+            enterTo="transform opacity-100 scale-100"
+            leave="transition ease-in duration-75"
+            leaveFrom="transform opacity-100 scale-100"
+            leaveTo="transform opacity-0 scale-95"
+          >
+            <MenuItems className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+              {menuItems.map((item, index) => (
+                <MenuItem key={index} disabled={item.disabled}>
+                  {({ focus }) => (
+                    <NavLink
+                      onClick={(e) => {
+                        e.preventDefault();
+                        close();
+
+                        if (item.onClick) {
+                          item.onClick(e);
+                        }
+
+                        if (item.href) {
+                          router.push(item.href);
+                        }
+                      }}
+                      className={classNames(
+                        focus ? "bg-gray-100" : "",
+                        "flex px-4 py-2 text-sm text-gray-700"
+                      )}
+                    >
+                      <span className="group flex w-full items-center gap-2 data-[focus]:bg-white/10">
+                        {item.icon}
+                        {item.label}
+                        {item.href && (
+                          <kbd className="ml-auto font-sans text-xs text-gray-50 group-data-[focus]:inline">
+                            ⌘{item.label.charAt(0)}
+                          </kbd>
+                        )}
+                      </span>
+                    </NavLink>
+                  )}
+                </MenuItem>
+              ))}
+            </MenuItems>
+          </Transition>
+        </>
+      )}
     </Menu>
   );
 }

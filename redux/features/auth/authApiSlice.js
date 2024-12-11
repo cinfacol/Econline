@@ -34,42 +34,6 @@ const authApiSlice = apiSlice.injectEndpoints({
               "Error desconocido",
             code: error?.error?.status || "UNKNOWN",
           };
-
-          // Si es un error 401, lo manejamos como un caso normal de sesión expirada
-          if (errorInfo.status === 401) {
-            logger.info(
-              "Sesión no válida o expirada",
-              {
-                reason: "session_expired",
-                timestamp: new Date().toISOString(),
-              },
-              "AuthAPI"
-            );
-
-            dispatch(logOut());
-
-            // Opcionalmente, redirigir al login si es necesario
-            // router.push('/auth/login');
-
-            return; // Salimos temprano para no registrar como error
-          }
-
-          // Solo loggeamos como error si no es un 401
-          logger.error(
-            `Error al recuperar información del usuario: ${errorInfo.message}`,
-            {
-              error: errorInfo,
-              request: {
-                endpoint: "/auth/users/me/",
-                method: "GET",
-              },
-              context: {
-                timestamp: new Date().toISOString(),
-                environment: process.env.NODE_ENV,
-              },
-            },
-            "AuthAPI"
-          );
         }
       },
 
@@ -131,7 +95,53 @@ const authApiSlice = apiSlice.injectEndpoints({
           Accept: "application/json",
           "Content-Type": "application/x-www-form-urlencoded",
         },
+        credentials: "include",
       }),
+      invalidatesTags: ["User"],
+      transformResponse: (response) => {
+        if (response.status === "success" || response.tokens) {
+          return {
+            status: "success",
+            message: response.message || "Social login successful",
+            user: response.user || null,
+            tokens: response.tokens || null,
+          };
+        }
+        return response;
+      },
+      transformErrorResponse: (response) => ({
+        status: response.status,
+        message: response.data?.message || "Error during social login",
+        originalError: response,
+      }),
+      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          console.log("social_data", data);
+          if (data.status === "success" || data.tokens) {
+            dispatch(setAuth());
+            if (data.user) {
+              dispatch(setUser(data.user));
+            }
+            logger.info("Social login successful", {
+              provider: arg.provider,
+              userId: data.user?.id,
+            });
+          }
+        } catch (error) {
+          logger.error("Error en el inicio de login social", {
+            error,
+            requestData: {
+              provider: arg.provider,
+              errorType: error?.name,
+              errorStatus: error?.status,
+              errorMessage: error?.message,
+              errorData: error?.data,
+            },
+          });
+          // Manejo de errores, puedes despachar una acción para mostrar un mensaje al usuario
+        }
+      },
     }),
     login: builder.mutation({
       query: (credentials) => ({
@@ -149,7 +159,7 @@ const authApiSlice = apiSlice.injectEndpoints({
           return {
             status: "success",
             message: response.message || "Login exitoso",
-            user: response.debug?.user || null,
+            user: response.user || null,
             tokens: response.tokens || null,
           };
         }
@@ -219,6 +229,7 @@ const authApiSlice = apiSlice.injectEndpoints({
       query: () => ({
         url: "/auth/jwt/verify/",
         method: "POST",
+        credentials: "include",
       }),
     }),
     logout: builder.mutation({
