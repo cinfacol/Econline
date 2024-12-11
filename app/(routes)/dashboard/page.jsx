@@ -3,7 +3,7 @@
 import { useRetrieveUserQuery } from "@/redux/features/auth/authApiSlice";
 import { List, Spinner } from "@/components/common";
 
-export default function Page() {
+function DashboardPage() {
   const { data: user, isLoading, isFetching } = useRetrieveUserQuery();
 
   const config = [
@@ -44,3 +44,5 @@ export default function Page() {
     </>
   );
 }
+
+export default DashboardPage;

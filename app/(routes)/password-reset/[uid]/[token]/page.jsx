@@ -4,7 +4,14 @@ export const metadata = {
   description: "Full Auth password reset confirm page",
 };
 
-export default function Page({ params: { uid, token } }) {
+export default async function Page(props) {
+  const params = await props.params;
+
+  const {
+    uid,
+    token
+  } = params;
+
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">

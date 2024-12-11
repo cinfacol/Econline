@@ -2,11 +2,15 @@ import Gallery from "@/components/gallery";
 import Info from "@/components/inventories/info";
 import SuggestedProducts from "@/components/inventories/SuggestedProducts";
 import Container from "@/components/ui/container";
-import { getAuthCookie } from "@/lib/cookies";
+import getAuthCookie from "@/lib/cookies";
 
 // recibe como params el id del producto
-const InventoryDetailsPage = ({ params }) => {
-  const auth = getAuthCookie()?.cookie?.value || [];
+const InventoryDetailsPage = async (props) => {
+  const params = await props.params;
+  const auth = await getAuthCookie();
+  let access = "";
+  auth != undefined ? (access = auth.cookie["value"]) : (access = []);
+
   const inventoryId = params.productId;
 
   return (
@@ -17,13 +21,14 @@ const InventoryDetailsPage = ({ params }) => {
             {/* Gallery */}
             <Gallery inventoryId={inventoryId} />
             <div className="mt-10 px-4 sm:mt-16 sm:px-0 lg:mt-0">
-              <Info inventoryId={inventoryId} auth={auth} />
+              <Info inventoryId={inventoryId} auth={access} />
             </div>
           </div>
           <hr className="my-10" />
           <SuggestedProducts
             title="Suggested Products"
             inventoryId={inventoryId}
+            auth={access}
           />
         </div>
       </Container>

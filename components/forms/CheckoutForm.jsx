@@ -2,7 +2,6 @@
 
 import { useCheckout } from "@/hooks";
 import { Form } from "@/components/forms";
-
 export default function CheckoutForm() {
   const {
     full_name,
@@ -20,16 +19,16 @@ export default function CheckoutForm() {
 
   const config = [
     {
-      labelText: "Full Name",
-      labelId: "fullname",
+      labelText: "Full Name *",
+      labelId: "full_name",
       type: "text",
       value: full_name,
       placeholder: "Yor Name *",
       required: true,
     },
     {
-      labelText: "Address Line 1",
-      labelId: "address1",
+      labelText: "Address Line 1 *",
+      labelId: "address_line_1",
       type: "text",
       value: address_line_1,
       placeholder: "Your home Addres *",
@@ -37,14 +36,14 @@ export default function CheckoutForm() {
     },
     {
       labelText: "Address Line 2",
-      labelId: "address2",
+      labelId: "address_line_2",
       type: "text",
       value: address_line_2,
       placeholder: "Your Office Address",
       required: false,
     },
     {
-      labelText: "City",
+      labelText: "City *",
       labelId: "city",
       type: "text",
       value: city,
@@ -52,15 +51,15 @@ export default function CheckoutForm() {
       required: true,
     },
     {
-      labelText: "Departamento",
-      labelId: "departamento",
+      labelText: "State *",
+      labelId: "state_province_region",
       type: "text",
       value: state_province_region,
       placeholder: "Your State *",
       required: true,
     },
     {
-      labelText: "Zip Code",
+      labelText: "Zip Code *",
       labelId: "zipcode",
       type: "text",
       value: psostal_zip_code,
@@ -68,19 +67,19 @@ export default function CheckoutForm() {
       required: true,
     },
     {
-      labelText: "Country",
-      labelId: "country",
+      labelText: "Country *",
+      labelId: "country_region",
       type: "text",
       value: country_region,
-      placeholder: "your Country *",
+      placeholder: "Colombia",
       required: true,
     },
     {
-      labelText: "Phone",
-      labelId: "phone",
+      labelText: "Phone Number *",
+      labelId: "telephone_number",
       type: "text",
       value: telephone_number,
-      placeholder: "Your Phone Number *",
+      placeholder: "+57 3245471015",
       required: true,
     },
   ];

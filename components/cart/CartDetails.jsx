@@ -6,7 +6,6 @@ import {
   useDecQtyMutation,
   useIncQtyMutation,
   useRemoveItemMutation,
-  useGetShippingOptionsQuery,
 } from "@/redux/features/cart/cartApiSlice";
 import Image from "next/image";
 import Link from "next/link";
@@ -21,26 +20,10 @@ import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
 export default function CartDetails({ title }) {
   const router = useRouter();
   const { data, isSuccess, isLoading, error } = useGetItemsQuery();
-  const {
-    data: dat,
-    isSuccess: isSuc,
-    isLoading: isLoad,
-    error: erro,
-  } = useGetShippingOptionsQuery("shipping");
   const [removeItem, { isLoading: loading, error: err }] =
     useRemoveItemMutation();
   const [decQty, { error: er }] = useDecQtyMutation();
   const [incQty, { error: e }] = useIncQtyMutation();
-
-  // Destructure data and handle empty cart case concisely
-  const { ids: Ids = [], entities: Enty = {} } = dat || {};
-
-  // Calculate cart items
-  const ship_items = Ids.map((id) => Enty[id] || null).filter(Boolean);
-  console.log("ship_items-name", ship_items);
-
-  const Deliver = ship_items.map((ship_item) => ship_item?.name);
-  console.log("deliver", Deliver[1]);
 
   // Destructure data and handle empty cart case concisely
   const { ids = [], entities = {} } = data || {};
@@ -96,12 +79,11 @@ export default function CartDetails({ title }) {
 
   // Render loading and error states at the end
   if (isLoading || loading) return <Spinner lg />;
-  if (error || err || erro || er || e)
+  if (error || err || er || e)
     return (
       <p>
         Error:{" "}
         {error?.data?.detail ||
-          erro?.data?.detail ||
           err?.data?.detail ||
           er?.data?.detail ||
           e?.data?.detail}
@@ -270,7 +252,7 @@ export default function CartDetails({ title }) {
                                   variant="shadow"
                                   aria-label="Apply Code"
                                   className="font-bold"
-                                  onClick={(e) => handleRemove(Item, e)}
+                                  onClick={() => handleRemove(Item)}
                                 >
                                   Remove
                                 </Button>
