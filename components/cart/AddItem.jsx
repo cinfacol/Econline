@@ -44,7 +44,7 @@ const AddItem = ({ data, access, ButtonComponent }) => {
             color="primary"
             variant="shadow"
             aria-label="Add To Cart"
-            onClick={onAddToCart}
+            onPress={onAddToCart}
             className="font-bold"
           >
             Add To Cart

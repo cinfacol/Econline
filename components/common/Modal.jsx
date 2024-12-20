@@ -13,7 +13,7 @@ const Modal = () => {
           <Button
             type="button"
             className="btn confirm-btn"
-            onClick={() => {
+            onPress={() => {
               dispatch(closeModal());
             }}
           >
@@ -22,7 +22,7 @@ const Modal = () => {
           <Button
             type="button"
             className="btn clear-btn"
-            onClick={() => {
+            onPress={() => {
               dispatch(closeModal());
             }}
           >

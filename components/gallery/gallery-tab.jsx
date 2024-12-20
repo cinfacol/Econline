@@ -11,8 +11,11 @@ const GalleryTab = ({ image }) => {
         <div>
           <span className="absolute h-full w-full aspect-square inset-0 overflow-hidden rounded-md">
             <NextImage
-            loader={cloudinaryImageLoader}
+              loader={cloudinaryImageLoader}
               fill
+              sizes="(max-width: 768px) 100vw, 
+               (max-width: 1200px) 50vw, 
+               33vw"
               src={image?.image}
               alt={image?.alt_text}
               className="object-fill object-center"

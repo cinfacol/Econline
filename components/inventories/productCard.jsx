@@ -58,7 +58,7 @@ const ProductCard = ({ data, auth }) => {
               color="default"
               variant="faded"
               aria-label="ShoppingCart"
-              onClick={onPreviewModal}
+              onPress={onPreviewModal}
             >
               {<Expand size={20} className="text-gray-600" />}
             </Button>
@@ -71,7 +71,7 @@ const ProductCard = ({ data, auth }) => {
                   color="default"
                   variant="faded"
                   aria-label="ShoppingCart"
-                  onClick={() => {
+                  onPress={() => {
                     router.push("/auth/login");
                   }}
                 >

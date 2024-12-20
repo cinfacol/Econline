@@ -116,7 +116,7 @@ const Info = ({ inventoryId, auth }) => {
               color="primary"
               variant="shadow"
               aria-label="Add To Cart"
-              onClick={() => {
+              onPress={() => {
                 router.push("/auth/login");
                 previewModal.onClose();
               }}

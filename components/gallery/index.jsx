@@ -26,9 +26,13 @@ const Gallery = ({ inventoryId }) => {
               <NextImage
                 loader={cloudinaryImageLoader}
                 fill
+                sizes="(max-width: 768px) 100vw, 
+               (max-width: 1200px) 50vw, 
+               33vw"
                 src={image?.image}
                 alt={image?.alt_text}
                 className="object-fill object-center"
+                priority
               />
             </div>
           </TabPanel>

@@ -22,7 +22,7 @@ export default function LoginPage() {
           alt="Tienda Logo"
           width={40}
           height={40}
-          priority
+          priority={false}
         />
         <h1 className="mt-4 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
           Inicia sesión en tu cuenta

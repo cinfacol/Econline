@@ -102,9 +102,11 @@ export default function Navbar() {
                 <MobileNavigation />
                 <div className="border-t border-gray-200 px-4 py-6">
                   <Link href="/" className="-m-2 flex items-center p-2">
-                    <img
+                    <Image
                       src="/images/flag.svg"
                       alt=""
+                      height={8}
+                      width={8}
                       className="block h-auto w-5 flex-shrink-0"
                     />
                     <span className="ml-3 block text-base font-medium text-gray-900">

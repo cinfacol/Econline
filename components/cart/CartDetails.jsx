@@ -252,7 +252,7 @@ export default function CartDetails({ title }) {
                                   variant="shadow"
                                   aria-label="Apply Code"
                                   className="font-bold"
-                                  onClick={() => handleRemove(Item)}
+                                  onPress={() => handleRemove(Item)}
                                 >
                                   Remove
                                 </Button>
@@ -610,7 +610,7 @@ export default function CartDetails({ title }) {
                       variant="shadow"
                       aria-label="Apply Code"
                       className="font-bold"
-                      onClick={() => router.push("/checkout")}
+                      onPress={() => router.push("/checkout")}
                     >
                       Proceed to Checkout
                     </Button>
