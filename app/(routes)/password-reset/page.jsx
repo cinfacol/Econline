@@ -1,14 +1,12 @@
-import { PasswordResetConfirmForm } from "@/components/forms";
+import { PasswordResetForm } from "@/components/forms";
 import Image from "next/image";
 
 export const metadata = {
-  title: "Econline | Password Reset Confirm",
-  description: "Econline password reset confirm page",
+  title: "Econline | Password Reset",
+  description: "Econline password reset page",
 };
 
-export default async function Page({ params }) {
-  const { uid, token } = params;
-
+export default function Page() {
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
@@ -26,7 +24,7 @@ export default async function Page({ params }) {
       </div>
 
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        <PasswordResetConfirmForm uid={uid} token={token} />
+        <PasswordResetForm />
       </div>
     </div>
   );
