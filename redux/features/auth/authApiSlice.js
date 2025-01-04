@@ -1,89 +1,9 @@
-import { logger } from "@/services/logger";
 import { apiSlice } from "@/redux/api/apiSlice";
-import { setAuth, setUser, logOut } from "@/redux/features/auth/authSlice";
 
 const authApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     retrieveUser: builder.query({
-      query: () => ({
-        url: "/auth/users/me/",
-        method: "GET",
-        credentials: "include", // Importante para manejar cookies
-      }),
-
-      async onQueryStarted(args, { dispatch, queryFulfilled }) {
-        try {
-          const { data } = await queryFulfilled;
-          dispatch(setUser(data));
-          dispatch(setAuth());
-
-          logger.debug(
-            "Usuario recuperado exitosamente",
-            { userId: data?.id },
-            "AuthAPI"
-          );
-        } catch (error) {
-          // Extraer información relevante del error
-          const errorInfo = {
-            status: error?.error?.status || error?.status,
-            data: error?.error?.data || error?.data,
-            message:
-              error?.error?.data?.detail ||
-              error?.error?.data?.message ||
-              error?.message ||
-              "Error desconocido",
-            code: error?.error?.status || "UNKNOWN",
-          };
-        }
-      },
-
-      transformResponse: (response) => {
-        logger.debug("Transformando respuesta del usuario", { response });
-
-        return {
-          id: response.id,
-          email: response.email,
-          username: response.username,
-          first_name: response.first_name,
-          last_name: response.last_name,
-          full_name: `${response.first_name} ${response.last_name}`.trim(),
-          profile_photo: response.profile_photo,
-          is_active: response.is_active,
-          is_staff: response.is_staff,
-          isProfileComplete: Boolean(
-            response.first_name && response.last_name && response.email
-          ),
-        };
-      },
-
-      transformErrorResponse: (response) => {
-        // Para errores 401, transformamos a un formato más amigable
-        if (response.status === 401) {
-          return {
-            status: 401,
-            data: response.data,
-            message: "Sesión expirada o no válida",
-            isAuthError: true,
-          };
-        }
-
-        return {
-          status: response.status,
-          data: response.data,
-          message:
-            response.data?.detail ||
-            response.data?.message ||
-            "Error desconocido",
-          timestamp: new Date().toISOString(),
-        };
-      },
-      // Configuración de caché y revalidación
-      keepUnusedDataFor: 300, // 5 minutos
-      refetchOnMountOrArgChange: true,
-
-      // Revalidar al volver a tener conexión
-      refetchOnReconnect: true,
-      providesTags: ["User"],
+      query: () => "/auth/users/me/",
     }),
     socialAuthenticate: builder.mutation({
       query: ({ provider, state, code }) => ({
@@ -95,121 +15,14 @@ const authApiSlice = apiSlice.injectEndpoints({
           Accept: "application/json",
           "Content-Type": "application/x-www-form-urlencoded",
         },
-        credentials: "include",
       }),
-      invalidatesTags: ["User"],
-      transformResponse: (response) => {
-        if (response.status === "success" || response.tokens) {
-          return {
-            status: "success",
-            message: response.message || "Social login successful",
-            user: response.user || null,
-            tokens: response.tokens || null,
-          };
-        }
-        return response;
-      },
-      transformErrorResponse: (response) => ({
-        status: response.status,
-        message: response.data?.message || "Error during social login",
-        originalError: response,
-      }),
-      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
-        try {
-          const { data } = await queryFulfilled;
-          console.log("social_data", data);
-          if (data.status === "success" || data.tokens) {
-            dispatch(setAuth());
-            if (data.user) {
-              dispatch(setUser(data.user));
-            }
-            logger.info("Social login successful", {
-              provider: arg.provider,
-              userId: data.user?.id,
-            });
-          }
-        } catch (error) {
-          logger.error("Error en el inicio de login social", {
-            error,
-            requestData: {
-              provider: arg.provider,
-              errorType: error?.name,
-              errorStatus: error?.status,
-              errorMessage: error?.message,
-              errorData: error?.data,
-            },
-          });
-          // Manejo de errores, puedes despachar una acción para mostrar un mensaje al usuario
-        }
-      },
     }),
     login: builder.mutation({
-      query: (credentials) => ({
+      query: ({ email, password }) => ({
         url: "/auth/jwt/create/",
         method: "POST",
-        body: credentials,
-        credentials: "include",
+        body: { email, password },
       }),
-      invalidatesTags: ["User"],
-
-      transformResponse: (response, meta) => {
-        logger.debug("Login response received", { response, meta });
-
-        if (response.status === "success" || response.tokens) {
-          return {
-            status: "success",
-            message: response.message || "Login exitoso",
-            user: response.user || null,
-            tokens: response.tokens || null,
-          };
-        }
-        return response;
-      },
-
-      transformErrorResponse: (response) => {
-        logger.debug("Login error response", { response });
-
-        return {
-          status: response.status,
-          message:
-            response.data?.detail ||
-            response.data?.message ||
-            "Error en el inicio de sesión",
-          originalError: response,
-        };
-      },
-
-      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
-        try {
-          logger.debug("Iniciando login", { email: arg.email });
-
-          const { data } = await queryFulfilled;
-
-          if (data.status === "success" || data.tokens) {
-            dispatch(setAuth());
-            if (data.user) {
-              dispatch(setUser(data.user));
-            }
-            logger.info("Login exitoso", {
-              email: arg.email,
-              hasUserData: !!data.user,
-            });
-          }
-        } catch (error) {
-          logger.error("Error en proceso de login", {
-            error,
-            requestData: {
-              email: arg?.email,
-              errorType: error?.name,
-              errorStatus: error?.status,
-              errorMessage: error?.message,
-              errorData: error?.data,
-            },
-          });
-
-          dispatch(logOut());
-        }
-      },
     }),
     register: builder.mutation({
       query: ({
@@ -238,16 +51,7 @@ const authApiSlice = apiSlice.injectEndpoints({
         method: "POST",
         credentials: "include",
       }),
-      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
-        try {
-          await queryFulfilled;
-          dispatch(logOut());
-        } catch (error) {
-          logger.error("Error en proceso de logout", error);
-        }
-      },
     }),
-
     activation: builder.mutation({
       query: ({ uid, token }) => ({
         url: "/auth/users/activation/",
@@ -276,6 +80,7 @@ export const {
   useRetrieveUserQuery,
   useSocialAuthenticateMutation,
   useLoginMutation,
+  // useGetAuthDataQuery,
   useRegisterMutation,
   useVerifyMutation,
   useLogoutMutation,

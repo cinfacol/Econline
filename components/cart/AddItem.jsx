@@ -63,7 +63,7 @@ const AddItem = ({ data, access, ButtonComponent }) => {
             color="default"
             variant="faded"
             aria-label="ShoppingCart"
-            onClick={onAddToCart}
+            onPress={onAddToCart}
           >
             {<ShoppingCart size={20} className="text-gray-600" />}
           </Button>

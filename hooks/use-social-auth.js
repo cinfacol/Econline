@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAppDispatch } from "@/redux/hooks";
-import { setAuth, setUser } from "@/redux/features/auth/authSlice";
+import { setAuth } from "@/redux/features/auth/authSlice";
 import { toast } from "sonner";
 
 export default function useSocialAuth(authenticate, provider) {
@@ -20,9 +20,6 @@ export default function useSocialAuth(authenticate, provider) {
         .unwrap()
         .then(() => {
           dispatch(setAuth());
-          if (user) {
-            dispatch(setUser(user));
-          }
           toast.success("Logged in successfully");
           router.push("/dashboard");
         })

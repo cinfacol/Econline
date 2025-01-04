@@ -41,21 +41,6 @@ export default function useCheckout() {
     setFormData({ ...formData, [name]: value });
   };
 
-  /* const onSubmit = (event) => {
-    event.preventDefault();
-
-    login({ email, password })
-      .unwrap()
-      .then(() => {
-        dispatch(setAuth());
-        toast.success("Logged in successfully");
-        router.push("/dashboard");
-      })
-      .catch(() => {
-        toast.error("Failed to log in");
-      });
-  }; */
-
   return {
     full_name,
     address_line_1,

@@ -11,7 +11,7 @@ import {
 import { Fragment, useEffect, useCallback } from "react";
 import { useAppSelector, useAppDispatch } from "@/redux/hooks";
 import { useLogoutMutation } from "@/redux/features/auth/authApiSlice";
-import { logOut as setLogOut } from "@/redux/features/auth/authSlice";
+import { logout as setLogout } from "@/redux/features/auth/authSlice";
 import { NavLink } from "@/components/common";
 import Image from "next/image";
 import { toast } from "sonner";
@@ -81,10 +81,10 @@ export default function ProfileButton() {
     return null;
   };
 
-  const handleLogOut = useCallback(async () => {
+  const handleLogout = useCallback(async () => {
     try {
       await logout({}).unwrap();
-      dispatch(setLogOut());
+      dispatch(setLogout());
       toast.success("¡Sesión cerrada exitosamente!");
       router.push("/");
     } catch (error) {
@@ -117,8 +117,8 @@ export default function ProfileButton() {
           icon: <SettingsIcon className="size-4 mr-2 text-xs text-gray/50" />,
         },
         {
-          label: "LogOut",
-          onClick: handleLogOut,
+          label: "Logout",
+          onClick: handleLogout,
           icon: <LogOutIcon className="size-4 mr-2 text-xs text-gray/50" />,
         },
       ]
