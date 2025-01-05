@@ -16,22 +16,18 @@ import { Button } from "@nextui-org/button";
 import AddItem from "./AddItem";
 import cloudinaryImageLoader from "@/actions/imageLoader";
 import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
+import { useCallback } from "react";
 
 export default function CartDetails({ title }) {
   const router = useRouter();
   const { data, isSuccess, isLoading, error } = useGetItemsQuery();
-  const [removeItem, { isLoading: loading, error: err }] =
-    useRemoveItemMutation();
-  const [decQty, { error: er }] = useDecQtyMutation();
-  const [incQty, { error: e }] = useIncQtyMutation();
+  const [removeItem, { isLoading: loading }] = useRemoveItemMutation();
+  const [decQty] = useDecQtyMutation();
+  const [incQty] = useIncQtyMutation();
 
-  // Destructure data and handle empty cart case concisely
   const { ids = [], entities = {} } = data || {};
-
-  // Calculate cart items
   const items = ids.map((id) => entities[id] || null).filter(Boolean);
 
-  // Calculate totals
   const subTotal = items.reduce(
     (acc, item) => acc + item.inventory.store_price * item.quantity,
     0
@@ -49,46 +45,45 @@ export default function CartDetails({ title }) {
     0
   );
 
-  const handleRemove = async (Item) => {
-    const itemId = Item?.inventory?.id;
-    try {
-      await removeItem({ itemId }).unwrap();
-      toast.success("Product removed successfully");
-    } catch (error) {
-      toast.error(`Error: ${error?.data?.error}`);
-    }
-  };
+  const handleRemove = useCallback(
+    async (Item) => {
+      const itemId = Item?.inventory?.id;
+      try {
+        await removeItem({ itemId }).unwrap();
+        toast.success("Product removed successfully");
+      } catch (error) {
+        toast.error(`Error: ${error?.data?.error}`);
+      }
+    },
+    [removeItem]
+  );
 
-  const handleIncQty = async (inventoryId) => {
-    try {
-      await incQty({ inventoryId }).unwrap();
-      toast.success("Product successfully increased");
-    } catch (error) {
-      toast.error(`Error: ${error?.data?.error}`);
-    }
-  };
+  const handleIncQty = useCallback(
+    async (inventoryId) => {
+      try {
+        await incQty({ inventoryId }).unwrap();
+        toast.success("Product successfully increased");
+      } catch (error) {
+        toast.error(`Error: ${error?.data?.error}`);
+      }
+    },
+    [incQty]
+  );
 
-  const handleDecQty = async (inventoryId) => {
-    try {
-      await decQty({ inventoryId }).unwrap();
-      toast.success("Product successfully decreased");
-    } catch (error) {
-      toast.error(`Error: ${error?.data?.error}`);
-    }
-  };
+  const handleDecQty = useCallback(
+    async (inventoryId) => {
+      try {
+        await decQty({ inventoryId }).unwrap();
+        toast.success("Product successfully decreased");
+      } catch (error) {
+        toast.error(`Error: ${error?.data?.error}`);
+      }
+    },
+    [decQty]
+  );
 
-  // Render loading and error states at the end
   if (isLoading || loading) return <Spinner lg />;
-  if (error || err || er || e)
-    return (
-      <p>
-        Error:{" "}
-        {error?.data?.detail ||
-          err?.data?.detail ||
-          er?.data?.detail ||
-          e?.data?.detail}
-      </p>
-    );
+  if (error) return <p>Error: {error?.data?.detail || "An error occurred"}</p>;
 
   if (isSuccess)
     return (
@@ -107,8 +102,7 @@ export default function CartDetails({ title }) {
               <div className="mt-6 sm:mt-8 md:gap-6 lg:flex lg:items-start xl:gap-8">
                 <div className="mx-auto w-full flex-none lg:max-w-2xl xl:max-w-4xl">
                   <div className="space-y-2">
-                    {ids?.map((id) => {
-                      const Item = entities[id];
+                    {items.map((Item) => {
                       const inventoryId = Item?.inventory?.id;
                       return (
                         <div
@@ -136,56 +130,34 @@ export default function CartDetails({ title }) {
                             </label>
                             <div className="flex items-center justify-between md:order-3 md:justify-end">
                               <div className="flex items-center">
-                                {Item?.quantity <= 1 ? (
-                                  <button
-                                    type="button"
-                                    id="decrement-button"
-                                    onClick={() => handleDecQty(inventoryId)}
-                                    data-input-counter-decrement="counter-input"
-                                    className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-gray-300 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700 cursor-not-allowed"
-                                    disabled
+                                <button
+                                  type="button"
+                                  id="decrement-button"
+                                  onClick={() => handleDecQty(inventoryId)}
+                                  data-input-counter-decrement="counter-input"
+                                  className={`inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-gray-300 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700 ${
+                                    Item?.quantity <= 1
+                                      ? "cursor-not-allowed"
+                                      : ""
+                                  }`}
+                                  disabled={Item?.quantity <= 1}
+                                >
+                                  <svg
+                                    className="h-2.5 w-2.5 text-gray-900 dark:text-white"
+                                    aria-hidden="true"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 18 2"
                                   >
-                                    <svg
-                                      className="h-2.5 w-2.5 text-gray-900 dark:text-white"
-                                      aria-hidden="true"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      fill="none"
-                                      viewBox="0 0 18 2"
-                                    >
-                                      <path
-                                        stroke="currentColor"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M1 1h16"
-                                      />
-                                    </svg>
-                                  </button>
-                                ) : (
-                                  <button
-                                    type="button"
-                                    id="decrement-button"
-                                    onClick={() => handleDecQty(inventoryId)}
-                                    data-input-counter-decrement="counter-input"
-                                    className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-gray-300 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700"
-                                  >
-                                    <svg
-                                      className="h-2.5 w-2.5 text-gray-900 dark:text-white"
-                                      aria-hidden="true"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      fill="none"
-                                      viewBox="0 0 18 2"
-                                    >
-                                      <path
-                                        stroke="currentColor"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M1 1h16"
-                                      />
-                                    </svg>
-                                  </button>
-                                )}
+                                    <path
+                                      stroke="currentColor"
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth="2"
+                                      d="M1 1h16"
+                                    />
+                                  </svg>
+                                </button>
 
                                 <input
                                   type="text"

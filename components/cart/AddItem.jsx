@@ -24,9 +24,10 @@ const AddItem = ({ data, access, ButtonComponent }) => {
     const inventory_id = data?.id;
     const quantity = 1;
     const coupon = {};
-    const newItem = { cart_id, inventory_id, quantity, coupon };
+    const newItem = { inventory_id, quantity, coupon };
+    console.log("newItem", newItem);
     try {
-      await addItem({ newItem, token })
+      await addItem({ newItem })
         .unwrap()
         .then((payload) => toast.success("Product added to Cart successfully"))
         .catch((error) => toast.error(`${error.error}`));

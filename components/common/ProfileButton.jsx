@@ -1,6 +1,9 @@
 "use client";
 
-import { useRetrieveUserQuery } from "@/redux/features/auth/authApiSlice";
+import {
+  useRetrieveUserQuery,
+  useLogoutMutation,
+} from "@/redux/features/auth/authApiSlice";
 import {
   Menu,
   MenuButton,
@@ -10,7 +13,6 @@ import {
 } from "@headlessui/react";
 import { Fragment, useEffect, useCallback } from "react";
 import { useAppSelector, useAppDispatch } from "@/redux/hooks";
-import { useLogoutMutation } from "@/redux/features/auth/authApiSlice";
 import { logout as setLogout } from "@/redux/features/auth/authSlice";
 import { NavLink } from "@/components/common";
 import Image from "next/image";
@@ -24,16 +26,11 @@ import {
   UserPenIcon,
   SettingsIcon,
 } from "lucide-react";
+import classNames from "classnames";
 
-function classNames(...classes) {
-  return classes.join(" ");
-}
-
-export default function ProfileButton() {
+function ProfileButton() {
   const dispatch = useAppDispatch();
-
   const [logout] = useLogoutMutation();
-
   const { isAuthenticated } = useAppSelector((state) => state.auth);
   const {
     data: user,
@@ -44,6 +41,8 @@ export default function ProfileButton() {
     pollingInterval: 300000, // Revalidar cada 5 minutos
     refetchOnMountOrArgChange: true,
   });
+  const router = useRouter();
+  const { profile_photo, full_name, email } = user || {};
 
   useEffect(() => {
     if (error) {
@@ -51,11 +50,18 @@ export default function ProfileButton() {
     }
   }, [error]);
 
-  const router = useRouter();
+  const handleLogout = useCallback(async () => {
+    try {
+      await logout({}).unwrap();
+      dispatch(setLogout());
+      toast.success("¡Sesión cerrada exitosamente!");
+      router.push("/");
+    } catch (error) {
+      const message = error?.data?.error || "Ocurrió un error desconocido";
+      toast.error(`Error al cerrar sesión: ${message}`);
+    }
+  }, [logout, dispatch, router]);
 
-  const { profile_photo, full_name, email } = user || {};
-
-  // Manejar estados de carga y error
   const renderUserInfo = () => {
     if (isLoading) {
       return (
@@ -80,18 +86,6 @@ export default function ProfileButton() {
 
     return null;
   };
-
-  const handleLogout = useCallback(async () => {
-    try {
-      await logout({}).unwrap();
-      dispatch(setLogout());
-      toast.success("¡Sesión cerrada exitosamente!");
-      router.push("/");
-    } catch (error) {
-      const message = error?.data?.error || "Ocurrió un error desconocido";
-      toast.error(`Error al cerrar sesión: ${message}`);
-    }
-  }, [logout, dispatch, router]);
 
   const menuItems = isAuthenticated
     ? [
@@ -201,3 +195,5 @@ export default function ProfileButton() {
     </Menu>
   );
 }
+
+export default ProfileButton;

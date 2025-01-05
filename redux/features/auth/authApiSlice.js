@@ -42,14 +42,12 @@ const authApiSlice = apiSlice.injectEndpoints({
       query: () => ({
         url: "/auth/jwt/verify/",
         method: "POST",
-        credentials: "include",
       }),
     }),
     logout: builder.mutation({
       query: () => ({
         url: "/auth/logout/",
         method: "POST",
-        credentials: "include",
       }),
     }),
     activation: builder.mutation({
@@ -80,7 +78,6 @@ export const {
   useRetrieveUserQuery,
   useSocialAuthenticateMutation,
   useLoginMutation,
-  // useGetAuthDataQuery,
   useRegisterMutation,
   useVerifyMutation,
   useLogoutMutation,

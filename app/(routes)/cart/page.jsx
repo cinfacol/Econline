@@ -15,10 +15,8 @@ export const metadata = {
 
 const CartPage = async () => {
   const auth = await getAuthCookie();
-  console.log("auth_cookies", auth);
 
   if (!auth) {
-    console.log("cart_page_auth", auth);
     return (
       <Container>
         <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4 text-center">

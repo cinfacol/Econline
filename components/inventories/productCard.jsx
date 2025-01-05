@@ -12,8 +12,8 @@ import usePreviewModal from "@/hooks/use-preview-modal";
 import AddItem from "@/components/cart/AddItem";
 import { useAppSelector } from "@/redux/hooks";
 
-const ProductCard = ({ data, auth }) => {
-  const token = auth;
+const ProductCard = ({ data }) => {
+  // const token = auth;
   const { isAuthenticated } = useAppSelector((state) => state.auth);
 
   const raters = data?.rating?.length;
@@ -27,11 +27,6 @@ const ProductCard = ({ data, auth }) => {
 
   const handleClick = () => {
     router.push(`/product/${data?.id}`);
-  };
-
-  const onPreviewModal = (event) => {
-    event.stopPropagation();
-    previewModal.onOpen(data, auth);
   };
 
   const dat = data;
@@ -58,12 +53,15 @@ const ProductCard = ({ data, auth }) => {
               color="default"
               variant="faded"
               aria-label="ShoppingCart"
-              onPress={onPreviewModal}
+              onPress={() => {
+                // event.stopPropagation();
+                previewModal.onOpen(data);
+              }}
             >
               {<Expand size={20} className="text-gray-600" />}
             </Button>
             {isAuthenticated ? (
-              <AddItem data={dat} access={token} />
+              (console.log("data", dat), (<AddItem data={dat} />))
             ) : (
               <div>
                 <Button

@@ -1,5 +1,5 @@
-import dynamic from "next/dynamic";
-// import InventoriesList from "@/components/inventories/InventoriesList";
+// import dynamic from "next/dynamic";
+import InventoriesList from "@/components/inventories/InventoriesList";
 import Container from "@/components/ui/container";
 import { RadioButtonCategoryGroup } from "@/components/common/RadioButtonCategoryGroup";
 import getAuthCookie from "@/lib/cookies";
@@ -19,7 +19,7 @@ export const metadata = {
 };
 
 // Lazy loading de componentes
-const InventoriesList = dynamic(
+/* const InventoriesList = dynamic(
   () => import("@/components/inventories/InventoriesList"),
   {
     loading: () => (
@@ -27,7 +27,7 @@ const InventoriesList = dynamic(
     ),
     ssr: true,
   }
-);
+); */
 
 export default async function Home() {
   const auth = await getAuthCookie();

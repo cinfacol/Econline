@@ -3,9 +3,8 @@
 import { useRetrieveUserQuery } from "@/redux/features/auth/authApiSlice";
 import { List, Spinner } from "@/components/common";
 
-function RetrieveUser(token) {
-  console.log("token_retireveUser", token);
-  const { data: user, isLoading, isFetching } = useRetrieveUserQuery(token);
+function RetrieveUser() {
+  const { data: user, isLoading, isFetching } = useRetrieveUserQuery();
 
   const config = [
     {
