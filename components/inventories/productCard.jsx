@@ -61,7 +61,7 @@ const ProductCard = ({ data }) => {
               {<Expand size={20} className="text-gray-600" />}
             </Button>
             {isAuthenticated ? (
-              (console.log("data", dat), (<AddItem data={dat} />))
+              <AddItem data={dat} />
             ) : (
               <div>
                 <Button

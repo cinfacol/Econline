@@ -25,7 +25,6 @@ const AddItem = ({ data, access, ButtonComponent }) => {
     const quantity = 1;
     const coupon = {};
     const newItem = { inventory_id, quantity, coupon };
-    console.log("newItem", newItem);
     try {
       await addItem({ newItem })
         .unwrap()

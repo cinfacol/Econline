@@ -15,7 +15,7 @@ import { toast } from "sonner";
 import { Button } from "@nextui-org/button";
 import AddItem from "./AddItem";
 import cloudinaryImageLoader from "@/actions/imageLoader";
-import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
+// import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
 import { useCallback } from "react";
 
 export default function CartDetails({ title }) {
@@ -37,6 +37,7 @@ export default function CartDetails({ title }) {
       acc + item.inventory.taxe * item.inventory.store_price * item.quantity,
     0
   );
+  const total = subTotal + taxes;
   const save = items.reduce(
     (acc, item) =>
       acc +
@@ -222,7 +223,7 @@ export default function CartDetails({ title }) {
                                 <Button
                                   color="warning"
                                   variant="shadow"
-                                  aria-label="Apply Code"
+                                  aria-label="Remove"
                                   className="font-bold"
                                   onPress={() => handleRemove(Item)}
                                 >
@@ -475,7 +476,7 @@ export default function CartDetails({ title }) {
                 </div>
 
                 <div className="mx-auto mt-6 max-w-4xl flex-1 space-y-6 lg:mt-0 lg:w-full">
-                  <div className="space-y-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 sm:p-6">
+                  {/* <div className="space-y-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 sm:p-6">
                     <form className="space-y-4">
                       <div>
                         <label
@@ -502,7 +503,7 @@ export default function CartDetails({ title }) {
                         Apply Code
                       </Button>
                     </form>
-                  </div>
+                  </div> */}
                   <div className="space-y-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 sm:p-6">
                     <p className="text-xl font-semibold text-gray-900 dark:text-white">
                       Order summary
@@ -528,7 +529,7 @@ export default function CartDetails({ title }) {
                           </dd>
                         </dl>
 
-                        <dl className="flex items-center justify-between gap-4">
+                        {/* <dl className="flex items-center justify-between gap-4">
                           <dt className="flex items-center text-sm text-gray-600">
                             Shipping
                             <Link
@@ -547,17 +548,16 @@ export default function CartDetails({ title }) {
                           <dd className="text-base font-medium text-gray-900 dark:text-white">
                             <Currency value={5} />
                           </dd>
-                        </dl>
+                        </dl> */}
 
-                        <dl className="flex items-center justify-between gap-4">
+                        {/* <dl className="flex items-center justify-between gap-4">
                           <dt className="text-base font-normal text-gray-500 dark:text-gray-400">
                             Coupon
                           </dt>
                           <dd className="text-base font-medium text-green-600 dark:text-white line-through">
                             <Currency value={0} />
                           </dd>
-                        </dl>
-
+                        </dl> */}
                         <dl className="flex items-center justify-between gap-4">
                           <dt className="text-base font-normal text-gray-500 dark:text-gray-400">
                             Tax
@@ -573,16 +573,16 @@ export default function CartDetails({ title }) {
                           Total
                         </dt>
                         <dd className="text-base font-bold text-gray-900 dark:text-white">
-                          <Currency value={subTotal + taxes} />
+                          <Currency value={total} />
                         </dd>
                       </dl>
                     </div>
                     <Button
                       color="primary"
                       variant="shadow"
-                      aria-label="Apply Code"
+                      aria-label="Proceed to Checkout"
                       className="font-bold"
-                      onPress={() => router.push("/checkout")}
+                      onPress={() => router.push(`/checkout/${total}`)}
                     >
                       Proceed to Checkout
                     </Button>

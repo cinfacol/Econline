@@ -3,6 +3,7 @@ import { TicketIcon } from "@heroicons/react/24/outline";
 import { Fragment } from "react";
 import Link from "next/link";
 import { CheckoutForm } from "@/components/forms";
+import Currency from "@/components/ui/currency";
 
 const ShippingForm = ({
   onChange,
@@ -10,6 +11,7 @@ const ShippingForm = ({
   user,
   // profile,
   renderShipping,
+  sub_total,
   original_price,
   total_amount,
   total_compare_amount,
@@ -76,6 +78,15 @@ const ShippingForm = ({
         ) : (
           <Fragment></Fragment>
         )}
+
+        <div className="border-t border-gray-200 pt-4 flex items-center justify-between">
+          <dt className="flex text-sm text-gray-600">
+            <span>Subtotal</span>
+          </dt>
+          <dd className="text-sm font-medium text-gray-900">
+            <Currency value={sub_total} />
+          </dd>
+        </div>
         <div className="border-t border-gray-200 pt-4 flex items-center justify-between">
           <dt className="flex items-center text-sm text-gray-600">
             <span>Shipping estimate</span>
@@ -99,7 +110,7 @@ const ShippingForm = ({
             )}
           </dd>
         </div>
-        <div className="border-t border-gray-200 pt-4 flex items-center justify-between">
+        {/* <div className="border-t border-gray-200 pt-4 flex items-center justify-between">
           <dt className="flex text-sm text-gray-600">
             <span>Tax estimate</span>
             <Link
@@ -115,15 +126,7 @@ const ShippingForm = ({
           <dd className="text-sm font-medium text-gray-900">
             ${estimated_tax}
           </dd>
-        </div>
-        <div className="border-t border-gray-200 pt-4 flex items-center justify-between">
-          <dt className="flex text-sm text-gray-600">
-            <span>Subtotal</span>
-          </dt>
-          <dd className="text-sm font-medium text-gray-900">
-            ${original_price}
-          </dd>
-        </div>
+        </div> */}
         {coupon && coupon !== null && coupon !== undefined ? (
           <>
             <div className="border-t border-gray-200 pt-4 flex items-center justify-between">

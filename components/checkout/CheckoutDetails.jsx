@@ -1,12 +1,12 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useAppSelector } from "@/redux/hooks";
 import { useRouter } from "next/navigation";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import Currency from "@/components/ui/currency";
-import { Button } from "@nextui-org/button";
+// import { Button } from "@nextui-org/button";
 import {
   useGetItemsQuery,
   useGetShippingOptionsQuery,
@@ -20,8 +20,7 @@ import cloudinaryImageLoader from "@/actions/imageLoader";
 import { toast } from "sonner";
 
 import ShippingForm from "@/components/checkout/ShippingForm";
-
-// import { check_coupon } from "../../features/services/coupons/coupons.service";
+import { useCheckCouponMutation } from "@/redux/features/cart/cartApiSlice";
 /* import {
   get_payment_total,
   get_client_token,
@@ -30,9 +29,9 @@ import ShippingForm from "@/components/checkout/ShippingForm";
 import { Spinner } from "@/components/common";
 // import { countries } from "../../helpers/fixedCountries";
 
-const CheckoutDetails = ({ title }) => {
+const CheckoutDetails = ({ title, total }) => {
   const dispatch = useDispatch();
-
+  const [checkCoupon] = useCheckCouponMutation();
   const router = useRouter();
   const { data: user, isLoading: loading, isFetching } = useRetrieveUserQuery();
   const { data, isSuccess, isLoading, error } = useGetItemsQuery();
@@ -156,11 +155,11 @@ const CheckoutDetails = ({ title }) => {
     }
   }; */
 
-  /* const apply_coupon = async (e) => {
+  const apply_coupon = async (e) => {
     e.preventDefault();
 
-    dispatch(check_coupon(coupon_name));
-  }; */
+    dispatch(checkCoupon(coupon_name));
+  };
 
   /* useEffect(() => {
     window.scrollTo(0, 0);
@@ -347,6 +346,7 @@ const CheckoutDetails = ({ title }) => {
         // buy={buy}
         user={user}
         renderShipping={renderShipping}
+        sub_total={total}
         // original_price={original_price}
         // total_amount={total_amount}
         // total_after_coupon={total_after_coupon}
@@ -357,7 +357,7 @@ const CheckoutDetails = ({ title }) => {
         shipping={shipping}
         renderPaymentInfo={renderPaymentInfo}
         // coupon={coupon}
-        // apply_coupon={apply_coupon}
+        apply_coupon={apply_coupon}
         // coupon_name={coupon_name}
       />
     </div>

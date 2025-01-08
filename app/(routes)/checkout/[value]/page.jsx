@@ -5,7 +5,9 @@ export const metadata = {
   description: "Products Page in a Modern Ecommerce App",
 };
 
-const Checkout = () => {
+async function Checkout({ params }) {
+  const value = (await params).value;
+
   return (
     <>
       <div className="bg-white">
@@ -13,11 +15,11 @@ const Checkout = () => {
           <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
             Check Out
           </h1>
-          <CheckoutDetails title={metadata.title} />
+          <CheckoutDetails title={metadata.title} total={value} />
         </div>
       </div>
     </>
   );
-};
+}
 
 export default Checkout;

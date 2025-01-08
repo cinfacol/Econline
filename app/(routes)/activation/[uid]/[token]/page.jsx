@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, use } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useActivationMutation } from "@/redux/features/auth/authApiSlice";
 import { toast } from "sonner";

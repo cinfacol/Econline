@@ -109,6 +109,17 @@ export const cartApiSlice = apiSlice.injectEndpoints({
         return cartAdapter.setAll(initialState, loadedItems);
       },
     }),
+    checkCoupon: builder.mutation({
+      query: ({ coupon_name }) => ({
+        url: "/cart/check-coupon/",
+        method: "POST",
+        body: JSON.stringify(coupon_name),
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      }),
+    }),
   }),
 });
 
@@ -119,4 +130,5 @@ export const {
   useIncQtyMutation,
   useRemoveItemMutation,
   useGetShippingOptionsQuery,
+  useCheckCouponMutation,
 } = cartApiSlice;
