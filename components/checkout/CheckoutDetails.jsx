@@ -80,6 +80,7 @@ const CheckoutDetails = ({ title, total }) => {
     telephone_number: "",
     coupon_name: "",
     shipping_id: 0,
+    shipping_cost: 0,
   });
 
   // eslint-disable-next-line no-unused-vars
@@ -98,6 +99,7 @@ const CheckoutDetails = ({ title, total }) => {
     telephone_number,
     coupon_name,
     shipping_id,
+    shipping_cost,
   } = formData;
 
   const onChange = (e) => {
@@ -193,8 +195,8 @@ const CheckoutDetails = ({ title, total }) => {
             <div key={index}>
               <input
                 onChange={(e) => onChange(e)}
-                value={shipping_option.id}
-                name="shipping_id"
+                value={shipping_option.price}
+                name="shipping_cost"
                 type="radio"
                 required
               />
@@ -265,6 +267,7 @@ const CheckoutDetails = ({ title, total }) => {
           {ids?.map((id) => {
             const Item = entities[id];
             const inventoryId = Item?.inventory?.id;
+            console.log("Item", Item);
             return (
               <div
                 key={Item.id}
@@ -354,6 +357,7 @@ const CheckoutDetails = ({ title, total }) => {
         // estimated_tax={estimated_tax}
         // shipping_cost={shipping_cost}
         shipping_id={shipping_id}
+        shipping_cost={shipping_cost}
         shipping={shipping}
         renderPaymentInfo={renderPaymentInfo}
         // coupon={coupon}

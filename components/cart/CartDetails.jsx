@@ -28,13 +28,14 @@ export default function CartDetails({ title }) {
   const { ids = [], entities = {} } = data || {};
   const items = ids.map((id) => entities[id] || null).filter(Boolean);
 
-  const subTotal = items.reduce(
-    (acc, item) => acc + item.inventory.store_price * item.quantity,
-    0
-  );
   const taxes = items.reduce(
     (acc, item) =>
       acc + item.inventory.taxe * item.inventory.store_price * item.quantity,
+    0
+  );
+  const subTotal = items.reduce(
+    (acc, item) =>
+      acc + item.inventory.store_price * item.quantity - taxes / items.length,
     0
   );
   const total = subTotal + taxes;

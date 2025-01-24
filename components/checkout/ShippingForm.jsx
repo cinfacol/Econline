@@ -101,7 +101,7 @@ const ShippingForm = ({
             </Link>
           </dt>
           <dd className="text-sm font-medium text-gray-900">
-            {shipping && shipping_id !== 0 ? (
+            {shipping && shipping_cost !== 0 ? (
               <>${shipping_cost}</>
             ) : (
               <div className="text-red-500">
@@ -110,23 +110,6 @@ const ShippingForm = ({
             )}
           </dd>
         </div>
-        {/* <div className="border-t border-gray-200 pt-4 flex items-center justify-between">
-          <dt className="flex text-sm text-gray-600">
-            <span>Tax estimate</span>
-            <Link
-              href="/"
-              className="ml-2 flex-shrink-0 text-gray-400 hover:text-gray-500"
-            >
-              <span className="sr-only">
-                Learn more about how tax is calculated
-              </span>
-              <QuestionMarkCircleIcon className="h-5 w-5" aria-hidden="true" />
-            </Link>
-          </dt>
-          <dd className="text-sm font-medium text-gray-900">
-            ${estimated_tax}
-          </dd>
-        </div> */}
         {coupon && coupon !== null && coupon !== undefined ? (
           <>
             <div className="border-t border-gray-200 pt-4 flex items-center justify-between">

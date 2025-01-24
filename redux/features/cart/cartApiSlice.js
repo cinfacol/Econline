@@ -111,7 +111,7 @@ export const cartApiSlice = apiSlice.injectEndpoints({
     }),
     checkCoupon: builder.mutation({
       query: ({ coupon_name }) => ({
-        url: "/cart/check-coupon/",
+        url: "/coupons/check/",
         method: "POST",
         body: JSON.stringify(coupon_name),
         headers: {

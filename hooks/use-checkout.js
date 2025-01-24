@@ -20,6 +20,7 @@ export default function useCheckout() {
     telephone_number: "",
     coupon_name: "",
     shipping_id: 0,
+    shipping_cost: 0,
   });
 
   const {
@@ -33,6 +34,7 @@ export default function useCheckout() {
     telephone_number,
     coupon_name,
     shipping_id,
+    shipping_cost,
   } = formData;
 
   const onChange = (event) => {
@@ -52,6 +54,7 @@ export default function useCheckout() {
     telephone_number,
     coupon_name,
     shipping_id,
+    shipping_cost,
     // isLoading,
     onChange,
     // onSubmit,
