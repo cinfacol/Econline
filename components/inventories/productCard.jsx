@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import cloudinaryImageLoader from "@/actions/imageLoader";
 
 import Currency from "@/components/ui/currency";
-import { Button } from "@nextui-org/button";
+import { Button } from "@heroui/button";
 import StarRatings from "react-star-ratings";
 import usePreviewModal from "@/hooks/use-preview-modal";
 import AddItem from "@/components/cart/AddItem";

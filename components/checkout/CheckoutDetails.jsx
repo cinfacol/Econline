@@ -6,7 +6,7 @@ import { useAppSelector } from "@/redux/hooks";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import Currency from "@/components/ui/currency";
-// import { Button } from "@nextui-org/button";
+// import { Button } from "@heroui/button";
 import {
   useGetItemsQuery,
   useGetShippingOptionsQuery,
@@ -267,7 +267,7 @@ const CheckoutDetails = ({ title, total }) => {
           {ids?.map((id) => {
             const Item = entities[id];
             const inventoryId = Item?.inventory?.id;
-            console.log("Item", Item);
+
             return (
               <div
                 key={Item.id}

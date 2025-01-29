@@ -6,7 +6,7 @@ import {
 } from "@/redux/features/cart/cartApiSlice";
 import { ShoppingCart } from "lucide-react";
 import { toast } from "sonner";
-import { Button } from "@nextui-org/button";
+import { Button } from "@heroui/button";
 
 const AddItem = ({ data, access, ButtonComponent }) => {
   const { data: cartId } = useGetItemsQuery();

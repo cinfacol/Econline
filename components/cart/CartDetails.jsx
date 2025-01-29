@@ -12,7 +12,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Currency from "@/components/ui/currency";
 import { toast } from "sonner";
-import { Button } from "@nextui-org/button";
+import { Button } from "@heroui/button";
 import AddItem from "./AddItem";
 import cloudinaryImageLoader from "@/actions/imageLoader";
 // import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";

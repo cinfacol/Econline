@@ -25,6 +25,7 @@ const ShippingForm = ({
   coupon_name,
   total_after_coupon,
 }) => {
+  const total_to_pay = parseFloat(sub_total) + parseFloat(shipping_cost);
   return (
     <section
       aria-labelledby="summary-heading"
@@ -125,7 +126,7 @@ const ShippingForm = ({
                 Order Total
               </dt>
               <dd className="text-base font-medium text-gray-900">
-                ${total_amount}
+                <Currency value={total_after_coupon} />
               </dd>
             </div>
           </>
@@ -133,7 +134,7 @@ const ShippingForm = ({
           <div className="border-t border-gray-200 pt-4 flex items-center justify-between">
             <dt className="text-base font-medium text-gray-900">Order total</dt>
             <dd className="text-base font-medium text-gray-900">
-              ${total_amount}
+              <Currency value={total_to_pay} />
             </dd>
           </div>
         )}

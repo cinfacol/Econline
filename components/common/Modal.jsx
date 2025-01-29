@@ -1,7 +1,7 @@
 "use client";
 import { useAppDispatch } from "@/redux/hooks";
 import { closeModal } from "@/redux/features/modal/modalSlice";
-import { Button } from "@nextui-org/button";
+import { Button } from "@heroui/button";
 
 const Modal = () => {
   const dispatch = useAppDispatch();
