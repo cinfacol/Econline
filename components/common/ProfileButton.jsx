@@ -11,11 +11,11 @@ import {
   MenuItems,
   Transition,
 } from "@headlessui/react";
+import { Avatar } from "@heroui/react";
 import { Fragment, useEffect, useCallback } from "react";
 import { useAppSelector, useAppDispatch } from "@/redux/hooks";
 import { logout as setLogout } from "@/redux/features/auth/authSlice";
 import { NavLink } from "@/components/common";
-import Image from "next/image";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import {
@@ -90,7 +90,7 @@ function ProfileButton() {
   const menuItems = isAuthenticated
     ? [
         {
-          label: user?.full_name,
+          label: user?.email,
           disabled: true,
         },
         {
@@ -136,12 +136,11 @@ function ProfileButton() {
           <MenuButton className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
             <span className="absolute -inset-1.5" />
             <span className="sr-only">Abrir menú de usuario</span>
-            <Image
-              className="h-8 w-8 rounded-full"
-              width={44}
-              height={44}
+            <Avatar
               src={profile_photo || "/images/profile_default.png"}
               alt={full_name || "Usuario"}
+              radius="lg"
+              isBordered
             />
           </MenuButton>
           <Transition

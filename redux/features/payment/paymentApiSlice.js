@@ -1,6 +1,5 @@
 import { createEntityAdapter } from "@reduxjs/toolkit";
-import { apiAppSlice } from "@/redux/api/apiAppSlice";
-
+import { apiSlice } from "@/redux/api/apiSlice";
 // Adaptador para la estructura de pagos
 const paymentAdapter = createEntityAdapter({
   sortComparer: (a, b) => b.date.localeCompare(a.date),
@@ -41,44 +40,31 @@ const createPaymentData = ({
 });
 
 // Slice de la API de pagos
-export const paymentApiSlice = apiAppSlice.injectEndpoints({
+export const paymentApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getPaymentTotal: builder.query({
-      query: ({ token, shipping_id }) => ({
-        url: `/payments/get-payment-total`,
+      query: ({ shipping_id }) => ({
+        url: `/payments/get-payment-total/?${shipping_id}`,
         method: "GET",
         params: { shipping_id },
-        headers: {
-          ...COMMON_HEADERS,
-          Authorization: `JWT ${token}`,
-        },
       }),
-      transformResponse: (response) => response.total,
       providesTags: ["Payment"],
     }),
 
     getClientToken: builder.query({
-      query: ({ token }) => ({
+      query: () => ({
         url: "/payments/get-token",
         method: "GET",
-        headers: {
-          ...COMMON_HEADERS,
-          Authorization: `JWT ${token}`,
-        },
       }),
-      transformResponse: (response) => response.token,
+      transformResponse: (response, meta, arg) => response.braintree_token,
       providesTags: ["Payment"],
     }),
 
     processPayment: builder.mutation({
-      query: ({ token, paymentData }) => ({
+      query: ({ paymentData }) => ({
         url: "/payments/make-payment",
         method: "POST",
         body: createPaymentData(paymentData),
-        headers: {
-          ...COMMON_HEADERS,
-          Authorization: `JWT ${token}`,
-        },
       }),
       transformResponse: (response) => response.data,
       transformErrorResponse: (error) => {
@@ -92,13 +78,9 @@ export const paymentApiSlice = apiAppSlice.injectEndpoints({
     }),
 
     verifyPayment: builder.query({
-      query: ({ token, paymentId }) => ({
+      query: ({ paymentId }) => ({
         url: `/payments/verify-payment/${paymentId}`,
         method: "GET",
-        headers: {
-          ...COMMON_HEADERS,
-          Authorization: `JWT ${token}`,
-        },
       }),
       transformResponse: (response) => response.status,
       providesTags: ["Payment"],

@@ -1,9 +1,12 @@
+"use client";
+
 import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
 import { TicketIcon } from "@heroicons/react/24/outline";
 import { Fragment } from "react";
 import Link from "next/link";
 import { CheckoutForm } from "@/components/forms";
 import Currency from "@/components/ui/currency";
+import { useGetPaymentTotalQuery } from "@/redux/features/payment/paymentApiSlice";
 
 const ShippingForm = ({
   onChange,
@@ -11,8 +14,6 @@ const ShippingForm = ({
   user,
   // profile,
   renderShipping,
-  sub_total,
-  original_price,
   total_amount,
   total_compare_amount,
   estimated_tax,
@@ -25,7 +26,12 @@ const ShippingForm = ({
   coupon_name,
   total_after_coupon,
 }) => {
+  const { data } = useGetPaymentTotalQuery(shipping_id);
+  console.log("data", data);
+  console.log("shipping_id", shipping_id);
+  const sub_total = data?.original_price;
   const total_to_pay = parseFloat(sub_total) + parseFloat(shipping_cost);
+
   return (
     <section
       aria-labelledby="summary-heading"

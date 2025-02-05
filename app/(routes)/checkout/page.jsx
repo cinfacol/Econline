@@ -5,9 +5,7 @@ export const metadata = {
   description: "Products Page in a Modern Ecommerce App",
 };
 
-async function Checkout({ params }) {
-  const value = (await params).value;
-
+async function Checkout() {
   return (
     <>
       <div className="bg-white">
@@ -15,7 +13,7 @@ async function Checkout({ params }) {
           <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
             Check Out
           </h1>
-          <CheckoutDetails title={metadata.title} total={value} />
+          <CheckoutDetails />
         </div>
       </div>
     </>

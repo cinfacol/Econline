@@ -2,47 +2,42 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useAppSelector } from "@/redux/hooks";
+import cloudinaryImageLoader from "@/actions/imageLoader";
 import { useRouter } from "next/navigation";
+import { useAppSelector } from "@/redux/hooks";
 import { useDispatch } from "react-redux";
 import Currency from "@/components/ui/currency";
+import ShippingForm from "@/components/checkout/ShippingForm";
+import { Spinner } from "@/components/common";
 // import { Button } from "@heroui/button";
+import { useRetrieveUserQuery } from "@/redux/features/auth/authApiSlice";
 import {
   useGetItemsQuery,
   useGetShippingOptionsQuery,
 } from "@/redux/features/cart/cartApiSlice";
-import { useRetrieveUserQuery } from "@/redux/features/auth/authApiSlice";
-import { useProcessPaymentMutation } from "@/redux/features/payment/paymentApiSlice";
-import { useGetClientTokenQuery } from "@/redux/features/payment/paymentApiSlice";
-import { useGetPaymentTotalQuery } from "@/redux/features/payment/paymentApiSlice";
-import cloudinaryImageLoader from "@/actions/imageLoader";
-// import DropIn from "braintree-web-drop-in-react";
-import { toast } from "sonner";
-
-import ShippingForm from "@/components/checkout/ShippingForm";
 import { useCheckCouponMutation } from "@/redux/features/cart/cartApiSlice";
-/* import {
-  get_payment_total,
-  get_client_token,
-  process_payment,
-} from "../../features/services/payment/payment.service"; */
-import { Spinner } from "@/components/common";
-// import { countries } from "../../helpers/fixedCountries";
+import {
+  useGetClientTokenQuery,
+  useProcessPaymentMutation,
+} from "@/redux/features/payment/paymentApiSlice";
+import DropIn from "braintree-web-drop-in-react";
+import { toast } from "sonner";
+import { countries } from "@/helpers/fixedCountries";
 
-const CheckoutDetails = ({ title, total }) => {
+const CheckoutDetails = () => {
   const dispatch = useDispatch();
   const [checkCoupon] = useCheckCouponMutation();
   const router = useRouter();
-  const { data: user, isLoading: loading, isFetching } = useRetrieveUserQuery();
-  const { data, isSuccess, isLoading, error } = useGetItemsQuery();
-  const {
-    data: dat,
-    isSuccess: isSuc,
-    isLoading: isLoad,
-    error: erro,
-  } = useGetShippingOptionsQuery("shipping");
+  const { data: user } = useRetrieveUserQuery();
+  const { data } = useGetItemsQuery();
+  const { data: shippingData } = useGetShippingOptionsQuery("shipping");
+
+  const { data: tokenData } = useGetClientTokenQuery();
+
+  const clientToken = tokenData;
+
   // Destructure data and handle empty cart case concisely
-  const { ids: Ids = [], entities: Enty = {} } = dat || {};
+  const { ids: Ids = [], entities: Enty = {} } = shippingData || {};
 
   // Calculate shipping items
   const shipping = Ids.map((id) => Enty[id] || null).filter(Boolean);
@@ -56,10 +51,10 @@ const CheckoutDetails = ({ title, total }) => {
   // const refresh = useSelector(state => state.auth.refresh)
   const { isAuthenticated } = useAppSelector((state) => state.auth);
   // const loading = useSelector((state) => state.payment.status);
+  const loading = false;
   /* const {
     clientToken,
     made_payment,
-    original_price,
     total_after_coupon,
     total_amount,
     total_compare_amount,
@@ -211,7 +206,7 @@ const CheckoutDetails = ({ title, total }) => {
   };
 
   const renderPaymentInfo = () => {
-    /* if (!clientToken) {
+    if (!clientToken) {
       if (!isAuthenticated) {
         <Link
           href="/auth/login"
@@ -252,7 +247,7 @@ const CheckoutDetails = ({ title, total }) => {
           </div>
         </>
       );
-    } */
+    }
   };
 
   // if (made_payment) return router.push("/thankyou");
@@ -275,7 +270,7 @@ const CheckoutDetails = ({ title, total }) => {
               >
                 <div className="space-y-4 md:flex md:items-center md:justify-between md:gap-6 md:space-y-0">
                   <Link
-                    href={`/product/${Item?.inventory?.id}`}
+                    href={`/product/${inventoryId}`}
                     className="shrink-0 md:order-1"
                   >
                     <Image
@@ -316,7 +311,7 @@ const CheckoutDetails = ({ title, total }) => {
 
                   <div className="w-full min-w-0 flex-1 space-y-4 md:order-2 md:max-w-md">
                     <Link
-                      href={`/product/${Item?.inventory?.id}`}
+                      href={`/product/${inventoryId}`}
                       className="text-base font-medium text-gray-900 hover:underline dark:text-white"
                     >
                       <span className="px-2 font-semibold text-lg">
@@ -344,13 +339,11 @@ const CheckoutDetails = ({ title, total }) => {
         state_province_region={state_province_region}
         postal_zip_code={postal_zip_code}
         telephone_number={telephone_number}
-        // countries={countries}
+        countries={countries}
         onChange={onChange}
         // buy={buy}
         user={user}
         renderShipping={renderShipping}
-        sub_total={total}
-        // original_price={original_price}
         // total_amount={total_amount}
         // total_after_coupon={total_after_coupon}
         // total_compare_amount={total_compare_amount}

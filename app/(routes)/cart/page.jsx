@@ -39,7 +39,7 @@ const CartPage = async () => {
 
   return (
     <Container>
-      <CartDetails title={metadata.title} />
+      <CartDetails />
     </Container>
   );
 };

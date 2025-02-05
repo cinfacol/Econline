@@ -18,7 +18,7 @@ import cloudinaryImageLoader from "@/actions/imageLoader";
 // import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
 import { useCallback } from "react";
 
-export default function CartDetails({ title }) {
+export default function CartDetails() {
   const router = useRouter();
   const { data, isSuccess, isLoading, error } = useGetItemsQuery();
   const [removeItem, { isLoading: loading }] = useRemoveItemMutation();
@@ -92,7 +92,7 @@ export default function CartDetails({ title }) {
       <section className="bg-white py-8 antialiased dark:bg-gray-900 md:py-16">
         <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">
-            {title}
+            {`Productos en el carrito (${items.length})`}
           </h2>
 
           {ids.length === 0 ? (
@@ -583,7 +583,7 @@ export default function CartDetails({ title }) {
                       variant="shadow"
                       aria-label="Proceed to Checkout"
                       className="font-bold"
-                      onPress={() => router.push(`/checkout/${total}`)}
+                      onPress={() => router.push("/checkout/")}
                     >
                       Proceed to Checkout
                     </Button>
