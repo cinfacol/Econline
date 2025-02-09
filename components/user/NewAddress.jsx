@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { countries } from "countries-list";
+import { Button } from "@heroui/button";
 
 const NewAddress = () => {
   // const { error, addNewAddress, clearErrors } = useContext(AuthContext);
@@ -9,6 +10,7 @@ const NewAddress = () => {
   const countriesList = Object.values(countries);
 
   const [address_line_1, setAddress_line_1] = useState("");
+  const [address_line_2, setAddress_line_2] = useState("");
   const [city, setCity] = useState("");
   const [state_province_region, setState_province_region] = useState("");
   const [postal_zip_code, setPostal_zip_code] = useState("");
@@ -55,10 +57,20 @@ const NewAddress = () => {
                       onChange={(e) => setAddress_line_1(e.target.value)}
                     />
                   </div>
+                  <div className="mb-4 md:col-span-2">
+                    <label className="block mb-1"> Address 2 (opcional) </label>
+                    <input
+                      className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
+                      type="text"
+                      placeholder="Type your alternative address"
+                      value={address_line_2}
+                      onChange={(e) => setAddress_line_2(e.target.value)}
+                    />
+                  </div>
 
                   <div className="grid md:grid-cols-2 gap-x-3">
                     <div className="mb-4 md:col-span-1">
-                      <label className="block mb-1"> City </label>
+                      <label className="block mb-1"> City * </label>
                       <input
                         className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
                         type="text"
@@ -69,7 +81,7 @@ const NewAddress = () => {
                     </div>
 
                     <div className="mb-4 md:col-span-1">
-                      <label className="block mb-1"> State </label>
+                      <label className="block mb-1"> State * </label>
                       <input
                         className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
                         type="text"
@@ -84,7 +96,7 @@ const NewAddress = () => {
 
                   <div className="grid md:grid-cols-2 gap-x-2">
                     <div className="mb-4 md:col-span-1">
-                      <label className="block mb-1"> ZIP code </label>
+                      <label className="block mb-1"> ZIP code * </label>
                       <input
                         className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
                         type="number"
@@ -95,7 +107,7 @@ const NewAddress = () => {
                     </div>
 
                     <div className="mb-4 md:col-span-1">
-                      <label className="block mb-1"> Phone No </label>
+                      <label className="block mb-1"> Phone Number * </label>
                       <input
                         className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
                         type="number"
@@ -107,7 +119,7 @@ const NewAddress = () => {
                   </div>
 
                   <div className="mb-4 md:col-span-2">
-                    <label className="block mb-1"> country </label>
+                    <label className="block mb-1"> country * </label>
                     <select
                       className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
                       value={country_region}
@@ -121,12 +133,15 @@ const NewAddress = () => {
                     </select>
                   </div>
 
-                  <button
+                  <Button
+                    color="warning"
+                    variant="shadow"
+                    aria-label="Add new address"
+                    className="font-bold"
                     type="submit"
-                    className="my-2 px-4 py-2 text-center w-full inline-block text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700"
                   >
-                    Add
-                  </button>
+                    Add new address
+                  </Button>
                 </form>
               </div>
             </main>

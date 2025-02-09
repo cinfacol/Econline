@@ -6,6 +6,7 @@ import Link from "next/link";
 import { List, Spinner } from "@/components/common";
 import { Avatar } from "@heroui/react";
 import { Button } from "@heroui/button";
+import UserAddresses from "@/components/user/Addresses";
 
 function RetrieveUser() {
   const { data: user, isLoading, isFetching } = useRetrieveUserQuery();
@@ -65,7 +66,7 @@ function RetrieveUser() {
 
           <hr className="my-4" />
 
-          {/* <UserAddresses addresses={addresses} /> */}
+          <UserAddresses />
 
           <Link href="/address/new">
             <Button

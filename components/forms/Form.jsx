@@ -1,5 +1,6 @@
 import { Input } from "@/components/forms";
 import { Spinner } from "@/components/common";
+import { Button } from "@heroui/button";
 
 export default function Form({
   config,
@@ -26,13 +27,16 @@ export default function Form({
       ))}
 
       <div>
-        <button
+        <Button
+          color="primary"
+          variant="shadow"
+          aria-label="Add new address"
+          className="font-bold"
           type="submit"
-          className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
           disabled={isLoading}
         >
           {isLoading ? <Spinner sm /> : `${btnText}`}
-        </button>
+        </Button>
       </div>
     </form>
   );

@@ -22,7 +22,7 @@ import {
 } from "@/redux/features/payment/paymentApiSlice";
 import DropIn from "braintree-web-drop-in-react";
 import { toast } from "sonner";
-import { countries } from "@/helpers/fixedCountries";
+import { countries } from "@/utils/countries";
 
 const CheckoutDetails = () => {
   const dispatch = useDispatch();
