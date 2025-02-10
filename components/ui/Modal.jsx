@@ -7,7 +7,7 @@ import {
 import { X } from "lucide-react";
 import { Fragment } from "react";
 
-import IconButton from "@/components/ui/icon-button";
+import { IconButton } from "@/components/ui";
 
 const Modal = ({ open, onClose, children }) => {
   return (

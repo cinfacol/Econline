@@ -3,7 +3,7 @@
 import { ShoppingCartIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
 import { useGetItemsQuery } from "@/redux/features/cart/cartApiSlice";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/common";
 
 export default function CartActions() {

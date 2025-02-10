@@ -1,9 +1,9 @@
-import Container from "@/components/ui/container";
+import { Container } from "@/components/ui";
 import CommonCats from "@/components/Categories/CommonCats";
 
 export const revalidate = 0;
 
-const CategoryPage = async props => {
+const CategoryPage = async (props) => {
   const params = await props.params;
   const categoryId = params.categoryId;
 

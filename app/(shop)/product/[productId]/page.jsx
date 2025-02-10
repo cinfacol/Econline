@@ -1,7 +1,7 @@
 import Gallery from "@/components/gallery";
 import Info from "@/components/inventories/info";
 import SuggestedProducts from "@/components/inventories/SuggestedProducts";
-import Container from "@/components/ui/container";
+import { Container } from "@/components/ui";
 import getAuthCookie from "@/lib/cookies";
 
 // recibe como params el id del producto

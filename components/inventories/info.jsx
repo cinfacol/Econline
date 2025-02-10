@@ -2,7 +2,7 @@
 
 import { HeartIcon, ShoppingCart } from "lucide-react";
 
-import Currency from "@/components/ui/currency";
+import { Currency } from "@/components/ui";
 import { Button } from "@heroui/button";
 import StarRatings from "react-star-ratings";
 import { useGetProductQuery } from "@/redux/features/inventories/inventoriesApiSlice";

@@ -26,7 +26,7 @@ import { toast } from "sonner";
 import Image from "next/image";
 import Link from "next/link";
 import { useAppSelector } from "@/redux/hooks";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { useRouter } from "next/navigation";
 
 const navigation = {

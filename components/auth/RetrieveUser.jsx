@@ -3,31 +3,16 @@
 import { useRetrieveUserQuery } from "@/redux/features/auth/authApiSlice";
 import { MapPinPlus } from "lucide-react";
 import Link from "next/link";
-import { List, Spinner } from "@/components/common";
+import { Spinner } from "@/components/common";
 import { Avatar } from "@heroui/react";
 import { Button } from "@heroui/button";
 import UserAddresses from "@/components/user/Addresses";
 
 function RetrieveUser() {
-  const { data: user, isLoading, isFetching } = useRetrieveUserQuery();
+  const { data: user, isLoading } = useRetrieveUserQuery();
   const { profile_photo, full_name, email } = user || {};
 
-  const config = [
-    {
-      label: "First Name",
-      value: user?.first_name,
-    },
-    {
-      label: "Last Name",
-      value: user?.last_name,
-    },
-    {
-      label: "Email",
-      value: user?.email,
-    },
-  ];
-
-  if (isLoading || isFetching) {
+  if (isLoading) {
     return (
       <div className="flex justify-center my-8">
         <Spinner lg />
@@ -45,7 +30,6 @@ function RetrieveUser() {
         </div>
       </header>
       <main className="mx-auto max-w-7xl py-6 my-8 sm:px-6 lg:px-8">
-        {/* <List config={config} /> */}
         <article className="border border-gray-200 bg-white shadow-sm rounded mb-5 p-3 lg:p-5">
           <figure className="flex items-start sm:items-center">
             <div className="relative">
@@ -68,7 +52,7 @@ function RetrieveUser() {
 
           <UserAddresses />
 
-          <Link href="/address/new">
+          <Link href="/dashboard/newAddress">
             <Button
               color="warning"
               variant="shadow"

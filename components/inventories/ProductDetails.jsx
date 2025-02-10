@@ -1,7 +1,7 @@
 "use client";
 
 import { useGetInventoriesQuery } from "@/redux/features/inventories/inventoriesApiSlice";
-import { Spinner } from "@/components/common";
+import { Skeleton } from "@/components/ui";
 
 const InventoryDetails = (params) => {
   const productId = params.params?.productId;
@@ -17,7 +17,7 @@ const InventoryDetails = (params) => {
 
   let content;
   if (isLoading) {
-    content = <Spinner lg />;
+    content = <Skeleton />;
   } else if (isError) {
     content = <p>{error}</p>;
   } else if (isSuccess) {

@@ -2,7 +2,6 @@ import { Navbar, Footer } from "@/components/common";
 import ModalProvider from "@/providers/modal-provider";
 import { Setup } from "@/components/utils";
 import CustomProvider from "@/redux/provider";
-// import { NextUIProvider } from "@nextui-org/system";
 import { HerouiProviders } from "@/providers/heroui-provider";
 import { Urbanist } from "next/font/google";
 import "@/styles/globals.css";

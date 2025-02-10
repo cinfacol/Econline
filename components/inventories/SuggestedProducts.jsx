@@ -1,11 +1,10 @@
 "use client";
 
-import NoResults from "@/components/ui/no-results";
+import { NoResults, Skeleton } from "@/components/ui";
 import {
   useGetInventoriesByCategoryQuery,
   useGetProductQuery,
 } from "@/redux/features/inventories/inventoriesApiSlice";
-import Loading from "@/components/inventories/loading";
 import ProductCard from "./productCard";
 
 const SuggestedProducts = ({ title, inventoryId, auth }) => {
@@ -23,7 +22,7 @@ const SuggestedProducts = ({ title, inventoryId, auth }) => {
   const { ids = [], entities = {} } = category || {};
 
   // Handle loading and error states
-  if (isLoading) return <Loading />;
+  if (isLoading) return <Skeleton />;
   if (error) return <p>Error: {error.message}</p>;
 
   return (

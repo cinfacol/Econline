@@ -1,6 +1,5 @@
-// import dynamic from "next/dynamic";
 import InventoriesList from "@/components/inventories/InventoriesList";
-import Container from "@/components/ui/container";
+import { Container } from "@/components/ui";
 import { RadioButtonCategoryGroup } from "@/components/common/RadioButtonCategoryGroup";
 import getAuthCookie from "@/lib/cookies";
 import { Suspense } from "react";
@@ -17,17 +16,6 @@ export const metadata = {
     images: ["/og-image.jpg"],
   },
 };
-
-// Lazy loading de componentes
-/* const InventoriesList = dynamic(
-  () => import("@/components/inventories/InventoriesList"),
-  {
-    loading: () => (
-      <div className="h-12 bg-gray-100 animate-pulse rounded-lg" />
-    ),
-    ssr: true,
-  }
-); */
 
 export default async function Home() {
   const auth = await getAuthCookie();
@@ -61,9 +49,9 @@ export default async function Home() {
       </div>
       <div className="space-y-10 pb-10">
         <div className="flex flex-col gap-y-8 px-4 sm:px-6 lg:px-8">
-          <Suspense fallback={<Spinner />}>
-            <InventoriesList title={metadata.title} auth={access} />
-          </Suspense>
+          {/* <Suspense fallback={<Spinner />}> */}
+          <InventoriesList title={metadata.title} auth={access} />
+          {/* </Suspense> */}
         </div>
       </div>
     </Container>

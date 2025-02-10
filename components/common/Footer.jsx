@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useGetCategoriesQuery } from "@/redux/features/categories/categoriesApiSlice";
 import CategoryLinkFooter from "@/components/Categories/CategoryLinkFooter";
-import NoResults from "@/components/ui/no-results";
+import { NoResults } from "@/components/ui";
 
 const navigation = {
   social: [

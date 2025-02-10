@@ -5,7 +5,7 @@ import { TicketIcon } from "@heroicons/react/24/outline";
 import { Fragment } from "react";
 import Link from "next/link";
 import { CheckoutForm } from "@/components/forms";
-import Currency from "@/components/ui/currency";
+import { Currency } from "@/components/ui";
 import { useGetPaymentTotalQuery } from "@/redux/features/payment/paymentApiSlice";
 
 const ShippingForm = ({

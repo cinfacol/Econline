@@ -1,10 +1,9 @@
 "use client";
 
-import NoResults from "@/components/ui/no-results";
+import { NoResults, Skeleton } from "@/components/ui";
 import { useGetInventoriesQuery } from "@/redux/features/inventories/inventoriesApiSlice";
 import ProductCard from "./productCard";
 import { useAppSelector } from "@/redux/hooks";
-import ProductSkeleton from "@/components/ui/ProductSkeleton";
 
 export default function InventoriesList({ title, auth }) {
   const searchTerm = useAppSelector((state) => state?.inventory?.searchTerm);
@@ -17,27 +16,26 @@ export default function InventoriesList({ title, auth }) {
     categoryTerm,
   });
 
-  // Early return for loading and error states
+  // Destructure data and handle empty inventory case concisely
+  const { ids = [] } = data || {}; // Default to empty array
+  const { entities = [] } = data || {}; // Default to empty array
+
   if (isLoading) {
     return (
       <section>
         <div className="space-y-4">
+          <h3 className="font-bold text-3xl sr-only">{title}</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {[...Array(8)].map((_, index) => (
-              <ProductSkeleton key={index} />
+            {[...Array(4)].map((_, index) => (
+              <Skeleton key={index} />
             ))}
           </div>
         </div>
       </section>
     );
-  }
-  if (error) return <p>Error: {error?.message}</p>;
-
-  // Destructure data and handle empty inventory case concisely
-  const { ids = [] } = data || {}; // Default to empty array
-  const { entities = [] } = data || {}; // Default to empty array
-
-  if (isSuccess)
+  } else if (error) {
+    return <p>Error: {error?.message}</p>;
+  } else if (isSuccess) {
     return (
       <section>
         <div className="space-y-4">
@@ -52,4 +50,5 @@ export default function InventoriesList({ title, auth }) {
         </div>
       </section>
     );
+  }
 }

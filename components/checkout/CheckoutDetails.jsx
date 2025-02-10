@@ -6,10 +6,9 @@ import cloudinaryImageLoader from "@/actions/imageLoader";
 import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/redux/hooks";
 import { useDispatch } from "react-redux";
-import Currency from "@/components/ui/currency";
+import { Currency } from "@/components/ui";
 import ShippingForm from "@/components/checkout/ShippingForm";
 import { Spinner } from "@/components/common";
-// import { Button } from "@heroui/button";
 import { useRetrieveUserQuery } from "@/redux/features/auth/authApiSlice";
 import {
   useGetItemsQuery,

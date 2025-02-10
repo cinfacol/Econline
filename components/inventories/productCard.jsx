@@ -5,7 +5,7 @@ import { Expand, ShoppingCart } from "lucide-react";
 import { useRouter } from "next/navigation";
 import cloudinaryImageLoader from "@/actions/imageLoader";
 
-import Currency from "@/components/ui/currency";
+import { Currency } from "@/components/ui";
 import { Button } from "@heroui/button";
 import StarRatings from "react-star-ratings";
 import usePreviewModal from "@/hooks/use-preview-modal";

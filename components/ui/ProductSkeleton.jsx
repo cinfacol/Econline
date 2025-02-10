@@ -1,4 +1,4 @@
-const ProductSkeleton = () => {
+const Skeleton = () => {
   return (
     <div className="bg-white rounded-xl p-4 shadow-sm animate-pulse">
       {/* Imagen */}
@@ -22,4 +22,4 @@ const ProductSkeleton = () => {
   );
 };
 
-export default ProductSkeleton;
+export default Skeleton;

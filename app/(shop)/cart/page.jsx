@@ -1,6 +1,6 @@
 import CartDetails from "@/components/cart/CartDetails";
 import getAuthCookie from "@/lib/cookies";
-import Container from "@/components/ui/container";
+import { Container } from "@/components/ui";
 import Link from "next/link";
 
 export const metadata = {

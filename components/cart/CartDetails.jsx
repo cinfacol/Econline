@@ -1,6 +1,7 @@
 "use client";
 
 import { Spinner } from "@/components/common";
+import { Skeleton } from "@/components/ui";
 import {
   useGetItemsQuery,
   useDecQtyMutation,
@@ -10,12 +11,11 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import Currency from "@/components/ui/currency";
+import { Currency } from "@/components/ui";
 import { toast } from "sonner";
 import { Button } from "@heroui/button";
 import AddItem from "./AddItem";
 import cloudinaryImageLoader from "@/actions/imageLoader";
-// import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
 import { useCallback } from "react";
 
 export default function CartDetails() {
@@ -84,7 +84,7 @@ export default function CartDetails() {
     [decQty]
   );
 
-  if (isLoading || loading) return <Spinner lg />;
+  if (isLoading) return <Skeleton />;
   if (error) return <p>Error: {error?.data?.detail || "An error occurred"}</p>;
 
   if (isSuccess)
