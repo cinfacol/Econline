@@ -44,7 +44,7 @@ export default function InventoriesList({ title, auth }) {
             {data?.ids?.length === 0 && <NoResults title={"products"} />}
             {ids?.map((id) => {
               const Item = entities[id];
-              return <ProductCard key={Item.id} data={Item} auth={auth} />;
+              return <ProductCard key={Item.id} data={Item} />;
             })}
           </div>
         </div>
