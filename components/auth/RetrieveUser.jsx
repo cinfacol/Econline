@@ -8,9 +8,9 @@ import { Avatar } from "@heroui/react";
 import { Button } from "@heroui/button";
 import UserAddresses from "@/components/user/Addresses";
 
-function RetrieveUser() {
+function RetrieveUserInfo() {
   const { data: user, isLoading } = useRetrieveUserQuery();
-  const { profile_photo, full_name, email } = user || {};
+  const { profile_photo, full_name, email, date_joined } = user || {};
 
   if (isLoading) {
     return (
@@ -30,29 +30,28 @@ function RetrieveUser() {
         </div>
       </header>
       <main className="mx-auto max-w-7xl py-6 my-8 sm:px-6 lg:px-8">
+        <figure className="flex items-start sm:items-center">
+          <div className="relative">
+            <Avatar
+              src={profile_photo || "/images/profile_default.png"}
+              alt={full_name || "Usuario"}
+              radius="full"
+            />
+          </div>
+          <figcaption>
+            <h5 className="px-4 font-semibold text-lg">{full_name}</h5>
+            <p className="px-4 text-sm text-gray-600">
+              <b>Email: </b> {email} | <b>Joined On: </b>
+              {date_joined.substring(0, 10)}
+            </p>
+          </figcaption>
+        </figure>
+
+        <hr className="my-4" />
         <article className="border border-gray-200 bg-white shadow-sm rounded mb-5 p-3 lg:p-5">
-          <figure className="flex items-start sm:items-center">
-            <div className="relative">
-              <Avatar
-                src={profile_photo || "/images/profile_default.png"}
-                alt={full_name || "Usuario"}
-                radius="full"
-              />
-            </div>
-            <figcaption>
-              <h5 className="px-4 font-semibold text-lg">{user?.full_name}</h5>
-              <p className="px-4 text-sm text-gray-600">
-                <b>Email: </b> {user?.email} | <b>Joined On: </b>
-                {user?.date_joined.substring(0, 10)}
-              </p>
-            </figcaption>
-          </figure>
-
-          <hr className="my-4" />
-
           <UserAddresses />
 
-          <Link href="/dashboard/newAddress">
+          <Link href="/dashboard/address/new">
             <Button
               color="warning"
               variant="shadow"
@@ -71,4 +70,4 @@ function RetrieveUser() {
   );
 }
 
-export default RetrieveUser;
+export default RetrieveUserInfo;

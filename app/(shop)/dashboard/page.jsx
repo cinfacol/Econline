@@ -1,7 +1,7 @@
-import RetrieveUser from "@/components/auth/RetrieveUser";
+import RetrieveUserInfo from "@/components/auth/RetrieveUser";
 
 const DashboardPage = async () => {
-  return <RetrieveUser />;
+  return <RetrieveUserInfo />;
 };
 
 export default DashboardPage;

@@ -12,10 +12,9 @@ import { useAppSelector } from "@/redux/hooks";
 import { useRouter } from "next/navigation";
 import usePreviewModal from "@/hooks/use-preview-modal";
 
-const Info = ({ inventoryId, auth }) => {
+const Info = ({ inventoryId }) => {
   const { isAuthenticated } = useAppSelector((state) => state.auth);
   const router = useRouter();
-  const token = auth;
   const { data } = useGetProductQuery(inventoryId);
   const raters = data?.rating?.length;
   let total = 0;
@@ -109,7 +108,7 @@ const Info = ({ inventoryId, auth }) => {
       </div>
       <div className="mt-10 flex items-center gap-x-3">
         {isAuthenticated ? (
-          <AddItem data={data} access={token} ButtonComponent={true} />
+          <AddItem data={data} ButtonComponent={true} />
         ) : (
           <div>
             <Button

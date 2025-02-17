@@ -7,7 +7,7 @@ import {
 } from "@/redux/features/inventories/inventoriesApiSlice";
 import ProductCard from "./productCard";
 
-const SuggestedProducts = ({ title, inventoryId, auth }) => {
+const SuggestedProducts = ({ title, inventoryId }) => {
   const { data: product } = useGetProductQuery(inventoryId);
 
   const categorySlug = product?.product?.category?.map((cat) => cat?.slug);
@@ -34,7 +34,7 @@ const SuggestedProducts = ({ title, inventoryId, auth }) => {
           const Item = entities[id];
 
           if (Item.id !== inventoryId) {
-            return <ProductCard key={Item?.id} data={Item} auth={auth} />;
+            return <ProductCard key={Item?.id} data={Item} />;
           }
         })}
       </div>

@@ -14,11 +14,6 @@ export const cartApiSlice = apiSlice.injectEndpoints({
     getItems: builder.query({
       query: () => ({
         url: "/cart/cart-items/",
-        /* headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `JWT ${auth}`,
-        }, */
       }),
       providesTags: ["Cart"],
       transformResponse: (responseData) => {

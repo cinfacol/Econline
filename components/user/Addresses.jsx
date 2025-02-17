@@ -1,29 +1,7 @@
-import Link from "next/link";
-import { useGetAddressQuery } from "@/redux/features/address/addressApiSlice";
-import { MapPin } from "lucide-react";
+"use client";
 
-const AddressItem = ({ address }) => (
-  <Link href={`/address/${address.id}`} key={address.id}>
-    <div className="mb-5 gap-4">
-      <figure className="w-full flex align-center bg-gray-100 p-4 rounded-md cursor-pointer">
-        <div className="mr-3">
-          <span>
-            <MapPin />
-          </span>
-        </div>
-        <figcaption className="text-gray-600">
-          <p>
-            {address.address_line_1} <br /> {address.city},{" "}
-            {address.state_province_region}, {address.postal_zip_code},{" "}
-            {address.country_region}
-            <br />
-            Phone number: {address.phone_number}
-          </p>
-        </figcaption>
-      </figure>
-    </div>
-  </Link>
-);
+import AddressItem from "@/components/user/AddressItem";
+import { useGetAddressQuery } from "@/redux/features/address/addressApiSlice";
 
 const UserAddresses = () => {
   const { data, isSuccess, error, isLoading } = useGetAddressQuery();
@@ -39,8 +17,19 @@ const UserAddresses = () => {
   }
 
   if (isSuccess) {
+    if (!items.length) {
+      return (
+        <div className="pb-3">
+          <p className="text-red-600">No addresses found.</p> Please, Add new
+          Address.
+        </div>
+      );
+    }
     return (
       <>
+        <h2 className="text-2xl pb-3 font-bold tracking-tight text-gray-900">
+          Addresses ({items.length})
+        </h2>
         {items.map((address) => (
           <AddressItem key={address.id} address={address} />
         ))}
@@ -48,7 +37,7 @@ const UserAddresses = () => {
     );
   }
 
-  return null;
+  return <p>No addresses found.</p>;
 };
 
 export default UserAddresses;

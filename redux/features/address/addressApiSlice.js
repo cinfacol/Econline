@@ -58,7 +58,44 @@ export const addressApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: ["Address"],
       extraOptions: { maxRetries: 0 },
     }),
+    getAddressDetails: builder.query({
+      query: (addressId) => ({
+        url: `/auth/address/${addressId}/`,
+      }),
+      providesTags: ["Address"],
+    }),
+    editAddress: builder.mutation({
+      query: ({ id, newAddress }) => ({
+        url: `/auth/address/edit/${id}/`,
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newAddress),
+      }),
+      transformResponse: (response, meta, arg) => response,
+
+      transformErrorResponse: (response, meta, arg) => response,
+      invalidatesTags: ["Address"],
+      extraOptions: { maxRetries: 0 },
+    }),
+    deleteAddress: builder.mutation({
+      query: (addressId) => ({
+        url: `/auth/address/delete/${addressId}/`,
+        method: "DELETE",
+      }),
+      transformResponse: (response, meta, arg) => response,
+      transformErrorResponse: (response, meta, arg) => response,
+      invalidatesTags: ["Address"],
+      extraOptions: { maxRetries: 0 },
+    }),
   }),
 });
 
-export const { useGetAddressQuery, useAddAddressMutation } = addressApiSlice;
+export const {
+  useGetAddressQuery,
+  useAddAddressMutation,
+  useEditAddressMutation,
+  useGetAddressDetailsQuery,
+  useDeleteAddressMutation,
+} = addressApiSlice;
