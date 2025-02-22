@@ -9,13 +9,21 @@ import { Button } from "@heroui/button";
 import UserAddresses from "@/components/user/Addresses";
 
 function RetrieveUserInfo() {
-  const { data: user, isLoading } = useRetrieveUserQuery();
+  const { data: user, isLoading, error } = useRetrieveUserQuery();
   const { profile_photo, full_name, email, date_joined } = user || {};
 
   if (isLoading) {
     return (
       <div className="flex justify-center my-8">
         <Spinner lg />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center my-8">
+        <p className="text-red-600">Failed to load user information.</p>
       </div>
     );
   }
@@ -38,11 +46,11 @@ function RetrieveUserInfo() {
               radius="full"
             />
           </div>
-          <figcaption>
-            <h5 className="px-4 font-semibold text-lg">{full_name}</h5>
-            <p className="px-4 text-sm text-gray-600">
+          <figcaption className="ml-4">
+            <h5 className="font-semibold text-lg">{full_name}</h5>
+            <p className="text-sm text-gray-600">
               <b>Email: </b> {email} | <b>Joined On: </b>
-              {date_joined.substring(0, 10)}
+              {date_joined?.substring(0, 10)}
             </p>
           </figcaption>
         </figure>
@@ -51,19 +59,19 @@ function RetrieveUserInfo() {
         <article className="border border-gray-200 bg-white shadow-sm rounded mb-5 p-3 lg:p-5">
           <UserAddresses />
 
+          <hr className="my-4" />
+
           <Link href="/dashboard/address/new">
             <Button
               color="warning"
               variant="shadow"
               aria-label="Add new address"
-              className="font-bold"
+              className="font-bold flex items-center"
             >
-              <span>{<MapPinPlus />}</span>
+              <MapPinPlus className="mr-2" />
               Add new address
             </Button>
           </Link>
-
-          <hr className="my-4" />
         </article>
       </main>
     </>

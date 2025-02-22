@@ -1,12 +1,26 @@
 "use client";
 
 import AddressItem from "@/components/user/AddressItem";
-import { useGetAddressQuery } from "@/redux/features/address/addressApiSlice";
+import {
+  useGetAddressQuery,
+  useSetDefaultAddressMutation,
+} from "@/redux/features/address/addressApiSlice";
+import { toast } from "sonner";
 
 const UserAddresses = () => {
   const { data, isSuccess, error, isLoading } = useGetAddressQuery();
+  const [setDefaultAddress] = useSetDefaultAddressMutation();
   const { ids = [], entities = {} } = data || {};
   const items = ids.map((id) => entities[id] || null).filter(Boolean);
+
+  const handleSetDefault = async (addressId) => {
+    try {
+      await setDefaultAddress({ addressId }).unwrap();
+      toast.success("Address set as default");
+    } catch (error) {
+      toast.error("Failed to set default address");
+    }
+  };
 
   if (isLoading) {
     return <p>Loading...</p>;
@@ -31,7 +45,11 @@ const UserAddresses = () => {
           Addresses ({items.length})
         </h2>
         {items.map((address) => (
-          <AddressItem key={address.id} address={address} />
+          <AddressItem
+            key={address.id}
+            address={address}
+            onSetDefault={handleSetDefault}
+          />
         ))}
       </>
     );

@@ -1,6 +1,5 @@
 import { createEntityAdapter } from "@reduxjs/toolkit";
 import { sub } from "date-fns";
-// import { apiAppSlice } from "@/redux/api/apiAppSlice";
 import { apiSlice } from "@/redux/api/apiSlice";
 
 const addressAdapter = createEntityAdapter({
@@ -74,7 +73,6 @@ export const addressApiSlice = apiSlice.injectEndpoints({
         body: JSON.stringify(newAddress),
       }),
       transformResponse: (response, meta, arg) => response,
-
       transformErrorResponse: (response, meta, arg) => response,
       invalidatesTags: ["Address"],
       extraOptions: { maxRetries: 0 },
@@ -83,6 +81,19 @@ export const addressApiSlice = apiSlice.injectEndpoints({
       query: (addressId) => ({
         url: `/auth/address/delete/${addressId}/`,
         method: "DELETE",
+      }),
+      transformResponse: (response, meta, arg) => response,
+      transformErrorResponse: (response, meta, arg) => response,
+      invalidatesTags: ["Address"],
+      extraOptions: { maxRetries: 0 },
+    }),
+    setDefaultAddress: builder.mutation({
+      query: ({ addressId }) => ({
+        url: `/auth/address/default/${addressId}/`,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
       }),
       transformResponse: (response, meta, arg) => response,
       transformErrorResponse: (response, meta, arg) => response,
@@ -98,4 +109,5 @@ export const {
   useEditAddressMutation,
   useGetAddressDetailsQuery,
   useDeleteAddressMutation,
+  useSetDefaultAddressMutation,
 } = addressApiSlice;

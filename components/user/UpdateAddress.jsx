@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useReducer, useCallback } from "react";
 import { countries } from "@/utils/countries";
 import { toast } from "sonner";
 import {
@@ -9,17 +9,31 @@ import {
 } from "@/redux/features/address/addressApiSlice";
 import { useRouter } from "next/navigation";
 
+const initialState = (address) => ({
+  address_line_1: address?.address_line_1 || "",
+  address_line_2: address?.address_line_2 || "",
+  city: address?.city || "",
+  state_province_region: address?.state_province_region || "",
+  postal_zip_code: address?.postal_zip_code || "",
+  phone_number: address?.phone_number || "",
+  country_region: address?.country_region || "",
+});
+
+const formReducer = (state, action) => {
+  switch (action.type) {
+    case "SET_FORM_DATA":
+      return {
+        ...state,
+        [action.name]: action.value,
+      };
+    default:
+      return state;
+  }
+};
+
 const UpdateAddressPage = ({ address }) => {
   const router = useRouter();
-  const [formData, setFormData] = useState({
-    address_line_1: address?.address_line_1 || "",
-    address_line_2: address?.address_line_2 || "",
-    city: address?.city || "",
-    state_province_region: address?.state_province_region || "",
-    postal_zip_code: address?.postal_zip_code || "",
-    phone_number: address?.phone_number || "",
-    country_region: address?.country_region || "",
-  });
+  const [formData, dispatch] = useReducer(formReducer, address, initialState);
 
   const addressId = address.id;
   const user = address.user;
@@ -33,56 +47,40 @@ const UpdateAddressPage = ({ address }) => {
     { isLoading: isDeleting, isSuccess: isDeleted, error: deleteError },
   ] = useDeleteAddressMutation();
 
-  useEffect(() => {
-    if (isUpdated) {
-      toast.success("Address Updated");
-      router.push("/dashboard/");
-    }
-
-    if (updateError) {
-      toast.error(updateError.message || "Failed to update address");
-    }
-
-    if (isDeleted) {
-      toast.success("Address Deleted");
-      router.push("/dashboard/");
-    }
-
-    if (deleteError) {
-      toast.error(deleteError.message || "Failed to delete address");
-    }
-  }, [isUpdated, updateError, isDeleted, deleteError, router]);
-
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    dispatch({ type: "SET_FORM_DATA", name, value });
   };
 
-  const submitHandler = async (e) => {
-    e.preventDefault();
+  const submitHandler = useCallback(
+    async (e) => {
+      e.preventDefault();
 
-    const newAddress = {
-      user,
-      ...formData,
-    };
+      const newAddress = {
+        user,
+        ...formData,
+      };
 
-    try {
-      await editAddress({ id: addressId, newAddress }).unwrap();
-    } catch (error) {
-      toast.error("Failed to update address");
-    }
-  };
+      try {
+        await editAddress({ id: addressId, newAddress }).unwrap();
+        toast.success("Address Updated");
+        router.push("/dashboard/");
+      } catch (error) {
+        toast.error("Failed to update address");
+      }
+    },
+    [editAddress, formData, addressId, user, router]
+  );
 
-  const deleteHandler = async () => {
+  const deleteHandler = useCallback(async () => {
     try {
       await deleteAddress(addressId).unwrap();
+      toast.success("Address Deleted");
+      router.push("/dashboard/");
     } catch (error) {
       toast.error("Failed to delete address");
     }
-  };
+  }, [deleteAddress, addressId, router]);
 
   return (
     <section className="py-10">

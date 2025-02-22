@@ -4,7 +4,8 @@ import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
 import { TicketIcon } from "@heroicons/react/24/outline";
 import { Fragment } from "react";
 import Link from "next/link";
-import { CheckoutForm } from "@/components/forms";
+import AddressDefault from "@/components/user/Addressdefault";
+// import { CheckoutForm } from "@/components/forms";
 import { Currency } from "@/components/ui";
 import { useGetPaymentTotalQuery } from "@/redux/features/payment/paymentApiSlice";
 
@@ -145,15 +146,11 @@ const ShippingForm = ({
           </div>
         )}
       </dl>
-      <div onSubmit={(e) => buy(e)}>
-        <div className=" px-4 py-5  mt-4 sm:px-6">
-          <h3 className="text-lg leading-6 font-medium text-gray-900">
-            Shipping Address:
-          </h3>
-        </div>
-        <CheckoutForm />
-        {renderPaymentInfo()}
+      <div className="mt-6">
+        <AddressDefault />
       </div>
+
+      <div onSubmit={(e) => buy(e)}>{renderPaymentInfo()}</div>
     </section>
   );
 };

@@ -1,5 +1,4 @@
 export { default as Form } from "./Form";
-export { default as CheckoutForm } from "./CheckoutForm";
 export { default as Input } from "./Input";
 export { default as LoginForm } from "./LoginForm";
 export { default as PasswordResetConfirmForm } from "./PasswordResetConfirmForm";
@@ -7,4 +6,3 @@ export { default as PasswordResetForm } from "./PasswordResetForm";
 export { default as RegisterForm } from "./RegisterForm";
 export { default as AddAddressForm } from "./AddAddressForm";
 export { default as AddressForm } from "./AddressForm";
-// export { default as UpdateAddressForm } from "./UpdateAddressForm";
