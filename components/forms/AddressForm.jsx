@@ -7,6 +7,7 @@ export default function Form({
   isLoading,
   btnText,
   onChange,
+  onCheckboxChange,
   onSubmit,
 }) {
   return (
@@ -30,6 +31,13 @@ export default function Form({
                 </option>
               ))}
             </select>
+          ) : field.type === "checkbox" ? (
+            <Input
+              type="checkbox"
+              id={field.labelId}
+              checked={field.value}
+              onChange={(e) => onCheckboxChange(e, field.labelId)}
+            />
           ) : (
             <Input
               type={field.type}
@@ -39,7 +47,7 @@ export default function Form({
               placeholder={field.placeholder}
               link={field.link}
               required={field.required}
-            ></Input>
+            />
           )}
         </div>
       ))}

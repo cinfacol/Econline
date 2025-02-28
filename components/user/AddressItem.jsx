@@ -23,9 +23,9 @@ const AddressItem = ({ address, onSetDefault }) => {
     const isChecked = e.target.checked;
     if (isChecked) {
       try {
-        await setDefaultAddress({ addressId: address.id }).unwrap();
+        await setDefaultAddress({ addressId }).unwrap();
         onSetDefault(address.id);
-        toast.success("Address set as default");
+        // toast.success("Address set as default");
       } catch (error) {
         toast.error("Failed to set default address");
       }
@@ -64,7 +64,7 @@ const AddressItem = ({ address, onSetDefault }) => {
           <label className="flex items-center">
             <input
               type="checkbox"
-              checked={address.default}
+              checked={address.is_default}
               onChange={handleDefaultChange}
               className="mr-2 form-checkbox rounded-full text-blue-600"
             />

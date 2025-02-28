@@ -8,7 +8,7 @@ const AddressDefault = () => {
   const { ids = [], entities = {} } = data || {};
   const items = ids.map((id) => entities[id] || null).filter(Boolean);
 
-  const defaultAddress = items.find((address) => address.default);
+  const defaultAddress = items.find((address) => address.is_default);
   if (isLoading) {
     return <p>Loading...</p>;
   }

@@ -11,10 +11,12 @@ export default function AddAddressForm() {
     city,
     state_province_region,
     postal_zip_code,
-    phone_number,
     country_region,
+    phone_number,
+    is_default,
     isLoading,
     onChange,
+    onCheckboxChange,
     onSubmit,
   } = useAddAddress();
 
@@ -60,6 +62,18 @@ export default function AddAddressForm() {
       required: true,
     },
     {
+      labelText: "Country",
+      labelId: "country_region",
+      type: "select",
+      value: country_region,
+      default: "Colombia",
+      required: true,
+      options: countries.map((country) => ({
+        value: country.Name,
+        label: country.Name,
+      })),
+    },
+    {
       labelText: "Phone Number",
       labelId: "phone_number",
       type: "text",
@@ -68,16 +82,11 @@ export default function AddAddressForm() {
       required: true,
     },
     {
-      labelText: "Country",
-      labelId: "country_region",
-      type: "select",
-      value: country_region,
-      placeholder: "Enter your Country *",
-      required: true,
-      options: countries.map((country) => ({
-        value: country.Name,
-        label: country.Name,
-      })),
+      labelText: "Set as Default ",
+      labelId: "is_default",
+      type: "checkbox",
+      value: is_default,
+      required: false,
     },
   ];
 
@@ -87,6 +96,7 @@ export default function AddAddressForm() {
       isLoading={isLoading}
       btnText="Add New Address"
       onChange={onChange}
+      onCheckboxChange={onCheckboxChange}
       onSubmit={onSubmit}
     />
   );

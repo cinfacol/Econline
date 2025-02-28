@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import {
   useEditAddressMutation,
   useDeleteAddressMutation,
+  useSetDefaultAddressMutation,
 } from "@/redux/features/address/addressApiSlice";
 import { useRouter } from "next/navigation";
 
@@ -17,6 +18,7 @@ const initialState = (address) => ({
   postal_zip_code: address?.postal_zip_code || "",
   phone_number: address?.phone_number || "",
   country_region: address?.country_region || "",
+  is_default: address?.is_default || false,
 });
 
 const formReducer = (state, action) => {
@@ -25,6 +27,11 @@ const formReducer = (state, action) => {
       return {
         ...state,
         [action.name]: action.value,
+      };
+    case "SET_CHECKBOX":
+      return {
+        ...state,
+        [action.name]: action.checked,
       };
     default:
       return state;
@@ -46,10 +53,15 @@ const UpdateAddressPage = ({ address }) => {
     deleteAddress,
     { isLoading: isDeleting, isSuccess: isDeleted, error: deleteError },
   ] = useDeleteAddressMutation();
+  const [setDefaultAddress] = useSetDefaultAddressMutation();
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    dispatch({ type: "SET_FORM_DATA", name, value });
+    const { name, value, type, checked } = e.target;
+    if (type === "checkbox") {
+      dispatch({ type: "SET_CHECKBOX", name, checked });
+    } else {
+      dispatch({ type: "SET_FORM_DATA", name, value });
+    }
   };
 
   const submitHandler = useCallback(
@@ -63,13 +75,17 @@ const UpdateAddressPage = ({ address }) => {
 
       try {
         await editAddress({ id: addressId, newAddress }).unwrap();
+
+        if (formData.is_default) {
+          await setDefaultAddress({ addressId }).unwrap();
+        }
         toast.success("Address Updated");
         router.push("/dashboard/");
       } catch (error) {
         toast.error("Failed to update address");
       }
     },
-    [editAddress, formData, addressId, user, router]
+    [editAddress, formData, addressId, user, router, setDefaultAddress]
   );
 
   const deleteHandler = useCallback(async () => {
@@ -213,6 +229,18 @@ const UpdateAddressPage = ({ address }) => {
                       </option>
                     ))}
                   </select>
+                </div>
+                <div className="mb-4 md:col-span-2">
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      name="is_default"
+                      checked={formData.is_default}
+                      onChange={handleChange}
+                      className="mr-2"
+                    />
+                    Is Default Address
+                  </label>
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-x-3">

@@ -37,6 +37,7 @@ export const addressApiSlice = apiSlice.injectEndpoints({
         state_province_region,
         postal_zip_code,
         phone_number,
+        is_default,
       }) => ({
         url: "/auth/address/create/",
         method: "POST",
@@ -49,11 +50,12 @@ export const addressApiSlice = apiSlice.injectEndpoints({
           state_province_region,
           postal_zip_code,
           phone_number,
+          is_default,
         },
       }),
-      transformResponse: (response, meta, arg) => response.data,
+      transformResponse: (response, meta, arg) => response,
 
-      transformErrorResponse: (response, meta, arg) => response.data,
+      transformErrorResponse: (response, meta, arg) => response,
       invalidatesTags: ["Address"],
       extraOptions: { maxRetries: 0 },
     }),
