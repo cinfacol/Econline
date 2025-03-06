@@ -6,7 +6,7 @@ import {
 } from "@/redux/features/cart/cartApiSlice";
 import { ShoppingCart } from "lucide-react";
 import { toast } from "sonner";
-import { Button } from "@heroui/button";
+import { Button } from "@/components/ui/button";
 
 const AddItem = ({ data, access, ButtonComponent }) => {
   const { data: cartId } = useGetItemsQuery();
@@ -36,7 +36,6 @@ const AddItem = ({ data, access, ButtonComponent }) => {
   };
 
   const renderButton = () => {
-    // Check if buttonComponent is provided
     if (ButtonComponent) {
       return (
         <div>
@@ -44,7 +43,7 @@ const AddItem = ({ data, access, ButtonComponent }) => {
             color="primary"
             variant="shadow"
             aria-label="Add To Cart"
-            onPress={onAddToCart}
+            onClick={onAddToCart}
             className="font-bold"
           >
             Add To Cart
@@ -55,15 +54,13 @@ const AddItem = ({ data, access, ButtonComponent }) => {
         </div>
       );
     } else {
-      // Use default IconButton if no custom button provided
       return (
         <div>
           <Button
-            isIconOnly
             color="default"
-            variant="faded"
+            variant="default"
             aria-label="ShoppingCart"
-            onPress={onAddToCart}
+            onClick={onAddToCart}
           >
             {<ShoppingCart size={20} className="text-gray-600" />}
           </Button>

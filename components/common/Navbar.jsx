@@ -7,14 +7,7 @@ import {
   Dialog,
   DialogPanel,
 } from "@headlessui/react";
-import {
-  Bars3Icon,
-  MagnifyingGlassIcon,
-  BellIcon,
-  HeartIcon,
-  XMarkIcon,
-  ShoppingCartIcon,
-} from "@heroicons/react/24/outline";
+import { X, Heart, ShoppingCart, Bell, Search, Menu } from "lucide-react";
 import {
   CartActions,
   Navigation,
@@ -26,7 +19,7 @@ import { toast } from "sonner";
 import Image from "next/image";
 import Link from "next/link";
 import { useAppSelector } from "@/redux/hooks";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 
 const navigation = {
@@ -71,14 +64,11 @@ export default function Navbar() {
               <DialogPanel className="relative flex w-full max-w-xs flex-col overflow-y-auto bg-white pb-6 shadow-xl">
                 <div className="flex px-4 pb-2 pt-5">
                   <Button
-                    type="button"
-                    className="relative -m-2 inline-flex items-center justify-center rounded-md p-2 text-gray-400"
-                    variant="destructive"
+                    variant="outline"
+                    size="default"
                     onClick={() => setOpen(false)}
                   >
-                    <span className="absolute -inset-0.5" />
-                    <span className="sr-only">Close menu</span>
-                    <XMarkIcon className="h-6 w-6" aria-hidden="true" />
+                    <X />
                   </Button>
                 </div>
 
@@ -124,120 +114,113 @@ export default function Navbar() {
 
         <nav
           aria-label="Top"
-          className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"
+          className="mx-auto max-w-8xl px-4 sm:px-6 lg:px-8"
         >
           <div className="border-b border-gray-200">
-            <div className="flex h-16 items-center">
-              <Button
-                type="button"
-                className="relative rounded-md bg-white p-2 text-gray-400 lg:hidden"
-                variant="destructive"
-                onClick={() => setOpen(true)}
-              >
-                <span className="absolute -inset-0.5" />
-                <span className="sr-only">Open menu</span>
-                <Bars3Icon className="h-6 w-6" aria-hidden="true" />
-              </Button>
-
-              {/* Logo */}
-              <div className="ml-4 flex lg:ml-0">
-                <Link href="/">
-                  <span className="sr-only">Ecommerce EcOnline</span>
-                  <Image
-                    className="h-8 w-auto"
-                    src="/workflow-mark-indigo-600.svg"
-                    height={8}
-                    width={8}
-                    alt=""
-                  />
-                </Link>
-              </div>
-
-              {/* Flyout menus */}
-              <div className="flex h-full space-x-8 ">
-                <div className="hidden lg:ml-8 lg:block lg:self-stretch">
-                  <div className="flex h-full space-x-8 ">
-                    {navigation.pages.map((page) => (
-                      <Link
-                        key={page.name}
-                        href={page.href}
-                        className="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800"
-                      >
-                        {page.name}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-                <Navigation />
-              </div>
-              <div className="mx-auto hidden md:block">
-                {/* Search Bar */}
-                <ProductSearchBar />
-              </div>
-              <div className="ml-auto flex items-center">
-                {/* Favorites */}
+            <div className="flex flex-col gap-6">
+              <div className="flex flex-wrap items-center gap-2 md:flex-row h-20">
                 <Button
-                  type="button"
-                  className="relative rounded-full p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
-                  variant="destructive"
+                  variant="outline"
+                  className="relative rounded-md bg-white p-2 text-gray-400 lg:hidden"
+                  size="default"
+                  onClick={() => setOpen(true)}
                 >
-                  <Link href="/" className="text-gray-400 hover:text-gray-500">
-                    <span className="sr-only">Favorites</span>
-                    <HeartIcon className="h-6 w-6" aria-hidden="true" />
-                  </Link>
+                  <span className="absolute -inset-0.5" />
+                  <span className="sr-only">Open menu</span>
+                  <Menu />
                 </Button>
-                {/* Search */}
-                <div className="flex lg:hidden">
-                  <Link
-                    href="/"
-                    className="pl-1 text-gray-400 hover:text-gray-500"
-                  >
-                    <span className="sr-only">Search</span>
-                    <MagnifyingGlassIcon
-                      className="h-6 w-6"
-                      aria-hidden="true"
+                {/* Logo */}
+                <div className="ml-4 flex lg:ml-0">
+                  <Link href="/">
+                    <span className="sr-only">Ecommerce EcOnline</span>
+                    <Image
+                      className="h-8 w-auto"
+                      src="/workflow-mark-indigo-600.svg"
+                      height={8}
+                      width={8}
+                      alt=""
                     />
                   </Link>
                 </div>
-                {/* Cart */}
-                {isAuthenticated ? (
-                  <CartActions />
-                ) : (
-                  <div className="flex">
-                    <Button
-                      onClick={() => {
-                        toast.warning("You must logged in first");
-                        router.push("/auth/login");
-                      }}
-                      className="text-gray-400 hover:text-gray-500"
-                      variant="destructive"
-                    >
-                      <span className="sr-only">items in cart, view bag</span>
-                      <ShoppingCartIcon
-                        className="h-6 w-6"
-                        aria-hidden="true"
-                      />
-                      <span className="ml-1 text-sm font-medium text-gray-400">
-                        0
-                      </span>
-                    </Button>
-                  </div>
-                )}
 
-                {/* Notifications */}
-                <Button
-                  type="button"
-                  className="relative rounded-full p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
-                  variant="destructive"
-                >
-                  <Link href="/" className="text-gray-400 hover:text-gray-500">
-                    <span className="absolute -inset-1.5" />
-                    <span className="sr-only">View notifications</span>
-                    <BellIcon className="h-6 w-6" aria-hidden="true" />
-                  </Link>
-                </Button>
-                {/* profileButton */}
-                <ProfileButton />
+                {/* Flyout menus */}
+                <div className="flex h-full space-x-8 ">
+                  <div className="hidden lg:ml-8 lg:block lg:self-stretch">
+                    <div className="flex h-full space-x-8 ">
+                      {navigation.pages.map((page) => (
+                        <Link
+                          key={page.name}
+                          href={page.href}
+                          className="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800"
+                        >
+                          {page.name}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                  <Navigation />
+                </div>
+                <div className="mx-auto hidden md:block">
+                  {/* Search Bar */}
+                  <ProductSearchBar />
+                </div>
+                <div className="ml-auto flex items-center">
+                  {/* Favorites */}
+                  <Button variant="outline" size="lg">
+                    <Link
+                      href="/"
+                      className="text-gray-400 hover:text-gray-500"
+                    >
+                      <span className="sr-only">Favorites</span>
+                      <Heart />
+                    </Link>
+                  </Button>
+                  {/* Search */}
+                  <div className="flex lg:hidden">
+                    <Link
+                      href="/"
+                      className="pl-1 text-gray-400 hover:text-gray-500"
+                    >
+                      <span className="sr-only">Search</span>
+                      <Search />
+                    </Link>
+                  </div>
+                  {/* Cart */}
+                  {isAuthenticated ? (
+                    <CartActions />
+                  ) : (
+                    <div className="relative flex">
+                      <Button
+                        variant="outline"
+                        className="text-gray-400 hover:text-gray-500 cursor-pointer"
+                        size="lg"
+                        onClick={() => {
+                          toast.warning("You must logged in first");
+                          router.push("/auth/login");
+                        }}
+                      >
+                        <span className="sr-only">items in cart, view bag</span>
+                        <ShoppingCart />
+                        <span className="absolute top-2 right-0 inline-flex items-center justify-center px-2 py-1 mr-3 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-400 rounded-full">
+                          0
+                        </span>
+                      </Button>
+                    </div>
+                  )}
+
+                  {/* Notifications */}
+                  <Button variant="outline" size="lg">
+                    <Link
+                      href="/"
+                      className="text-gray-400 hover:text-gray-500"
+                    >
+                      <span className="sr-only">View notifications</span>
+                      <Bell />
+                    </Link>
+                  </Button>
+                  {/* profileButton */}
+                  <ProfileButton />
+                </div>
               </div>
             </div>
           </div>

@@ -3,6 +3,7 @@
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { setSearchTerm } from "@/redux/features/inventories/inventorySlice";
 import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { Search } from "lucide-react";
 
 const ProductSearchBar = () => {
   const dispatch = useAppDispatch();
@@ -25,12 +26,12 @@ const ProductSearchBar = () => {
         placeholder="Search for products..."
       />
       {searchTerm ? (
-        <XMarkIcon
+        <Search
           onClick={handleClearInput}
           className="w-5 h-5 hover:text-red-500 duration-200 hover:cursor-pointer"
         />
       ) : (
-        <MagnifyingGlassIcon className="w-5 h-5 hover:cursor-pointer" />
+        <Search className="w-5 h-5 hover:cursor-pointer" />
       )}
     </div>
   );

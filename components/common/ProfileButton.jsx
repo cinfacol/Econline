@@ -15,7 +15,7 @@ import { Fragment, useEffect, useCallback, useMemo } from "react";
 import { useAppSelector, useAppDispatch } from "@/redux/hooks";
 import { logout as setLogout } from "@/redux/features/auth/authSlice";
 import { NavLink } from "@/components/common";
-import Image from "next/image";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import {
@@ -139,7 +139,6 @@ function ProfileButton() {
         onClick(e);
       }
       if (href) {
-        // Validar y sanitizar la URL antes de redirigir
         const allowedUrls = [
           "/dashboard",
           "/profile",
@@ -164,13 +163,13 @@ function ProfileButton() {
           <MenuButton className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 cursor-pointer">
             <span className="absolute -inset-1.5" />
             <span className="sr-only">Abrir menú de usuario</span>
-            <Image
-              className="h-8 w-8 rounded-full"
-              src={user?.profile_photo || "/images/profile_default.png"}
-              alt={user?.full_name || "Usuario"}
-              width={50}
-              height={50}
-            />
+            <Avatar>
+              <AvatarImage
+                src={user?.profile_photo || "/images/profile_default.png"}
+                alt={user?.full_name || "Usuario"}
+              />
+              <AvatarFallback>CN</AvatarFallback>
+            </Avatar>
           </MenuButton>
           <Transition
             as={Fragment}
