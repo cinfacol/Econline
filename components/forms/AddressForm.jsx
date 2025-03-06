@@ -33,7 +33,7 @@ export default function Form({
             </select>
           ) : field.type === "checkbox" ? (
             <Input
-              type="checkbox"
+              type={field.type}
               id={field.labelId}
               checked={field.value}
               onChange={(e) => onCheckboxChange(e, field.labelId)}

@@ -2,7 +2,7 @@
 
 import { useRetrieveUserQuery } from "@/redux/features/auth/authApiSlice";
 import { Spinner } from "@/components/common";
-import { Avatar } from "@heroui/react";
+import Image from "next/image";
 
 function RetrieveUserInfo() {
   const { data: user, isLoading, error } = useRetrieveUserQuery();
@@ -28,10 +28,12 @@ function RetrieveUserInfo() {
     <>
       <figure className="flex items-start sm:items-center">
         <div className="relative">
-          <Avatar
+          <Image
+            className="h-12 w-12 rounded-full"
             src={profile_photo || "/images/profile_default.png"}
             alt={full_name || "Usuario"}
-            radius="full"
+            width={40}
+            height={40}
           />
         </div>
         <figcaption className="ml-4">

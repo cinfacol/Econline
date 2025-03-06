@@ -11,11 +11,11 @@ import {
   MenuItems,
   Transition,
 } from "@headlessui/react";
-import { Avatar } from "@heroui/react";
-import { Fragment, useEffect, useCallback } from "react";
+import { Fragment, useEffect, useCallback, useMemo } from "react";
 import { useAppSelector, useAppDispatch } from "@/redux/hooks";
 import { logout as setLogout } from "@/redux/features/auth/authSlice";
 import { NavLink } from "@/components/common";
+import Image from "next/image";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import {
@@ -29,6 +29,7 @@ import {
 import classNames from "classnames";
 
 function ProfileButton() {
+  const router = useRouter();
   const dispatch = useAppDispatch();
   const [logout] = useLogoutMutation();
   const { isAuthenticated } = useAppSelector((state) => state.auth);
@@ -41,8 +42,6 @@ function ProfileButton() {
     pollingInterval: 300000, // Revalidar cada 5 minutos
     refetchOnMountOrArgChange: true,
   });
-  const router = useRouter();
-  const { profile_photo, full_name, email } = user || {};
 
   useEffect(() => {
     if (error) {
@@ -62,7 +61,7 @@ function ProfileButton() {
     }
   }, [logout, dispatch, router]);
 
-  const renderUserInfo = () => {
+  const renderUserInfo = useMemo(() => {
     if (isLoading) {
       return (
         <div className="hidden md:flex items-center space-x-2">
@@ -75,20 +74,21 @@ function ProfileButton() {
       return (
         <div className="hidden md:flex flex-col items-end">
           <span className="text-sm font-medium text-gray-200 truncate max-w-[150px]">
-            {full_name}
+            {user.full_name}
           </span>
           <span className="text-xs text-gray-400 truncate max-w-[150px]">
-            {email}
+            {user.email}
           </span>
         </div>
       );
     }
 
     return null;
-  };
+  }, [isLoading, isAuthenticated, user]);
 
-  const menuItems = isAuthenticated
-    ? [
+  const menuItems = useMemo(() => {
+    if (isAuthenticated) {
+      return [
         {
           label: user?.email,
           disabled: true,
@@ -115,8 +115,9 @@ function ProfileButton() {
           onClick: handleLogout,
           icon: <LogOutIcon className="size-4 mr-2 text-xs text-gray/50" />,
         },
-      ]
-    : [
+      ];
+    } else {
+      return [
         {
           label: "Login",
           href: "/auth/login",
@@ -128,19 +129,47 @@ function ProfileButton() {
           icon: <UserPlus className="size-4 mr-2 text-xs text-gray/50" />,
         },
       ];
+    }
+  }, [isAuthenticated, user, handleLogout]);
+
+  const handleNavigation = useCallback(
+    (e, href, onClick) => {
+      e.preventDefault();
+      if (onClick) {
+        onClick(e);
+      }
+      if (href) {
+        // Validar y sanitizar la URL antes de redirigir
+        const allowedUrls = [
+          "/dashboard",
+          "/profile",
+          "/settings",
+          "/auth/login",
+          "/auth/register",
+        ];
+        if (allowedUrls.includes(href)) {
+          router.push(href);
+        } else {
+          toast.error("URL no permitida");
+        }
+      }
+    },
+    [router]
+  );
 
   return (
     <Menu as="div" className="relative ml-3">
       {({ close }) => (
         <>
-          <MenuButton className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
+          <MenuButton className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 cursor-pointer">
             <span className="absolute -inset-1.5" />
             <span className="sr-only">Abrir menú de usuario</span>
-            <Avatar
-              src={profile_photo || "/images/profile_default.png"}
-              alt={full_name || "Usuario"}
-              radius="lg"
-              isBordered
+            <Image
+              className="h-8 w-8 rounded-full"
+              src={user?.profile_photo || "/images/profile_default.png"}
+              alt={user?.full_name || "Usuario"}
+              width={50}
+              height={50}
             />
           </MenuButton>
           <Transition
@@ -158,16 +187,8 @@ function ProfileButton() {
                   {({ focus }) => (
                     <NavLink
                       onClick={(e) => {
-                        e.preventDefault();
                         close();
-
-                        if (item.onClick) {
-                          item.onClick(e);
-                        }
-
-                        if (item.href) {
-                          router.push(item.href);
-                        }
+                        handleNavigation(e, item.href, item.onClick);
                       }}
                       className={classNames(
                         focus ? "bg-gray-100" : "",

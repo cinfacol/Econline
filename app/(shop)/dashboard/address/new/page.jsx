@@ -3,7 +3,7 @@ import { AddAddressForm } from "@/components/forms";
 import { Suspense } from "react";
 
 export const metadata = {
-  title: "Virtual E-line | Add Address",
+  title: "Dashboard | Add Address",
   description: "Tienda Online add Address page",
 };
 

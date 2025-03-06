@@ -2,6 +2,6 @@
 
 import { HeroUIProvider } from "@heroui/react";
 
-export function HerouiProviders({ children }) {
+export function Providers({ children }) {
   return <HeroUIProvider>{children}</HeroUIProvider>;
 }

@@ -11,10 +11,10 @@
   "dependencies": {
     "@headlessui/react": "^2.2.0",
     "@heroicons/react": "^2.2.0",
-    "@heroui/button": "^2.2.13",
-    "@heroui/react": "^2.7.2",
-    "@heroui/system": "^2.4.10",
-    "@heroui/theme": "^2.4.9",
+    "@heroui/button": "^2.2.15",
+    "@heroui/react": "^2.7.4",
+    "@heroui/system": "^2.4.11",
+    "@heroui/theme": "^2.4.11",
     "@radix-ui/react-slot": "^1.1.2",
     "@reduxjs/toolkit": "^2.6.0",
     "@tailwindcss/forms": "^0.5.10",
@@ -26,25 +26,28 @@
     "clsx": "^2.1.1",
     "countries-list": "^3.1.1",
     "date-fns": "^4.1.0",
-    "framer-motion": "^11.18.2",
-    "lucide-react": "^0.454.0",
-    "next": "^15.2.0",
+    "framer-motion": "^12.4.10",
+    "lucide-react": "^0.476.0",
+    "next": "^15.2.1",
+    "postcss": "^8.5.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-icons": "^5.5.0",
     "react-redux": "^9.2.0",
     "react-star-ratings": "^2.3.0",
-    "sonner": "^1.7.4",
-    "tailwind-merge": "^2.6.0",
+    "react-tooltip": "^5.28.0",
+    "sonner": "^2.0.1",
+    "tailwind-merge": "^3.0.2",
+    "tailwindcss": "^4.0.10",
     "tailwindcss-animate": "^1.0.7",
     "zustand": "^5.0.3"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.0",
+    "@tailwindcss/postcss": "^4.0.10",
     "autoprefixer": "^10.4.20",
     "eslint": "^9.21.0",
-    "eslint-config-next": "15.0.1",
-    "postcss": "^8.5.3",
-    "tailwindcss": "^3.4.17"
+    "eslint-config-next": "15.2.0"
   },
-  "packageManager": "pnpm@10.2.0+sha512.0d27364e0139c6aadeed65ada153135e0ca96c8da42123bd50047f961339dc7a758fc2e944b428f52be570d1bd3372455c1c65fa2e7aa0bfbf931190f9552001"
+  "packageManager": "pnpm@10.5.2+sha512.da9dc28cd3ff40d0592188235ab25d3202add8a207afbedc682220e4a0029ffbff4562102b9e6e46b4e3f9e8bd53e6d05de48544b0c57d4b0179e22c76d1199b"
 }

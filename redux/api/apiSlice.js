@@ -51,6 +51,7 @@ export const apiSlice = createApi({
     "CartItems",
     "Products",
     "Payment",
+    "User",
   ],
   baseQuery: baseQueryWithReauth,
   endpoints: (builder) => ({}),

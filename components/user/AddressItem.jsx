@@ -3,6 +3,7 @@
 import React, { useCallback } from "react";
 import Link from "next/link";
 import { MapPin, Edit, Trash } from "lucide-react";
+import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
 import {
   useDeleteAddressMutation,
   useSetDefaultAddressMutation,
@@ -43,7 +44,7 @@ const AddressItem = ({ address, onSetDefault }) => {
 
   return (
     <div className="mb-5 gap-4">
-      <div className="w-full flex justify-between align-center bg-gray-100 p-4 rounded-md cursor-pointer">
+      <div className="w-full flex justify-between align-center bg-gray-100 p-4 rounded-md">
         <div className="flex items-center">
           <div className="mr-3">
             <span>
@@ -66,21 +67,28 @@ const AddressItem = ({ address, onSetDefault }) => {
               type="checkbox"
               checked={address.is_default}
               onChange={handleDefaultChange}
-              className="mr-2 form-checkbox rounded-full text-blue-600"
+              className="mr-2 form-checkbox rounded-full text-blue-600 cursor-pointer"
             />
             Default
           </label>
           <Link href={`/dashboard/address/${address.id}`}>
-            <button className="p-2 text-center inline-block text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700">
+            <PencilSquareIcon
+              className="h-6 w-6 hover:bg-orange-300 border border-transparent rounded-md"
+              aria-hidden="true"
+            />
+            {/* <button className="p-2 text-center inline-block text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700">
               <Edit className="w-5 h-5" />
-            </button>
+            </button> */}
           </Link>
-          <button
+          <div
             onClick={deleteHandler}
-            className="p-2 text-center inline-block text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700"
+            // className="p-2 text-center inline-block text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700"
           >
-            <Trash className="w-5 h-5" />
-          </button>
+            <TrashIcon
+              className="h-6 w-6 hover:bg-red-300 border border-transparent rounded-md"
+              aria-hidden="true"
+            />
+          </div>
         </div>
       </div>
     </div>

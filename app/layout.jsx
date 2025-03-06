@@ -2,7 +2,7 @@ import { Navbar, Footer } from "@/components/common";
 import ModalProvider from "@/providers/modal-provider";
 import { Setup } from "@/components/utils";
 import CustomProvider from "@/redux/provider";
-import { HerouiProviders } from "@/providers/heroui-provider";
+import { Providers } from "./providers";
 import { Urbanist } from "next/font/google";
 import "@/styles/globals.css";
 
@@ -19,7 +19,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={font.className}>
         <CustomProvider>
-          <HerouiProviders>
+          <Providers>
             <ModalProvider />
             <Setup />
             <Navbar />
@@ -27,7 +27,7 @@ export default function RootLayout({ children }) {
               {children}
             </div>
             <Footer />
-          </HerouiProviders>
+          </Providers>
         </CustomProvider>
       </body>
     </html>
