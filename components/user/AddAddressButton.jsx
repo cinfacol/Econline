@@ -1,19 +1,17 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { Button } from "@heroui/button";
+import { Button } from "@/components/ui/button";
 import { MapPinPlus } from "lucide-react";
 
 const AddAddressButton = () => {
   const router = useRouter();
   return (
     <Button
-      color="warning"
-      variant="shadow"
-      aria-label="Add new address"
-      className="font-bold flex items-center"
-      onPress={() => router.push("/dashboard/address/new")}
+      variant="warning"
+      className="font-bold"
+      onClick={() => router.push("/dashboard/address/new")}
     >
-      <MapPinPlus className="mr-2" />
+      <MapPinPlus />
       New address
     </Button>
   );

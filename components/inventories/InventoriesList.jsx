@@ -5,7 +5,7 @@ import { useGetInventoriesQuery } from "@/redux/features/inventories/inventories
 import ProductCard from "./productCard";
 import { useAppSelector } from "@/redux/hooks";
 
-export default function InventoriesList({ title, auth }) {
+export default function InventoriesList({ title }) {
   const searchTerm = useAppSelector((state) => state?.inventory?.searchTerm);
   const categoryTerm = useAppSelector(
     (state) => state?.inventory?.categoryTerm

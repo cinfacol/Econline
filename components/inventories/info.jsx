@@ -3,7 +3,7 @@
 import { HeartIcon, ShoppingCart } from "lucide-react";
 
 import { Currency } from "@/components/ui";
-import { Button } from "@heroui/button";
+import { Button } from "@/components/ui/button";
 import StarRatings from "react-star-ratings";
 import { useGetProductQuery } from "@/redux/features/inventories/inventoriesApiSlice";
 import Link from "next/link";
@@ -112,19 +112,13 @@ const Info = ({ inventoryId }) => {
         ) : (
           <div>
             <Button
-              color="primary"
-              variant="shadow"
-              aria-label="Add To Cart"
-              onPress={() => {
+              variant="default"
+              onClick={() => {
                 router.push("/auth/login");
                 previewModal.onClose();
               }}
-              className="font-bold"
             >
-              Add To Cart
-              <span className="px-2">
-                {<ShoppingCart size={20} className="text-white-600" />}
-              </span>
+              <ShoppingCart /> Add To Cart
             </Button>
           </div>
         )}

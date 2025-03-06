@@ -38,33 +38,15 @@ const AddItem = ({ data, access, ButtonComponent }) => {
   const renderButton = () => {
     if (ButtonComponent) {
       return (
-        <div>
-          <Button
-            color="primary"
-            variant="shadow"
-            aria-label="Add To Cart"
-            onClick={onAddToCart}
-            className="font-bold"
-          >
-            Add To Cart
-            <span className="px-2">
-              {<ShoppingCart size={20} className="text-white-600" />}
-            </span>
-          </Button>
-        </div>
+        <Button onClick={onAddToCart}>
+          <ShoppingCart /> Add To Cart
+        </Button>
       );
     } else {
       return (
-        <div>
-          <Button
-            color="default"
-            variant="default"
-            aria-label="ShoppingCart"
-            onClick={onAddToCart}
-          >
-            {<ShoppingCart size={20} className="text-gray-600" />}
-          </Button>
-        </div>
+        <Button variant="outline" size="icon" onClick={onAddToCart}>
+          {<ShoppingCart />}
+        </Button>
       );
     }
   };

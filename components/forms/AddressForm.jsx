@@ -1,6 +1,6 @@
 import { Input } from "@/components/forms";
 import { Spinner } from "@/components/common";
-import { Button } from "@heroui/button";
+import { Button } from "@/components/ui/button";
 
 export default function Form({
   config,
@@ -53,14 +53,7 @@ export default function Form({
       ))}
 
       <div>
-        <Button
-          color="primary"
-          variant="shadow"
-          aria-label="Add new address"
-          className="font-bold"
-          type="submit"
-          disabled={isLoading}
-        >
+        <Button variant="default" className="font-bold" disabled={isLoading}>
           {isLoading ? <Spinner sm /> : `${btnText}`}
         </Button>
       </div>

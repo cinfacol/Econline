@@ -1,7 +1,7 @@
 "use client";
 import { useAppDispatch } from "@/redux/hooks";
 import { closeModal } from "@/redux/features/modal/modalSlice";
-import { Button } from "@heroui/button";
+import { Button } from "@/components/ui/button";
 
 const Modal = () => {
   const dispatch = useAppDispatch();
@@ -11,18 +11,14 @@ const Modal = () => {
         <h4>remove all items from your shopping cart?</h4>
         <div className="btn-container">
           <Button
-            type="button"
-            className="btn confirm-btn"
-            onPress={() => {
+            onClick={() => {
               dispatch(closeModal());
             }}
           >
             confirm
           </Button>
           <Button
-            type="button"
-            className="btn clear-btn"
-            onPress={() => {
+            onClick={() => {
               dispatch(closeModal());
             }}
           >

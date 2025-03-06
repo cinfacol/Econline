@@ -1,6 +1,5 @@
 "use client";
 
-import { Spinner } from "@/components/common";
 import { Skeleton } from "@/components/ui";
 import {
   useGetItemsQuery,
@@ -13,10 +12,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Currency } from "@/components/ui";
 import { toast } from "sonner";
-import { Button } from "@heroui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Trash2 } from "lucide-react";
 import AddItem from "./AddItem";
 import cloudinaryImageLoader from "@/actions/imageLoader";
 import { useCallback } from "react";
+import { Heart } from "lucide-react";
+import { MoveRight } from "lucide-react";
 
 export default function CartDetails() {
   const router = useRouter();
@@ -222,13 +224,10 @@ export default function CartDetails() {
 
                               <div className="flex items-center gap-4">
                                 <Button
-                                  color="warning"
-                                  variant="shadow"
-                                  aria-label="Remove"
-                                  className="font-bold"
-                                  onPress={() => handleRemove(Item)}
+                                  variant="warning"
+                                  onClick={() => handleRemove(Item)}
                                 >
-                                  Remove
+                                  <Trash2 /> Remove
                                 </Button>
                               </div>
                             </div>
@@ -266,7 +265,7 @@ export default function CartDetails() {
                           >
                             iMac 27”
                           </Link>
-                          <p className="mt-2 text-base font-normal text-gray-500 dark:text-gray-400">
+                          <p className="mt-2 text-base font-normal text-gray-500 dark:text-gray-400 line-clamp-2">
                             This generation has some improvements, including a
                             longer continuous battery life.
                           </p>
@@ -283,38 +282,12 @@ export default function CartDetails() {
                         </div>
                         <div className="mt-6 flex items-center gap-2.5">
                           <Button
-                            data-tooltip-target="favourites-tooltip-1"
-                            type="button"
-                            className="gap-2 rounded-lg border border-gray-200 bg-white p-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
-                            variant="destructive"
+                            variant="outline"
+                            size="lg"
+                            className="border border-input"
                           >
-                            <svg
-                              className="h-5 w-5"
-                              aria-hidden="true"
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                stroke="currentColor"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="M12 6C6.5 1 1 8 5.8 13l6.2 7 6.2-7C23 8 17.5 1 12 6Z"
-                              ></path>
-                            </svg>
+                            <Heart />
                           </Button>
-                          <div
-                            id="favourites-tooltip-1"
-                            role="tooltip"
-                            className="tooltip invisible absolute z-10 inline-block rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white opacity-0 shadow-sm transition-opacity duration-300 dark:bg-gray-700"
-                          >
-                            Add to favourites
-                            <div
-                              className="tooltip-arrow"
-                              data-popper-arrow
-                            ></div>
-                          </div>
                           <AddItem ButtonComponent={true} />
                         </div>
                       </div>
@@ -342,7 +315,7 @@ export default function CartDetails() {
                           >
                             Playstation 5
                           </Link>
-                          <p className="mt-2 text-base font-normal text-gray-500 dark:text-gray-400">
+                          <p className="mt-2 text-base font-normal text-gray-500 dark:text-gray-400 line-clamp-2">
                             This generation has some improvements, including a
                             longer continuous battery life.
                           </p>
@@ -360,38 +333,12 @@ export default function CartDetails() {
                         </div>
                         <div className="mt-6 flex items-center gap-2.5">
                           <Button
-                            data-tooltip-target="favourites-tooltip-2"
-                            type="button"
-                            className="gap-2 rounded-lg border border-gray-200 bg-white p-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
-                            variant="destructive"
+                            variant="outline"
+                            size="lg"
+                            className="border border-input"
                           >
-                            <svg
-                              className="h-5 w-5"
-                              aria-hidden="true"
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                stroke="currentColor"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="M12 6C6.5 1 1 8 5.8 13l6.2 7 6.2-7C23 8 17.5 1 12 6Z"
-                              ></path>
-                            </svg>
+                            <Heart />
                           </Button>
-                          <div
-                            id="favourites-tooltip-2"
-                            role="tooltip"
-                            className="tooltip invisible absolute z-10 inline-block rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white opacity-0 shadow-sm transition-opacity duration-300 dark:bg-gray-700"
-                          >
-                            Add to favourites
-                            <div
-                              className="tooltip-arrow"
-                              data-popper-arrow
-                            ></div>
-                          </div>
                           <AddItem ButtonComponent={true} />
                         </div>
                       </div>
@@ -437,38 +384,12 @@ export default function CartDetails() {
                         </div>
                         <div className="mt-6 flex items-center gap-2.5">
                           <Button
-                            data-tooltip-target="favourites-tooltip-3"
-                            type="button"
-                            className="gap-2 rounded-lg border border-gray-200 bg-white p-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
-                            variant="destructive"
+                            variant="outline"
+                            size="lg"
+                            className="border border-input"
                           >
-                            <svg
-                              className="h-5 w-5"
-                              aria-hidden="true"
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                stroke="currentColor"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="M12 6C6.5 1 1 8 5.8 13l6.2 7 6.2-7C23 8 17.5 1 12 6Z"
-                              ></path>
-                            </svg>
+                            <Heart />
                           </Button>
-                          <div
-                            id="favourites-tooltip-3"
-                            role="tooltip"
-                            className="tooltip invisible absolute z-10 inline-block rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white opacity-0 shadow-sm transition-opacity duration-300 dark:bg-gray-700"
-                          >
-                            Add to favourites
-                            <div
-                              className="tooltip-arrow"
-                              data-popper-arrow
-                            ></div>
-                          </div>
                           <AddItem ButtonComponent={true} />
                         </div>
                       </div>
@@ -579,11 +500,8 @@ export default function CartDetails() {
                       </dl>
                     </div>
                     <Button
-                      color="primary"
-                      variant="shadow"
-                      aria-label="Proceed to Checkout"
-                      className="font-bold"
-                      onPress={() => router.push("/checkout/")}
+                      variant="warning"
+                      onClick={() => router.push("/checkout/")}
                     >
                       Proceed to Checkout
                     </Button>
@@ -594,6 +512,12 @@ export default function CartDetails() {
                         or{" "}
                       </span>
                       <Link
+                        href="/product"
+                        className={buttonVariants({ variant: "link" })}
+                      >
+                        Continue Shopping <MoveRight />
+                      </Link>
+                      {/* <Link
                         href="/product"
                         title="back to explore products"
                         className="inline-flex items-center gap-2 text-sm font-medium text-primary-700 underline hover:no-underline dark:text-primary-500"
@@ -614,7 +538,7 @@ export default function CartDetails() {
                             d="M19 12H5m14 0-4 4m4-4-4-4"
                           />
                         </svg>
-                      </Link>
+                      </Link> */}
                     </div>
                   </div>
                 </div>

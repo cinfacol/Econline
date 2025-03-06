@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import cloudinaryImageLoader from "@/actions/imageLoader";
 
 import { Currency } from "@/components/ui";
-import { Button } from "@heroui/button";
+import { Button } from "@/components/ui/button";
 import StarRatings from "react-star-ratings";
 import usePreviewModal from "@/hooks/use-preview-modal";
 import AddItem from "@/components/cart/AddItem";
@@ -49,31 +49,26 @@ const ProductCard = ({ data }) => {
         <div className="opacity-20 group-hover:opacity-100 transition absolute w-full px-6 bottom-5">
           <div className="flex gap-x-6 justify-center">
             <Button
-              isIconOnly
-              color="default"
-              variant="faded"
-              aria-label="ShoppingCart"
-              onPress={() => {
+              variant="outline"
+              onClick={() => {
                 // event.stopPropagation();
                 previewModal.onOpen(data);
               }}
             >
-              {<Expand size={20} className="text-gray-600" />}
+              {<Expand />}
             </Button>
             {isAuthenticated ? (
-              <AddItem data={dat} />
+              <AddItem data={dat} ButtonComponent={false} />
             ) : (
               <div>
                 <Button
-                  isIconOnly
-                  color="default"
-                  variant="faded"
-                  aria-label="ShoppingCart"
-                  onPress={() => {
+                  variant="outline"
+                  size="icon"
+                  onClick={() => {
                     router.push("/auth/login");
                   }}
                 >
-                  {<ShoppingCart size={20} className="text-gray-600" />}
+                  {<ShoppingCart />}
                 </Button>
               </div>
             )}
