@@ -1,7 +1,6 @@
 import InventoriesList from "@/components/inventories/InventoriesList";
 import { Container } from "@/components/ui";
-import { RadioButtonCategoryGroup } from "@/components/common/RadioButtonCategoryGroup";
-import getAuthCookie from "@/lib/cookies";
+// import { RadioButtonCategoryGroup } from "@/components/common/RadioButtonCategoryGroup";
 import { Suspense } from "react";
 import { Spinner } from "@/components/common";
 
@@ -17,11 +16,11 @@ export const metadata = {
   },
 };
 
-export default async function Home() {
+export default function Home() {
   return (
     <Container className="bg-white overflow-hidden">
       <Suspense fallback={<Spinner />}>
-        <RadioButtonCategoryGroup />
+        {/* <RadioButtonCategoryGroup /> */}
       </Suspense>
 
       {/* Hero section */}
