@@ -194,7 +194,7 @@ function ProfileButton() {
                         "flex px-4 py-2 text-sm text-gray-700"
                       )}
                     >
-                      <span className="group flex w-full items-center gap-2 data-[focus]:bg-white/10">
+                      <span className="group flex w-full items-center gap-2 data-[focus]:bg-white/10 cursor-pointer">
                         {item.icon}
                         {item.label}
                         {item.href && (
