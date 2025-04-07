@@ -2,6 +2,7 @@
 
 import { useGetAddressQuery } from "@/redux/features/address/addressApiSlice";
 import { MapPin } from "lucide-react";
+import Link from "next/link";
 
 const AddressDefault = () => {
   const { data, isLoading, error } = useGetAddressQuery();
@@ -20,8 +21,14 @@ const AddressDefault = () => {
   if (!defaultAddress) {
     return (
       <div className="pb-3">
-        <p className="text-red-600">No default address found.</p> Please, set a
-        default address.
+        <p className="text-red-600">No default address found.</p>
+        <p>
+          Please, set a default address. Go to{" "}
+          <Link href="/dashboard" className="text-blue-600 underline">
+            Set or Create a default Address
+          </Link>
+          .
+        </p>
       </div>
     );
   }

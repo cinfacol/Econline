@@ -1,97 +1,70 @@
 import { createEntityAdapter } from "@reduxjs/toolkit";
 import { apiSlice } from "@/redux/api/apiSlice";
-// Adaptador para la estructura de pagos
-const paymentAdapter = createEntityAdapter({
-  sortComparer: (a, b) => b.date.localeCompare(a.date),
-});
 
-// Estado inicial
-const initialState = paymentAdapter.getInitialState();
+const paymentAdapter = createEntityAdapter();
 
-// Headers comunes para las peticiones
-const COMMON_HEADERS = {
-  Accept: "application/json",
-  "Content-Type": "application/json",
-};
-
-// Interfaz para los datos de pago
-const createPaymentData = ({
-  nonce,
-  shipping_id,
-  full_name,
-  address_line_1,
-  address_line_2,
-  city,
-  state_province_region,
-  postal_zip_code,
-  country_region,
-  telephone_number,
-}) => ({
-  nonce,
-  shipping_id,
-  full_name,
-  address_line_1,
-  address_line_2,
-  city,
-  state_province_region,
-  postal_zip_code,
-  country_region,
-  telephone_number,
-});
-
-// Slice de la API de pagos
 export const paymentApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getPaymentTotal: builder.query({
-      query: ({ shipping_id }) => ({
-        url: `/payments/get-payment-total/?${shipping_id}`,
+      query: (shipping_id) => ({
+        url: `/payments/calculate-total/`,
         method: "GET",
         params: { shipping_id },
       }),
-      providesTags: ["Payment"],
+      transformResponse: (response) => ({
+        ...response,
+        calculatedTotal: response.total_amount,
+      }),
+      providesTags: ["PaymentTotal"],
     }),
 
     getClientToken: builder.query({
       query: () => ({
-        url: "/payments/get-token",
+        url: `/payments/client-token/`,
         method: "GET",
       }),
-      transformResponse: (response, meta, arg) => response.braintree_token,
-      providesTags: ["Payment"],
+      transformResponse: (response) => response.token,
+      providesTags: ["ClientToken"],
+    }),
+
+    createCheckoutSession: builder.mutation({
+      query: ({ orderId, paymentData }) => ({
+        url: `/payments/${orderId}/create-checkout-session/`,
+        method: "POST",
+        body: paymentData,
+      }),
+      invalidatesTags: ["Payment"],
     }),
 
     processPayment: builder.mutation({
-      query: ({ paymentData }) => ({
-        url: "/payments/make-payment",
+      query: ({ orderId, paymentData }) => ({
+        url: `/payments/${orderId}/process/`,
         method: "POST",
-        body: createPaymentData(paymentData),
+        body: paymentData,
       }),
-      transformResponse: (response) => response.data,
-      transformErrorResponse: (error) => {
-        return {
-          status: error?.status,
-          message: error?.data?.message || "Error procesando el pago",
-        };
-      },
-      invalidatesTags: ["Payment", "Cart"],
-      extraOptions: { maxRetries: 0 },
+      invalidatesTags: ["Payment", "Order"],
     }),
 
     verifyPayment: builder.query({
-      query: ({ paymentId }) => ({
-        url: `/payments/verify-payment/${paymentId}`,
+      query: (paymentId) => ({
+        url: `/payments/${paymentId}/verify/`,
         method: "GET",
       }),
-      transformResponse: (response) => response.status,
-      providesTags: ["Payment"],
+      providesTags: (result, error, id) => [{ type: "Payment", id }],
+    }),
+
+    getPaymentDetails: builder.query({
+      query: (paymentId) => `/payments/${paymentId}/`,
+      providesTags: (result, error, id) => [{ type: "Payment", id }],
     }),
   }),
 });
 
-// Hooks exportados
 export const {
   useGetPaymentTotalQuery,
   useGetClientTokenQuery,
+  useCreateCheckoutSessionMutation,
   useProcessPaymentMutation,
   useVerifyPaymentQuery,
+  useGetPaymentDetailsQuery,
 } = paymentApiSlice;

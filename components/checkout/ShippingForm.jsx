@@ -5,33 +5,58 @@ import { TicketIcon } from "@heroicons/react/24/outline";
 import { Fragment } from "react";
 import Link from "next/link";
 import AddressDefault from "@/components/user/Addressdefault";
-// import { CheckoutForm } from "@/components/forms";
 import { Currency } from "@/components/ui";
 import { useGetPaymentTotalQuery } from "@/redux/features/payment/paymentApiSlice";
 
 const ShippingForm = ({
   onChange,
-  buy,
-  user,
-  // profile,
-  renderShipping,
-  total_amount,
-  total_compare_amount,
-  estimated_tax,
+  shippingOptions,
   shipping_cost,
   shipping_id,
-  shipping,
+  onShippingChange,
   renderPaymentInfo,
+  onPaymentSubmit,
   apply_coupon,
   coupon,
   coupon_name,
   total_after_coupon,
 }) => {
   const { data } = useGetPaymentTotalQuery(shipping_id);
-  console.log("data", data);
-  console.log("shipping_id", shipping_id);
-  const sub_total = data?.original_price;
+  console.log("ShippingForm data", data);
+  const sub_total = data?.subtotal || 0;
   const total_to_pay = parseFloat(sub_total) + parseFloat(shipping_cost);
+
+  // Renderizado de opciones de envío
+  const renderShippingOptions = () => {
+    if (!shippingOptions?.length) {
+      return <div>No hay opciones de envío disponibles</div>;
+    }
+
+    return (
+      <div className="mb-5">
+        {shippingOptions.map((option) => (
+          <div key={option.id} className="flex items-center mb-2">
+            <input
+              type="radio"
+              id={`shipping-${option.id}`}
+              name="shipping_id"
+              value={option.id}
+              checked={shipping_id === option.id}
+              onChange={(e) => onShippingChange(e, option.price)}
+              className="h-4 w-4 text-indigo-600 focus:ring-indigo-500"
+            />
+            <label
+              htmlFor={`shipping-${option.id}`}
+              className="ml-3 block text-sm font-medium text-gray-700"
+            >
+              {option.name} - <Currency value={option.price} /> (
+              {option.time_to_delivery})
+            </label>
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   return (
     <section
@@ -43,7 +68,7 @@ const ShippingForm = ({
       </h2>
       <dl className="mt-6 space-y-4">
         <div className="flex items-center justify-between">
-          {renderShipping()}
+          {renderShippingOptions()}
         </div>
         <div className="flex items-center justify-between">
           {
@@ -109,8 +134,8 @@ const ShippingForm = ({
             </Link>
           </dt>
           <dd className="text-sm font-medium text-gray-900">
-            {shipping && shipping_cost !== 0 ? (
-              <>${shipping_cost}</>
+            {shipping_cost !== 0 ? (
+              <Currency value={shipping_cost} />
             ) : (
               <div className="text-red-500">
                 (Please select shipping option)
@@ -150,8 +175,11 @@ const ShippingForm = ({
         <AddressDefault />
       </div>
 
-      <div onSubmit={(e) => buy(e)}>{renderPaymentInfo()}</div>
+      <div className="mt-6">
+        <form onSubmit={onPaymentSubmit}>{renderPaymentInfo}</form>
+      </div>
     </section>
   );
 };
+
 export default ShippingForm;

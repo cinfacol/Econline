@@ -1,6 +1,7 @@
 import RetrieveUserInfo from "@/components/auth/RetrieveUser";
 import UserAddresses from "@/components/user/Addresses";
 import AddAddressButton from "@/components/user/AddAddressButton";
+import { Container } from "@/components/ui";
 
 export const metadata = {
   title: "Dashboard | Address",

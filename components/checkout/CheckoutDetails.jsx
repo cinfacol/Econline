@@ -1,360 +1,198 @@
 "use client";
-import { useState } from "react";
-import Link from "next/link";
-import Image from "next/image";
-import cloudinaryImageLoader from "@/actions/imageLoader";
+
+import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useAppSelector } from "@/redux/hooks";
-import { useDispatch } from "react-redux";
-import { Currency } from "@/components/ui";
-import ShippingForm from "@/components/checkout/ShippingForm";
-import { Spinner } from "@/components/common";
-import { useRetrieveUserQuery } from "@/redux/features/auth/authApiSlice";
 import {
   useGetItemsQuery,
   useGetShippingOptionsQuery,
+  useCheckCouponMutation,
 } from "@/redux/features/cart/cartApiSlice";
-import { useCheckCouponMutation } from "@/redux/features/cart/cartApiSlice";
 import {
   useGetClientTokenQuery,
   useProcessPaymentMutation,
+  useGetPaymentTotalQuery,
 } from "@/redux/features/payment/paymentApiSlice";
-import DropIn from "braintree-web-drop-in-react";
+import { CheckoutSkeleton } from "@/squeletons/CheckoutSkeleton";
+import CheckoutItems from "./CheckoutItems";
+import ShippingForm from "./ShippingForm";
+import { loadStripe } from "@stripe/stripe-js";
 import { toast } from "sonner";
-import { countries } from "@/utils/countries";
+import { Button } from "@headlessui/react";
+
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+);
 
 const CheckoutDetails = () => {
-  const dispatch = useDispatch();
-  const [checkCoupon] = useCheckCouponMutation();
   const router = useRouter();
-  const { data: user } = useRetrieveUserQuery();
-  const { data } = useGetItemsQuery();
-  const { data: shippingData } = useGetShippingOptionsQuery("shipping");
+  const [formState, setFormState] = useState(() => {
+    // Recuperar estado del localStorage si existe
+    const savedState = localStorage.getItem("checkoutForm");
+    return savedState
+      ? JSON.parse(savedState)
+      : {
+          coupon_name: "",
+          shipping_id: 0,
+          shipping_cost: 0,
+        };
+  });
 
-  const { data: tokenData } = useGetClientTokenQuery();
-
-  const clientToken = tokenData;
-
+  const { data: cartData, isLoading: isLoadingCart } = useGetItemsQuery(
+    undefined,
+    {
+      refetchOnMountOrArgChange: true,
+    }
+  );
   // Destructure data and handle empty cart case concisely
-  const { ids: Ids = [], entities: Enty = {} } = shippingData || {};
-
-  // Calculate shipping items
-  const shipping = Ids.map((id) => Enty[id] || null).filter(Boolean);
-
-  // Destructure data and handle empty cart case concisely
-  const { ids = [], entities = {} } = data || {};
-
+  const { ids = [], entities = {} } = cartData || {};
   // Calculate cart items
   const items = ids.map((id) => entities[id] || null).filter(Boolean);
 
-  // const refresh = useSelector(state => state.auth.refresh)
-  const { isAuthenticated } = useAppSelector((state) => state.auth);
-  // const loading = useSelector((state) => state.payment.status);
-  const loading = false;
-  /* const {
-    clientToken,
-    made_payment,
-    total_after_coupon,
-    total_amount,
-    total_compare_amount,
-    estimated_tax,
-    shipping_cost,
-  } = useSelector((state) => state.payment); */
+  const { data: shippingData, isLoading: isLoadingShipping } =
+    useGetShippingOptionsQuery("shipping", {
+      refetchOnMountOrArgChange: true,
+    });
 
-  // const coupon = useSelector((state) => state.coupons.coupon);
+  const { data: tokenData, isLoading: isLoadingToken } = useGetClientTokenQuery(
+    undefined,
+    {
+      refetchOnMountOrArgChange: false,
+    }
+  );
 
-  const [formData, setFormData] = useState({
-    full_name: "",
-    address_line_1: "",
-    address_line_2: "",
-    city: "",
-    state_province_region: "",
-    postal_zip_code: "",
-    country_region: "Colombia",
-    telephone_number: "",
-    coupon_name: "",
-    shipping_id: 0,
-    shipping_cost: 0,
-  });
+  const { data: paymentTotal } = useGetPaymentTotalQuery(
+    formState.shipping_id,
+    {
+      skip: !formState.shipping_id,
+      // Refetch cuando cambie el shipping_id
+      refetchOnMountOrArgChange: true,
+    }
+  );
 
-  // eslint-disable-next-line no-unused-vars
-  /* const [data, setData] = useState({
-    instance: {},
-  }); */
+  const [processPayment, { isLoading: isProcessingPayment }] =
+    useProcessPaymentMutation();
+  const [checkCoupon, { isLoading: isCheckingCoupon }] =
+    useCheckCouponMutation();
 
-  const {
-    full_name,
-    address_line_1,
-    address_line_2,
-    city,
-    state_province_region,
-    postal_zip_code,
-    country_region,
-    telephone_number,
-    coupon_name,
-    shipping_id,
-    shipping_cost,
-  } = formData;
+  // Persistir formState en localStorage
+  useEffect(() => {
+    localStorage.setItem("checkoutForm", JSON.stringify(formState));
+  }, [formState]);
 
-  const onChange = (e) => {
+  // Añadir esta función para manejar cambios en inputs generales
+  const handleInputChange = useCallback((e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
+    setFormState((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  }, []);
 
-  /* const buy = async (e) => {
-    e.preventDefault();
-    let nonce = await data.instance.requestPaymentMethod();
+  const handleShippingChange = useCallback((e, shippingCost) => {
+    const { name, value } = e.target;
+    setFormState((prev) => ({
+      ...prev,
+      shipping_id: value,
+      shipping_cost: shippingCost,
+    }));
+  }, []);
 
-    if (coupon && coupon !== null && coupon !== undefined) {
-      const coupon_name = coupon.name;
-      dispatch(
-        process_payment({
-          nonce,
-          shipping_id,
-          coupon_name,
-          full_name,
-          address_line_1,
-          address_line_2,
-          city,
-          state_province_region,
-          postal_zip_code,
-          country_region,
-          telephone_number,
-        })
-      )
-        .unwrap()
-        .then((payload) =>
-          toast.success("El pago fue exitoso y se ha creado la orden")
-        )
-        .catch((error) => toast.error(`${error.error}`));
-    } else {
-      dispatch(
-        process_payment({
-          nonce,
-          shipping_id,
-          coupon_name: "",
-          full_name,
-          address_line_1,
-          address_line_2,
-          city,
-          state_province_region,
-          postal_zip_code,
-          country_region,
-          telephone_number,
-        })
-      )
-        .unwrap()
-        .then((payload) =>
-          toast.success("El pago fue exitoso y se ha creado la orden")
-        )
-        .catch((error) => toast.error(`${error.error}`));
-    }
-  }; */
-
-  const apply_coupon = async (e) => {
-    e.preventDefault();
-
-    dispatch(checkCoupon(coupon_name));
-  };
-
-  /* useEffect(() => {
-    window.scrollTo(0, 0);
-    dispatch(get_shipping_options());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); */
-
-  /* useEffect(() => {
-    dispatch(get_client_token());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]); */
-
-  /* useEffect(() => {
-    // const defecto = 'default';
-    if (coupon && coupon !== null && coupon !== undefined)
-      dispatch(get_payment_total({ shipping_id, coupon_name }));
-    else dispatch(get_payment_total({ shipping_id, coupon_name: "default" }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [shipping_id, coupon]); */
-
-  // const [render, setRender] = useState(false);
-
-  const renderShipping = () => {
-    return (
-      <div className="mb-5">
-        {shipping &&
-          shipping !== null &&
-          shipping !== undefined &&
-          shipping.length !== 0 &&
-          shipping.map((shipping_option, index) => (
-            <div key={index}>
-              <input
-                onChange={(e) => onChange(e)}
-                value={shipping_option.price}
-                name="shipping_cost"
-                type="radio"
-                required
-              />
-              <label className="ml-4">
-                {shipping_option.name} - ${shipping_option.price} (
-                {shipping_option.time_to_delivery})
-              </label>
-            </div>
-          ))}
-      </div>
-    );
-  };
-
-  const renderPaymentInfo = () => {
-    if (!clientToken) {
-      if (!isAuthenticated) {
-        <Link
-          href="/auth/login"
-          className="w-full bg-gray-600 border border-transparent rounded-md shadow-sm py-3 px-4 text-base font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 focus:ring-gray-500"
-        >
-          Login
-        </Link>;
-      } else {
-        <button className="w-full bg-indigo-600 border border-transparent rounded-md shadow-sm py-3 px-4 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 focus:ring-indigo-500">
-          <Spinner />
-        </button>;
+  const handleCouponSubmit = useCallback(
+    async (e) => {
+      e.preventDefault();
+      if (!formState.coupon_name) {
+        toast.error("Por favor ingrese un cupón");
+        return;
       }
-    } else {
-      return (
-        <>
-          <DropIn
-            options={{
-              authorization: clientToken,
-              paypal: {
-                flow: "vault",
-              },
-            }}
-            onInstance={(instance) => (data.instance = instance)}
-          />
-          <div className="mt-6">
-            {loading === "pending" ? (
-              <button className="w-full bg-indigo-600 border border-transparent rounded-md shadow-sm py-3 px-4 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 focus:ring-indigo-500">
-                <Spinner />
-              </button>
-            ) : (
-              <button
-                type="submit"
-                className="w-full bg-green-600 border border-transparent rounded-md shadow-sm py-3 px-4 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 focus:ring-green-500"
-              >
-                Place Order
-              </button>
-            )}
-          </div>
-        </>
-      );
-    }
-  };
 
-  // if (made_payment) return router.push("/thankyou");
+      try {
+        const result = await checkCoupon(formState.coupon_name).unwrap();
+        toast.success("Cupón aplicado correctamente");
+        setFormState((prev) => ({
+          ...prev,
+          coupon_applied: true,
+          discount: result.discount,
+        }));
+      } catch (err) {
+        toast.error(err.data?.detail || "Error al aplicar el cupón");
+      }
+    },
+    [formState.coupon_name, checkCoupon]
+  );
+
+  const handlePaymentSubmit = useCallback(
+    async (e) => {
+      e.preventDefault();
+
+      if (!formState.shipping_id) {
+        toast.error("Por favor seleccione un método de envío");
+        return;
+      }
+
+      try {
+        // Crear sesión de checkout con Stripe
+        const result = await processPayment({
+          shipping_id: formState.shipping_id,
+          ...formState,
+        }).unwrap();
+
+        // Redireccionar a Stripe Checkout
+        const stripe = await stripePromise;
+        const { error } = await stripe.redirectToCheckout({
+          sessionId: result.sessionId,
+        });
+
+        if (error) {
+          toast.error(error.message);
+        }
+      } catch (err) {
+        toast.error(err.data?.detail || "Error al procesar el pago");
+      }
+    },
+    [formState, processPayment]
+  );
+
+  // Manejo de estados de carga
+  const isLoading = isLoadingCart || isLoadingShipping || isLoadingToken;
+  const isProcessing = isProcessingPayment || isCheckingCoupon;
+
+  if (isLoading) {
+    return <CheckoutSkeleton />;
+  }
 
   return (
-    <div className="mt-12 lg:grid lg:grid-cols-12 lg:gap-x-12 lg:items-start xl:gap-x-16">
-      <section aria-labelledby="cart-heading" className="lg:col-span-7">
-        <h2 id="cart-heading" className="sr-only">
-          Items in your shopping cart
-        </h2>
-        <div className="space-y-2">
-          {ids?.map((id) => {
-            const Item = entities[id];
-            const inventoryId = Item?.inventory?.id;
-
-            return (
-              <div
-                key={Item.id}
-                className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6"
-              >
-                <div className="space-y-4 md:flex md:items-center md:justify-between md:gap-6 md:space-y-0">
-                  <Link
-                    href={`/product/${inventoryId}`}
-                    className="shrink-0 md:order-1"
-                  >
-                    <Image
-                      loader={cloudinaryImageLoader}
-                      src={Item?.inventory?.image[0].image}
-                      alt={Item?.inventory?.image[0].alt_text}
-                      width="100"
-                      height="100"
-                      className="aspect-square object-fill rounded-md"
-                      sizes="100px"
-                    />
-                  </Link>
-
-                  <label htmlFor="counter-input" className="sr-only">
-                    Quantity:
-                  </label>
-                  <div className="flex items-center justify-between md:order-3 md:justify-end">
-                    <div className="flex items-center">
-                      <input
-                        type="text"
-                        id="counter-input"
-                        onChange={() => {}}
-                        data-input-counter
-                        className="w-10 shrink-0 border-0 bg-transparent text-center text-sm font-medium text-gray-900 focus:outline-none focus:ring-0 dark:text-white"
-                        placeholder=""
-                        value={Item?.quantity}
-                        required
-                      />
-                    </div>
-                    <div className="text-end md:order-4 md:w-32">
-                      <div className="text-base font-bold text-gray-900 dark:text-white">
-                        <Currency
-                          value={Item?.inventory?.store_price * Item?.quantity}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="w-full min-w-0 flex-1 space-y-4 md:order-2 md:max-w-md">
-                    <Link
-                      href={`/product/${inventoryId}`}
-                      className="text-base font-medium text-gray-900 hover:underline dark:text-white"
-                    >
-                      <span className="px-2 font-semibold text-lg">
-                        {Item?.inventory?.product?.name}
-                      </span>
-                      <p className="px-2 text-sm text-gray-500 line-clamp-2">
-                        {Item?.inventory?.product?.description}
-                      </p>
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* Order summary */}
+    <div className="mt-12 lg:grid lg:grid-cols-12 lg:gap-x-12">
+      <CheckoutItems items={items} isProcessing={isProcessing} />
 
       <ShippingForm
-        full_name={full_name}
-        address_line_1={address_line_1}
-        address_line_2={address_line_2}
-        city={city}
-        state_province_region={state_province_region}
-        postal_zip_code={postal_zip_code}
-        telephone_number={telephone_number}
-        countries={countries}
-        onChange={onChange}
-        // buy={buy}
-        user={user}
-        renderShipping={renderShipping}
-        // total_amount={total_amount}
-        // total_after_coupon={total_after_coupon}
-        // total_compare_amount={total_compare_amount}
-        // estimated_tax={estimated_tax}
-        // shipping_cost={shipping_cost}
-        shipping_id={shipping_id}
-        shipping_cost={shipping_cost}
-        shipping={shipping}
-        renderPaymentInfo={renderPaymentInfo}
-        // coupon={coupon}
-        apply_coupon={apply_coupon}
-        // coupon_name={coupon_name}
+        shippingOptions={
+          shippingData?.entities ? Object.values(shippingData.entities) : []
+        }
+        formState={formState}
+        shipping_id={formState.shipping_id}
+        shipping_cost={formState.shipping_cost}
+        onShippingChange={handleShippingChange}
+        onChange={handleInputChange}
+        onCouponSubmit={handleCouponSubmit}
+        onPaymentSubmit={handlePaymentSubmit}
+        renderPaymentInfo={
+          <div className="payment-info">
+            <Button
+              type="submit"
+              variant="warning"
+              className="w-full mt-4"
+              disabled={isProcessing}
+            >
+              {isProcessing ? "Procesando..." : "Pagar con Stripe"}
+            </Button>
+          </div>
+        }
+        clientToken={tokenData}
+        paymentTotal={paymentTotal}
+        isProcessing={isProcessing}
+        coupon={formState.coupon}
+        coupon_name={formState.coupon_name}
+        total_after_coupon={formState.total_after_coupon}
       />
     </div>
   );
