@@ -2,84 +2,63 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { usePayment } from "@/hooks/use-payment";
 import {
   useGetItemsQuery,
   useGetShippingOptionsQuery,
   useCheckCouponMutation,
 } from "@/redux/features/cart/cartApiSlice";
-import {
-  useGetClientTokenQuery,
-  useProcessPaymentMutation,
-  useGetPaymentTotalQuery,
-} from "@/redux/features/payment/paymentApiSlice";
-import { CheckoutSkeleton } from "@/squeletons/CheckoutSkeleton";
+import { useGetPaymentTotalQuery } from "@/redux/features/payment/paymentApiSlice";
+import { CheckoutSkeleton } from "@/components/skeletons/CheckoutSkeleton";
 import CheckoutItems from "./CheckoutItems";
 import ShippingForm from "./ShippingForm";
-import { loadStripe } from "@stripe/stripe-js";
+import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Button } from "@headlessui/react";
-
-const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-);
 
 const CheckoutDetails = () => {
   const router = useRouter();
-  const [formState, setFormState] = useState(() => {
-    // Recuperar estado del localStorage si existe
-    const savedState = localStorage.getItem("checkoutForm");
-    return savedState
-      ? JSON.parse(savedState)
-      : {
-          coupon_name: "",
-          shipping_id: 0,
-          shipping_cost: 0,
-        };
+  const { handlePayment, isProcessing } = usePayment();
+
+  // Estado del formulario
+  const [formState, setFormState] = useState({
+    shipping_id: "",
+    shipping_cost: 0,
+    coupon_name: "",
+    coupon: null,
+    coupon_applied: false,
+    discount: 0,
+    total_after_coupon: 0,
   });
 
-  const { data: cartData, isLoading: isLoadingCart } = useGetItemsQuery(
-    undefined,
-    {
-      refetchOnMountOrArgChange: true,
-    }
-  );
-  // Destructure data and handle empty cart case concisely
-  const { ids = [], entities = {} } = cartData || {};
-  // Calculate cart items
-  const items = ids.map((id) => entities[id] || null).filter(Boolean);
-
+  // Queries y Mutations
+  const { data: cartData, isLoading: isLoadingCart } = useGetItemsQuery();
   const { data: shippingData, isLoading: isLoadingShipping } =
-    useGetShippingOptionsQuery("shipping", {
-      refetchOnMountOrArgChange: true,
-    });
-
-  const { data: tokenData, isLoading: isLoadingToken } = useGetClientTokenQuery(
-    undefined,
-    {
-      refetchOnMountOrArgChange: false,
-    }
-  );
-
+    useGetShippingOptionsQuery();
   const { data: paymentTotal } = useGetPaymentTotalQuery(
     formState.shipping_id,
     {
       skip: !formState.shipping_id,
-      // Refetch cuando cambie el shipping_id
-      refetchOnMountOrArgChange: true,
     }
   );
+  const [checkCoupon] = useCheckCouponMutation();
 
-  const [processPayment, { isLoading: isProcessingPayment }] =
-    useProcessPaymentMutation();
-  const [checkCoupon, { isLoading: isCheckingCoupon }] =
-    useCheckCouponMutation();
+  // Procesar datos del carrito
+  const { ids = [], entities = {} } = cartData || {};
+  const items = ids.map((id) => entities[id]).filter(Boolean);
 
-  // Persistir formState en localStorage
+  // Efecto para persistir el estado del formulario
+  useEffect(() => {
+    const savedForm = localStorage.getItem("checkoutForm");
+    if (savedForm) {
+      setFormState(JSON.parse(savedForm));
+    }
+  }, []);
+
   useEffect(() => {
     localStorage.setItem("checkoutForm", JSON.stringify(formState));
   }, [formState]);
 
-  // Añadir esta función para manejar cambios en inputs generales
+  // Handlers
   const handleInputChange = useCallback((e) => {
     const { name, value } = e.target;
     setFormState((prev) => ({
@@ -89,7 +68,7 @@ const CheckoutDetails = () => {
   }, []);
 
   const handleShippingChange = useCallback((e, shippingCost) => {
-    const { name, value } = e.target;
+    const { value } = e.target;
     setFormState((prev) => ({
       ...prev,
       shipping_id: value,
@@ -100,6 +79,7 @@ const CheckoutDetails = () => {
   const handleCouponSubmit = useCallback(
     async (e) => {
       e.preventDefault();
+
       if (!formState.coupon_name) {
         toast.error("Por favor ingrese un cupón");
         return;
@@ -107,17 +87,25 @@ const CheckoutDetails = () => {
 
       try {
         const result = await checkCoupon(formState.coupon_name).unwrap();
-        toast.success("Cupón aplicado correctamente");
+
+        const discountAmount =
+          (paymentTotal?.total_amount * result.discount_percentage) / 100;
+        const newTotal = paymentTotal?.total_amount - discountAmount;
+
         setFormState((prev) => ({
           ...prev,
+          coupon: result,
           coupon_applied: true,
-          discount: result.discount,
+          discount: discountAmount,
+          total_after_coupon: newTotal,
         }));
+
+        toast.success("Cupón aplicado correctamente");
       } catch (err) {
-        toast.error(err.data?.detail || "Error al aplicar el cupón");
+        toast.error(err.data?.detail || "Cupón inválido");
       }
     },
-    [formState.coupon_name, checkCoupon]
+    [formState.coupon_name, checkCoupon, paymentTotal]
   );
 
   const handlePaymentSubmit = useCallback(
@@ -130,34 +118,34 @@ const CheckoutDetails = () => {
       }
 
       try {
-        // Crear sesión de checkout con Stripe
-        const result = await processPayment({
-          shipping_id: formState.shipping_id,
+        await handlePayment({
           ...formState,
-        }).unwrap();
-
-        // Redireccionar a Stripe Checkout
-        const stripe = await stripePromise;
-        const { error } = await stripe.redirectToCheckout({
-          sessionId: result.sessionId,
+          total_amount: formState.coupon_applied
+            ? formState.total_after_coupon
+            : paymentTotal?.total_amount,
         });
-
-        if (error) {
-          toast.error(error.message);
-        }
-      } catch (err) {
-        toast.error(err.data?.detail || "Error al procesar el pago");
+      } catch (error) {
+        toast.error("Error al procesar el pago");
       }
     },
-    [formState, processPayment]
+    [formState, paymentTotal, handlePayment]
   );
 
-  // Manejo de estados de carga
-  const isLoading = isLoadingCart || isLoadingShipping || isLoadingToken;
-  const isProcessing = isProcessingPayment || isCheckingCoupon;
-
-  if (isLoading) {
+  // Loading states
+  if (isLoadingCart || isLoadingShipping) {
     return <CheckoutSkeleton />;
+  }
+
+  // Empty cart
+  if (!items.length) {
+    return (
+      <div className="text-center py-12">
+        <h2 className="text-2xl font-bold mb-4">Tu carrito está vacío</h2>
+        <Button onClick={() => router.push("/products")}>
+          Continuar comprando
+        </Button>
+      </div>
+    );
   }
 
   return (
@@ -183,11 +171,10 @@ const CheckoutDetails = () => {
               className="w-full mt-4"
               disabled={isProcessing}
             >
-              {isProcessing ? "Procesando..." : "Pagar con Stripe"}
+              {isProcessing ? "Procesando pago..." : "Pagar con Stripe"}
             </Button>
           </div>
         }
-        clientToken={tokenData}
         paymentTotal={paymentTotal}
         isProcessing={isProcessing}
         coupon={formState.coupon}

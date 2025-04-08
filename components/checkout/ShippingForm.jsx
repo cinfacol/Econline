@@ -22,7 +22,6 @@ const ShippingForm = ({
   total_after_coupon,
 }) => {
   const { data } = useGetPaymentTotalQuery(shipping_id);
-  console.log("ShippingForm data", data);
   const sub_total = data?.subtotal || 0;
   const total_to_pay = parseFloat(sub_total) + parseFloat(shipping_cost);
 

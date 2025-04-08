@@ -7,7 +7,7 @@ export const paymentApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getPaymentTotal: builder.query({
       query: (shipping_id) => ({
-        url: `/payments/calculate-total/`,
+        url: `/api/payments/calculate-total/`,
         method: "GET",
         params: { shipping_id },
       }),
@@ -18,53 +18,45 @@ export const paymentApiSlice = apiSlice.injectEndpoints({
       providesTags: ["PaymentTotal"],
     }),
 
-    getClientToken: builder.query({
-      query: () => ({
-        url: `/payments/client-token/`,
-        method: "GET",
-      }),
-      transformResponse: (response) => response.token,
-      providesTags: ["ClientToken"],
-    }),
-
     createCheckoutSession: builder.mutation({
-      query: ({ orderId, paymentData }) => ({
-        url: `/payments/${orderId}/create-checkout-session/`,
+      query: (paymentData) => ({
+        url: `/api/payments/create-checkout-session/`,
         method: "POST",
         body: paymentData,
       }),
-      invalidatesTags: ["Payment"],
+      invalidatesTags: ["Payment", "Cart"],
     }),
 
     processPayment: builder.mutation({
-      query: ({ orderId, paymentData }) => ({
-        url: `/payments/${orderId}/process/`,
+      query: (paymentId) => ({
+        url: `/api/payments/${paymentId}/process/`,
         method: "POST",
-        body: paymentData,
       }),
-      invalidatesTags: ["Payment", "Order"],
+      invalidatesTags: ["Payment", "Order", "Cart"],
     }),
 
     verifyPayment: builder.query({
       query: (paymentId) => ({
-        url: `/payments/${paymentId}/verify/`,
+        url: `/api/payments/${paymentId}/verify/`,
         method: "GET",
       }),
       providesTags: (result, error, id) => [{ type: "Payment", id }],
     }),
 
-    getPaymentDetails: builder.query({
-      query: (paymentId) => `/payments/${paymentId}/`,
-      providesTags: (result, error, id) => [{ type: "Payment", id }],
+    retryPayment: builder.mutation({
+      query: (paymentId) => ({
+        url: `/api/payments/${paymentId}/retry_payment/`,
+        method: "POST",
+      }),
+      invalidatesTags: ["Payment"],
     }),
   }),
 });
 
 export const {
   useGetPaymentTotalQuery,
-  useGetClientTokenQuery,
   useCreateCheckoutSessionMutation,
   useProcessPaymentMutation,
   useVerifyPaymentQuery,
-  useGetPaymentDetailsQuery,
+  useRetryPaymentMutation,
 } = paymentApiSlice;
