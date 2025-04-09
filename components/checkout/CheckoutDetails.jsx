@@ -67,14 +67,29 @@ const CheckoutDetails = () => {
     }));
   }, []);
 
-  const handleShippingChange = useCallback((e, shippingCost) => {
-    const { value } = e.target;
-    setFormState((prev) => ({
-      ...prev,
-      shipping_id: value,
-      shipping_cost: shippingCost,
-    }));
-  }, []);
+  const handleShippingChange = useCallback(
+    (e, shippingCost) => {
+      const { value } = e.target;
+      setFormState((prev) => ({
+        ...prev,
+        shipping_id: value,
+        shipping_cost: shippingCost,
+        // Resetear cupón al cambiar envío
+        coupon: null,
+        coupon_applied: false,
+        discount: 0,
+        total_after_coupon: 0,
+        // Opcional: Limpiar el input del cupón si se resetea
+        // coupon_name: "",
+      }));
+      if (formState.coupon_applied) {
+        toast.info(
+          "El método de envío cambió. Por favor, vuelve a aplicar tu cupón si aún es válido."
+        );
+      }
+    },
+    [formState.coupon_applied]
+  );
 
   const handleCouponSubmit = useCallback(
     async (e) => {

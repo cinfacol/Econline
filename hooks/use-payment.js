@@ -1,51 +1,77 @@
 import { useState, useCallback, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { loadStripe } from "@stripe/stripe-js";
 import { toast } from "sonner";
 import {
   useCreateCheckoutSessionMutation,
   useProcessPaymentMutation,
-  useVerifyPaymentQuery,
+  // useVerifyPaymentQuery,
 } from "@/redux/features/payment/paymentApiSlice";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 );
 
+// Clave para sessionStorage
+const PAYMENT_ID_STORAGE_KEY = "pendingPaymentId";
+
 export function usePayment() {
   const router = useRouter();
-  const [paymentId, setPaymentId] = useState(null);
+  const searchParams = useSearchParams();
+  // const [paymentId, setPaymentId] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
   const [createCheckoutSession] = useCreateCheckoutSessionMutation();
   const [processPayment] = useProcessPaymentMutation();
-  const { data: paymentStatus } = useVerifyPaymentQuery(paymentId, {
+  /* const { data: paymentStatus } = useVerifyPaymentQuery(paymentId, {
     skip: !paymentId,
     pollingInterval: 2000,
-  });
+  }); */
 
   const handlePayment = useCallback(
     async (formData) => {
-      try {
-        setIsProcessing(true);
+      setIsProcessing(true);
+      let paymentIdToPersist = null;
 
+      try {
         // 1. Crear sesión de checkout
         const result = await createCheckoutSession({
           shipping_id: formData.shipping_id,
           payment_option: "S", // Stripe
         }).unwrap();
 
-        setPaymentId(result.payment_id);
+        paymentIdToPersist = result.payment_id;
 
-        // 2. Redireccionar a Stripe
+        if (!paymentIdToPersist) {
+          throw new Error("No se recibió payment_id del backend.");
+        }
+
+        // 2. Persistir paymentId ANTES de redirigir
+        sessionStorage.setItem(PAYMENT_ID_STORAGE_KEY, paymentIdToPersist);
+
+        // 3. Redireccionar a Stripe
         const stripe = await stripePromise;
+        if (!stripe) {
+          throw new Error("Stripe.js no se cargó correctamente.");
+        }
         const { error } = await stripe.redirectToCheckout({
           sessionId: result.sessionId,
         });
 
-        if (error) throw new Error(error.message);
+        // Si redirectToCheckout falla, lanzará un error
+        if (error) {
+          sessionStorage.removeItem(PAYMENT_ID_STORAGE_KEY);
+          throw new Error(error.message);
+        }
       } catch (err) {
-        toast.error(err.data?.error || "Error al procesar el pago");
+        console.error("Error en handlePayment:", err);
+        sessionStorage.removeItem(PAYMENT_ID_STORAGE_KEY); // Limpiar en cualquier error
+        const errorMessage =
+          err?.data?.error ||
+          err?.data?.detail ||
+          err?.message ||
+          "Error al iniciar el proceso de pago";
+        toast.error(errorMessage);
         setIsProcessing(false);
       }
     },
@@ -54,24 +80,38 @@ export function usePayment() {
 
   // Verificar estado cuando regresa de Stripe
   useEffect(() => {
-    const verifyPayment = async () => {
-      const sessionId = new URLSearchParams(window.location.search).get(
-        "session_id"
-      );
+    const verifyOnReturn = async () => {
+      const sessionId = searchParams.get("session_id");
+      const storedPaymentId = sessionStorage.getItem(PAYMENT_ID_STORAGE_KEY);
 
-      if (sessionId && paymentId) {
+      if (sessionId && storedPaymentId) {
+        setIsProcessing(true);
         try {
-          const result = await processPayment(paymentId).unwrap();
+          // Limpiar el ID de sessionStorage INMEDIATAMENTE para evitar reprocesamiento
+          sessionStorage.removeItem(PAYMENT_ID_STORAGE_KEY);
 
-          if (result.status === "success") {
+          const result = await processPayment(storedPaymentId).unwrap();
+
+          // Asumiendo que el backend devuelve un estado claro
+          if (result.status === "success" || result.payment_status === "C") {
+            // Ajustar según respuesta real
             toast.success("Pago procesado exitosamente");
             router.push("/order/success");
           } else {
-            toast.error("Error al procesar el pago");
+            const failureReason =
+              result.message || "El pago no pudo ser completado.";
+            toast.error(`Error al procesar el pago: ${failureReason}`);
             router.push("/order/cancelled");
           }
         } catch (err) {
-          toast.error(err.data?.error || "Error al verificar el pago");
+          console.error("Error en verifyOnReturn:", err);
+          sessionStorage.removeItem(PAYMENT_ID_STORAGE_KEY); // Asegurar limpieza en error
+          const errorMessage =
+            err?.data?.error ||
+            err?.data?.detail ||
+            err?.message ||
+            "Error al verificar el pago";
+          toast.error(errorMessage);
           router.push("/order/cancelled");
         } finally {
           setIsProcessing(false);
@@ -79,12 +119,11 @@ export function usePayment() {
       }
     };
 
-    verifyPayment();
-  }, [paymentId, processPayment, router]);
+    verifyOnReturn();
+  }, [searchParams, processPayment, router]);
 
   return {
     handlePayment,
     isProcessing,
-    paymentStatus,
   };
 }

@@ -7,7 +7,7 @@ export const paymentApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getPaymentTotal: builder.query({
       query: (shipping_id) => ({
-        url: `/api/payments/calculate-total/`,
+        url: `/payments/calculate-total/`,
         method: "GET",
         params: { shipping_id },
       }),
@@ -20,7 +20,7 @@ export const paymentApiSlice = apiSlice.injectEndpoints({
 
     createCheckoutSession: builder.mutation({
       query: (paymentData) => ({
-        url: `/api/payments/create-checkout-session/`,
+        url: `/payments/create-checkout-session/`,
         method: "POST",
         body: paymentData,
       }),
@@ -29,7 +29,7 @@ export const paymentApiSlice = apiSlice.injectEndpoints({
 
     processPayment: builder.mutation({
       query: (paymentId) => ({
-        url: `/api/payments/${paymentId}/process/`,
+        url: `/payments/${paymentId}/process/`,
         method: "POST",
       }),
       invalidatesTags: ["Payment", "Order", "Cart"],
@@ -37,7 +37,7 @@ export const paymentApiSlice = apiSlice.injectEndpoints({
 
     verifyPayment: builder.query({
       query: (paymentId) => ({
-        url: `/api/payments/${paymentId}/verify/`,
+        url: `/payments/${paymentId}/verify/`,
         method: "GET",
       }),
       providesTags: (result, error, id) => [{ type: "Payment", id }],
@@ -45,7 +45,7 @@ export const paymentApiSlice = apiSlice.injectEndpoints({
 
     retryPayment: builder.mutation({
       query: (paymentId) => ({
-        url: `/api/payments/${paymentId}/retry_payment/`,
+        url: `/payments/${paymentId}/retry_payment/`,
         method: "POST",
       }),
       invalidatesTags: ["Payment"],

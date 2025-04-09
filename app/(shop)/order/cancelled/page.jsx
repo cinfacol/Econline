@@ -1,10 +1,23 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { XCircleIcon } from "@heroicons/react/24/outline";
 
 export default function CancelledPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const errorCode = searchParams.get("error_code");
+
+  const getErrorMessage = (code) => {
+    switch (code) {
+      case "card_declined":
+        return "Tu tarjeta fue rechazada. Por favor, intenta con otra.";
+      case "insufficient_funds":
+        return "No había fondos suficientes para completar la transacción.";
+      default:
+        return "El proceso de pago ha sido cancelado o ha fallado.";
+    }
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -14,7 +27,7 @@ export default function CancelledPage() {
           Pago cancelado
         </h1>
         <p className="mt-2 text-sm text-gray-600">
-          El proceso de pago ha sido cancelado.
+          {getErrorMessage(errorCode)}
         </p>
         <div className="mt-6">
           <button

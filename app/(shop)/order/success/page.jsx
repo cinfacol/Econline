@@ -1,24 +1,32 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useVerifyPaymentQuery } from "@/redux/features/payment/paymentApiSlice";
 import { CheckCircleIcon } from "@heroicons/react/24/outline";
 
 export default function SuccessPage() {
   const router = useRouter();
-  const paymentId = new URLSearchParams(window.location.search).get(
+  const searchParams = useSearchParams();
+  /* const paymentId = new URLSearchParams(window.location.search).get(
     "payment_id"
-  );
+  ); */
+  const paymentId = searchParams.get("payment_id");
 
   const { data: payment, isLoading } = useVerifyPaymentQuery(paymentId);
 
   useEffect(() => {
+    let timerId; // Variable para guardar el ID del timeout
     if (payment?.status === "C") {
-      setTimeout(() => router.push("/dashboard/orders"), 3000);
+      timerId = setTimeout(() => router.push("/dashboard/orders"), 3000);
     }
+    // Función de limpieza que se ejecuta al desmontar o antes de re-ejecutar el efecto
+    return () => {
+      if (timerId) {
+        clearTimeout(timerId);
+      }
+    };
   }, [payment, router]);
-
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="text-center">

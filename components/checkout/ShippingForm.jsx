@@ -103,7 +103,7 @@ const ShippingForm = ({
             </form>
           }
         </div>
-        {coupon && coupon !== null && coupon !== undefined ? (
+        {coupon !== null && coupon !== undefined ? (
           <div className="text-green-500">
             Coupon: {coupon.name} is applied.
           </div>
