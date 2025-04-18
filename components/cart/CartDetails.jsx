@@ -6,6 +6,7 @@ import {
   useDecQtyMutation,
   useIncQtyMutation,
   useRemoveItemMutation,
+  useClearCartMutation,
 } from "@/redux/features/cart/cartApiSlice";
 import Image from "next/image";
 import Link from "next/link";
@@ -24,6 +25,7 @@ export default function CartDetails() {
   const router = useRouter();
   const { data, isSuccess, isLoading, error } = useGetItemsQuery();
   const [removeItem, { isLoading: loading }] = useRemoveItemMutation();
+  const [cleanCart] = useClearCartMutation();
   const [decQty] = useDecQtyMutation();
   const [incQty] = useIncQtyMutation();
 
@@ -61,6 +63,15 @@ export default function CartDetails() {
     },
     [removeItem]
   );
+
+  const handleCleanCart = useCallback(async () => {
+    try {
+      await cleanCart().unwrap();
+      toast.success("Cart Clean successfully");
+    } catch (error) {
+      toast.error(`Error: ${error?.data?.error}`);
+    }
+  }, [cleanCart]);
 
   const handleIncQty = useCallback(
     async (inventoryId) => {
@@ -108,6 +119,7 @@ export default function CartDetails() {
             <>
               <div className="mt-6 sm:mt-8 md:gap-6 lg:flex lg:items-start xl:gap-8">
                 <div className="mx-auto w-full flex-none lg:max-w-2xl xl:max-w-4xl">
+                  <div>Remove all cart</div>
                   <div className="space-y-2">
                     {items.map((Item) => {
                       const inventoryId = Item?.inventory?.id;
@@ -238,6 +250,14 @@ export default function CartDetails() {
                         </div>
                       );
                     })}
+                  </div>
+                  <div className="flex flex-row-reverse items-center gap-4 mt-3">
+                    <Button
+                      variant="destructive"
+                      onClick={() => handleCleanCart()}
+                    >
+                      <Trash2 /> Remove All
+                    </Button>
                   </div>
                   <div className="hidden xl:mt-8 xl:block">
                     <h3 className="text-2xl font-semibold text-gray-900 dark:text-white">

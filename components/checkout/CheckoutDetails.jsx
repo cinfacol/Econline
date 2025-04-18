@@ -17,7 +17,7 @@ import { toast } from "sonner";
 
 const CheckoutDetails = () => {
   const router = useRouter();
-  const { handlePayment, isProcessing } = usePayment();
+  const { handlePayment, isProcessing, error, paymentState } = usePayment();
 
   // Estado del formulario
   const [formState, setFormState] = useState({
@@ -123,6 +123,14 @@ const CheckoutDetails = () => {
     [formState.coupon_name, checkCoupon, paymentTotal]
   );
 
+  useEffect(() => {
+    if (paymentState === "error" && error) {
+      toast.error(error);
+      // Opcionalmente, limpiar el formulario o redirigir
+      localStorage.removeItem("checkoutForm");
+    }
+  }, [paymentState, error]);
+
   const handlePaymentSubmit = useCallback(
     async (e) => {
       e.preventDefault();
@@ -132,18 +140,63 @@ const CheckoutDetails = () => {
         return;
       }
 
+      if (!items.length) {
+        toast.error("El carrito está vacío");
+        return;
+      }
+
+      // Validar monto mínimo si es necesario
+      const totalAmount = formState.coupon_applied
+        ? formState.total_after_coupon
+        : paymentTotal?.total_amount;
+
+      if (!totalAmount || totalAmount <= 0) {
+        toast.error("El monto a pagar no es válido");
+        return;
+      }
+
       try {
+        // Mostrar indicador de carga
+        toast.loading("Iniciando proceso de pago...");
+
         await handlePayment({
           ...formState,
-          total_amount: formState.coupon_applied
-            ? formState.total_after_coupon
-            : paymentTotal?.total_amount,
+          total_amount: totalAmount,
+          currency: "USD", // Agregar moneda si es necesario
+          items: items.map((item) => ({
+            id: item.id,
+            quantity: item.quantity,
+            price: item.store_price,
+          })),
         });
       } catch (error) {
-        toast.error("Error al procesar el pago");
+        console.error("Error en checkout:", error);
       }
     },
-    [formState, paymentTotal, handlePayment]
+    [formState, paymentTotal, handlePayment, items]
+  );
+
+  const renderPaymentButton = () => (
+    <div className="payment-info">
+      <Button
+        type="submit"
+        variant="warning"
+        className="w-full mt-4"
+        disabled={isProcessing || !items.length || !formState.shipping_id}
+      >
+        {isProcessing ? (
+          <div className="flex items-center justify-center gap-2">
+            <span className="animate-spin">⭕</span>
+            <span>Procesando pago...</span>
+          </div>
+        ) : (
+          "Pagar con Stripe"
+        )}
+      </Button>
+      {error && (
+        <p className="text-red-500 text-sm mt-2 text-center">{error}</p>
+      )}
+    </div>
   );
 
   // Loading states
@@ -178,20 +231,10 @@ const CheckoutDetails = () => {
         onChange={handleInputChange}
         onCouponSubmit={handleCouponSubmit}
         onPaymentSubmit={handlePaymentSubmit}
-        renderPaymentInfo={
-          <div className="payment-info">
-            <Button
-              type="submit"
-              variant="warning"
-              className="w-full mt-4"
-              disabled={isProcessing}
-            >
-              {isProcessing ? "Procesando pago..." : "Pagar con Stripe"}
-            </Button>
-          </div>
-        }
+        renderPaymentInfo={renderPaymentButton()}
         paymentTotal={paymentTotal}
         isProcessing={isProcessing}
+        error={error}
         coupon={formState.coupon}
         coupon_name={formState.coupon_name}
         total_after_coupon={formState.total_after_coupon}

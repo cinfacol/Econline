@@ -87,6 +87,22 @@ export const cartApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: ["Cart"],
       extraOptions: { maxRetries: 0 },
     }),
+    clearCart: builder.mutation({
+      query: () => ({
+        url: "/cart/clear/",
+        method: "POST",
+      }),
+
+      transformResponse: (response, meta, arg) => response,
+
+      // Transformar respuesta para manejar errores
+      transformErrorResponse: (response) => response,
+      invalidatesTags: ["Cart", "CartItems"],
+
+      extraOptions: {
+        maxRetries: 0,
+      },
+    }),
     getShippingOptions: builder.query({
       query: () => ({
         url: "/shipping/get-shipping-options/",
@@ -126,4 +142,5 @@ export const {
   useRemoveItemMutation,
   useGetShippingOptionsQuery,
   useCheckCouponMutation,
+  useClearCartMutation,
 } = cartApiSlice;
