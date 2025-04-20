@@ -42,9 +42,13 @@ export default function InventoriesList({ title }) {
           <h3 className="font-bold text-3xl sr-only">{title}</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {data?.ids?.length === 0 && <NoResults title={"products"} />}
-            {ids?.map((id) => {
+            {ids?.map((id, index) => {
               const Item = entities[id];
-              return <ProductCard key={Item.id} data={Item} />;
+              // Prioritize loading for the first 4 images (adjust number as needed)
+              const priority = index < 4;
+              return (
+                <ProductCard key={Item.id} data={Item} priority={priority} />
+              );
             })}
           </div>
         </div>

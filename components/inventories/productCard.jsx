@@ -12,15 +12,11 @@ import usePreviewModal from "@/hooks/use-preview-modal";
 import AddItem from "@/components/cart/AddItem";
 import { useAppSelector } from "@/redux/hooks";
 
-const ProductCard = ({ data }) => {
+const ProductCard = ({ data, priority = false }) => {
   // const token = auth;
   const { isAuthenticated } = useAppSelector((state) => state.auth);
 
-  const raters = data?.rating?.length;
-  let total = 0;
-  const rate = data?.rating?.map(({ rating }) => (total += rating));
-  const resultado = total / raters || 0;
-  const resultadoAdjust = resultado.toFixed(1);
+  // Client-side rating calculation removed - using data.average_rating and data.rating_count from API
   const stock = data?.stock?.units - data?.stock?.units_sold;
   const previewModal = usePreviewModal();
   const router = useRouter();
@@ -42,9 +38,9 @@ const ProductCard = ({ data }) => {
           fill
           sizes="(max-width: 500px) 100vw, (max-width: 768px) 50vw, 33vw"
           className="object-cover rounded-xl"
-          priority={false}
+          priority={priority} // Use the passed priority prop
           quality={80}
-          loading="lazy"
+          // loading="lazy" // Remove loading="lazy" when priority is true
         />
         <div className="opacity-20 group-hover:opacity-100 transition absolute w-full px-6 bottom-5">
           <div className="flex gap-x-6 justify-center">
@@ -84,16 +80,19 @@ const ProductCard = ({ data }) => {
       </div>
       {/* Price & Reiew */}
       <div className="flex flex-wrap items-center space-x-2 mb-2">
-        {!resultado ? (
+        {data?.rating_count === 0 ? ( // Check rating_count from API
           <div className="font-semibold text-amber-400 py-1 rounded-full">
-            <h1>Not Reviews</h1>
+            <h1>No Reviews</h1>
           </div>
         ) : (
           <>
-            <span className="text-gray-500">{resultadoAdjust}</span>
+            {/* Display average_rating from API */}
+            <span className="text-gray-500">
+              {data?.average_rating?.toFixed(1)}
+            </span>
             <div className="">
               <StarRatings
-                rating={resultado}
+                rating={data?.average_rating || 0} // Use average_rating from API
                 starRatedColor="#ffb829"
                 numberOfStars={1}
                 starDimension="20px"
@@ -101,8 +100,8 @@ const ProductCard = ({ data }) => {
                 name="rating"
               />
             </div>
-
-            <span className="text-gray-500">({raters})</span>
+            {/* Display rating_count from API */}
+            <span className="text-gray-500">({data?.rating_count})</span>
           </>
         )}
 
