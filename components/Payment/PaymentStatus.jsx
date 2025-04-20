@@ -1,3 +1,5 @@
+"use client";
+
 import { useVerifyPaymentQuery } from "@/redux/features/payment/paymentApiSlice";
 import { Spinner } from "@/components/ui/spinner";
 import { ExclamationCircleIcon } from "@heroicons/react/20/solid";

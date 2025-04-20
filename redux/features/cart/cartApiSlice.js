@@ -72,7 +72,7 @@ export const cartApiSlice = apiSlice.injectEndpoints({
     }),
     removeItem: builder.mutation({
       query: ({ itemId }) => ({
-        url: `/cart/remove-item/`,
+        url: "/cart/remove-item/",
         method: "POST",
         body: JSON.stringify(itemId),
         headers: {
@@ -80,12 +80,27 @@ export const cartApiSlice = apiSlice.injectEndpoints({
           "Content-Type": "application/json",
         },
       }),
-
-      transformResponse: (response, meta, arg) => response.data,
-
-      transformErrorResponse: (response, meta, arg) => response.data,
+      transformResponse: (response) => {
+        const cartItems = response.cart || [];
+        return {
+          success: true,
+          cart: cartItems,
+          totalItems: response.total_items,
+          // Extraer datos según la estructura del serializer
+          items: cartItems.map((item) => ({
+            id: item.id,
+            cart: item.cart,
+            inventory: item.inventory,
+            quantity: item.quantity,
+            coupon: item.coupon,
+          })),
+        };
+      },
+      transformErrorResponse: (error) => ({
+        success: false,
+        error: error.data?.error || "Error al eliminar el producto",
+      }),
       invalidatesTags: ["Cart"],
-      extraOptions: { maxRetries: 0 },
     }),
     clearCart: builder.mutation({
       query: () => ({
