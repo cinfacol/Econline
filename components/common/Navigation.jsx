@@ -52,10 +52,6 @@ export default function Navigation() {
           "Close up of Basic Tee fall bundle with off-white, ochre, olive, and black tees.",
       },
     ],
-    pages: [
-      { name: "Team", href: "/" },
-      { name: "Products", href: "/product" },
-    ],
   };
 
   return (

@@ -13,6 +13,7 @@ import {
   Navigation,
   MobileNavigation,
   ProfileButton,
+  GuestButton,
   ProductSearchBar,
 } from "@/components/common";
 import { toast } from "sonner";
@@ -24,7 +25,7 @@ import { useRouter } from "next/navigation";
 
 const navigation = {
   pages: [
-    { name: "Team", href: "/" },
+    { name: "Compras", href: "/" },
     { name: "Products", href: "/product" },
   ],
 };
@@ -219,7 +220,7 @@ export default function Navbar() {
                     </Link>
                   </Button>
                   {/* profileButton */}
-                  <ProfileButton />
+                  {isAuthenticated ? <ProfileButton /> : <GuestButton />}
                 </div>
               </div>
             </div>

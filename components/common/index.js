@@ -9,6 +9,7 @@ export { default as List } from "./List";
 export { default as NavLink } from "./NavLink";
 export { default as CartActions } from "./CartActions";
 export { default as ProfileButton } from "./ProfileButton";
+export { default as GuestButton } from "./GuestButton";
 export { default as ProductSearchBar } from "./Searchbar";
 export { default as SocialButton } from "./SocialButton";
 export { default as SocialButtons } from "./SocialButtons";
