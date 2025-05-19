@@ -9,13 +9,13 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@babel/runtime": "^7.27.0",
-    "@headlessui/react": "^2.2.2",
+    "@babel/runtime": "^7.27.1",
+    "@headlessui/react": "^2.2.3",
     "@heroicons/react": "^2.2.0",
-    "@radix-ui/react-avatar": "^1.1.7",
-    "@radix-ui/react-slot": "^1.2.0",
-    "@reduxjs/toolkit": "^2.7.0",
-    "@stripe/stripe-js": "^7.2.0",
+    "@radix-ui/react-avatar": "^1.1.9",
+    "@radix-ui/react-slot": "^1.2.2",
+    "@reduxjs/toolkit": "^2.8.2",
+    "@stripe/stripe-js": "^7.3.0",
     "@tailwindcss/forms": "^0.5.10",
     "@tailwindcss/line-clamp": "^0.4.4",
     "async-mutex": "^0.5.0",
@@ -26,7 +26,7 @@
     "countries-list": "^3.1.1",
     "date-fns": "^4.1.0",
     "lucide-react": "^0.476.0",
-    "next": "^15.3.1",
+    "next": "^15.3.2",
     "postcss": "^8.5.3",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
@@ -35,17 +35,17 @@
     "react-star-ratings": "^2.3.0",
     "react-tooltip": "^5.28.1",
     "sonner": "^2.0.3",
-    "stripe": "^18.0.0",
-    "tailwind-merge": "^3.2.0",
-    "tailwindcss": "^4.1.4",
+    "stripe": "^18.1.0",
+    "tailwind-merge": "^3.3.0",
+    "tailwindcss": "^4.1.7",
     "tailwindcss-animate": "^1.0.7",
-    "zustand": "^5.0.3"
+    "zustand": "^5.0.4"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
-    "@tailwindcss/postcss": "^4.1.4",
+    "@tailwindcss/postcss": "^4.1.7",
     "autoprefixer": "^10.4.21",
-    "eslint": "^9.25.1",
+    "eslint": "^9.27.0",
     "eslint-config-next": "15.2.0"
   },
   "packageManager": "pnpm@10.9.0+sha512.0486e394640d3c1fb3c9d43d49cf92879ff74f8516959c235308f5a8f62e2e19528a65cdc2a3058f587cde71eba3d5b56327c8c33a97e4c4051ca48a10ca2d5f"
