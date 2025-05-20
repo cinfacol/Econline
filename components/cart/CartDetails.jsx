@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Heart, Trash2, MoveRight, Minus, Plus } from "lucide-react";
@@ -21,6 +21,7 @@ import { CartSummary } from "./CartSummary";
 
 export default function CartDetails() {
   const router = useRouter();
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const { data, isSuccess, isLoading } = useGetItemsQuery();
   const [removeItem] = useRemoveItemMutation();
   const [clearCart] = useClearCartMutation();
@@ -66,6 +67,17 @@ export default function CartDetails() {
   console.log("save", save);
 
   // Handlers optimizados
+  const handleCheckoutRedirect = useCallback(async () => {
+    setIsRedirecting(true);
+    try {
+      await Promise.resolve(router.push("/checkout"));
+    } catch (error) {
+      console.error("Error al redirigir:", error);
+    } finally {
+      setIsRedirecting(false);
+    }
+  }, [router]);
+
   const handleQuantityChange = useCallback(
     async (inventoryId, action) => {
       try {
@@ -192,7 +204,8 @@ export default function CartDetails() {
           taxes={taxes}
           total={total}
           savings={save}
-          onCheckout={() => router.push("/checkout")}
+          onCheckout={handleCheckoutRedirect}
+          isLoading={isRedirecting}
         />
       </div>
     </div>

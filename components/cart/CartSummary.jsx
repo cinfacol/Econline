@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { MoveRight } from "lucide-react";
+import { MoveRight, Loader2 } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -23,7 +23,14 @@ function SummaryRow({ label, value, className, strikethrough = false }) {
   );
 }
 
-export function CartSummary({ subTotal, taxes, total, savings, onCheckout }) {
+export function CartSummary({
+  subTotal,
+  taxes,
+  total,
+  savings,
+  onCheckout,
+  isLoading,
+}) {
   return (
     <div className="rounded-lg border bg-white p-6 shadow-sm dark:bg-gray-800">
       <h2 className="text-lg font-semibold">Resumen del pedido</h2>
@@ -47,8 +54,20 @@ export function CartSummary({ subTotal, taxes, total, savings, onCheckout }) {
       </div>
 
       <div className="mt-6 space-y-4">
-        <Button variant="warning" className="w-full" onClick={onCheckout}>
-          Proceder al pago
+        <Button
+          variant="warning"
+          className="w-full"
+          onClick={onCheckout}
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <span className="flex items-center gap-2">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Redirigiendo...
+            </span>
+          ) : (
+            "Proceder al pago"
+          )}
         </Button>
 
         <div className="flex items-center justify-center gap-2">
