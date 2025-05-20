@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useState } from "react";
+import { Fragment, useCallback, useState } from "react";
 import {
   Transition,
   TransitionChild,
@@ -25,7 +25,12 @@ import { useRouter } from "next/navigation";
 
 const navigation = {
   pages: [
-    { name: "Compras", href: "/" },
+    {
+      name: "Compras",
+      protectedRoute: true, // agregamos esta propiedad
+      authHref: "/purchases", // ruta cuando está autenticado
+      guestHref: "/auth/login", // ruta cuando no está autenticado
+    },
     { name: "Products", href: "/product" },
   ],
 };
@@ -34,6 +39,15 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
   const { isAuthenticated } = useAppSelector((state) => state.auth);
   const router = useRouter();
+
+  // Función helper para obtener la URL correcta
+  const getPageHref = useCallback(
+    (page) => {
+      if (!page.protectedRoute) return page.href;
+      return isAuthenticated ? page.authHref : page.guestHref;
+    },
+    [isAuthenticated]
+  );
 
   return (
     <div className="bg-white">
@@ -78,8 +92,13 @@ export default function Navbar() {
                   {navigation.pages.map((page) => (
                     <div key={page.name} className="flow-root">
                       <Link
-                        href={page.href}
+                        href={getPageHref(page)}
                         className="-m-2 block p-2 font-medium text-gray-900"
+                        onClick={(e) => {
+                          if (page.protectedRoute && !isAuthenticated) {
+                            toast.warning("Debes iniciar sesión primero");
+                          }
+                        }}
                       >
                         {page.name}
                       </Link>
@@ -151,8 +170,13 @@ export default function Navbar() {
                       {navigation.pages.map((page) => (
                         <Link
                           key={page.name}
-                          href={page.href}
+                          href={getPageHref(page)}
                           className="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800"
+                          onClick={(e) => {
+                            if (page.protectedRoute && !isAuthenticated) {
+                              toast.warning("Debes iniciar sesión primero");
+                            }
+                          }}
                         >
                           {page.name}
                         </Link>

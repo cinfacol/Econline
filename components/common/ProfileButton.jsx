@@ -44,10 +44,24 @@ function ProfileButton() {
   });
 
   useEffect(() => {
-    if (error) {
-      toast.error(error.message || "Error al cargar información del usuario");
+    if (
+      error &&
+      isAuthenticated &&
+      error.status !== 401 &&
+      error.status !== 403 && // Ignorar errores de permisos
+      !error.message?.includes("unauthorized") // Ignorar mensajes de unauthorized
+    ) {
+      toast.error(
+        error.data?.message ||
+          error.message ||
+          "Error al cargar información del usuario",
+        {
+          id: "user-info-error", // Evitar toasts duplicados
+          duration: 3000,
+        }
+      );
     }
-  }, [error]);
+  }, [error, isAuthenticated]);
 
   const handleLogout = useCallback(async () => {
     try {
