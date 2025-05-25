@@ -18,6 +18,18 @@ export const paymentApiSlice = apiSlice.injectEndpoints({
       providesTags: ["PaymentTotal"],
     }),
 
+    getPaymentMethods: builder.query({
+      query: () => ({
+        url: "/payments/payment-methods/",
+        method: "GET",
+      }),
+      transformResponse: (response) => ({
+        methods: response.payment_methods || [],
+        hasPaymentMethods: response.has_payment_methods,
+      }),
+      providesTags: ["PaymentMethods"],
+    }),
+
     createCheckoutSession: builder.mutation({
       query: (paymentData) => ({
         url: `/payments/create-checkout-session/`,
@@ -59,4 +71,5 @@ export const {
   useProcessPaymentMutation,
   useVerifyPaymentQuery,
   useRetryPaymentMutation,
+  useGetPaymentMethodsQuery,
 } = paymentApiSlice;

@@ -5,8 +5,8 @@ import { toast } from "sonner";
 import {
   useCreateCheckoutSessionMutation,
   useProcessPaymentMutation,
-  useVerifyPaymentQuery,
 } from "@/redux/features/payment/paymentApiSlice";
+import { getStripe } from "@/lib/stripe";
 import { useClearCartMutation } from "@/redux/features/cart/cartApiSlice";
 
 // Constantes
@@ -21,14 +21,6 @@ const PAYMENT_STATES = {
   PROCESSING: "processing",
   SUCCESS: "success",
   ERROR: "error",
-};
-
-let stripePromise;
-const getStripe = () => {
-  if (!stripePromise) {
-    stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
-  }
-  return stripePromise;
 };
 
 export function usePayment() {
@@ -50,12 +42,11 @@ export function usePayment() {
 
   // Manejo de errores mejorado
   const handleError = useCallback(
-    (error, context = "") => {
-      console.error(`Error en ${context}:`, error);
+    (err, context = "") => {
       const errorMessage =
-        error?.data?.error ||
-        error?.data?.detail ||
-        error?.message ||
+        err?.data?.error ||
+        err?.data?.detail ||
+        err?.message ||
         "Error en el proceso de pago";
       setError(errorMessage);
       toast.error(errorMessage);
@@ -80,32 +71,36 @@ export function usePayment() {
         if (!formData?.shipping_id) {
           throw new Error("Método de envío requerido");
         }
+        if (!formData?.payment_option) {
+          // payment_option debe venir del formData
+          // (lo pasas desde CheckoutDetails.jsx)
+          throw new Error("Método de pago requerido");
+        }
 
         // 1. Crear sesión de checkout
         const result = await createCheckoutSession({
           shipping_id: formData.shipping_id,
-          payment_option: "S",
+          payment_option: formData.payment_option, // <-- aquí el valor correcto
         }).unwrap();
 
-        if (!result?.payment_id || !result?.sessionId) {
-          throw new Error("Respuesta inválida del servidor");
+        // Si el método es Stripe (SC), redirige a Stripe
+        if (formData.payment_option === "SC" && result?.sessionId) {
+          localStorage.setItem("payment_id", result.payment_id);
+          sessionStorage.setItem(STORAGE_KEYS.PAYMENT_INTENT, result.sessionId);
+
+          const stripe = await getStripe();
+          const { error: stripeError } = await stripe.redirectToCheckout({
+            sessionId: result.sessionId,
+          });
+          if (stripeError) throw stripeError;
+        } else if (result?.checkout_url) {
+          // Si el backend retorna una URL para otros métodos (PayPal, PSE, etc.)
+          window.location.href = result.checkout_url;
+        } else {
+          // Si es efectivo u otro método sin redirección
+          toast.success("Sesión de pago creada correctamente");
+          // Aquí podrías redirigir a una página de instrucciones, etc.
         }
-
-        // Guardar el ID del pago en localStorage
-        localStorage.setItem("payment_id", result.payment_id);
-        sessionStorage.setItem(STORAGE_KEYS.PAYMENT_INTENT, result.sessionId);
-
-        // 2. Persistir datos necesarios
-        /* sessionStorage.setItem(STORAGE_KEYS.PAYMENT_ID, result.payment_id);
-        sessionStorage.setItem(STORAGE_KEYS.PAYMENT_INTENT, result.sessionId); */
-
-        // 3. Redireccionar a Stripe
-        const stripe = await getStripe();
-        const { error: stripeError } = await stripe.redirectToCheckout({
-          sessionId: result.sessionId,
-        });
-
-        if (stripeError) throw stripeError;
       } catch (err) {
         handleError(err, "handlePayment");
       }

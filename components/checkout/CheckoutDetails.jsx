@@ -2,18 +2,25 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { usePayment } from "@/hooks/use-payment";
+import { PaymentMethodSelector } from "./PaymentMethodSelector";
+import { getPaymentMethodLabel } from "./paymentMethodLabels";
+import CheckoutItems from "./CheckoutItems";
+import ShippingForm from "./ShippingForm";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import {
   useGetItemsQuery,
   useGetShippingOptionsQuery,
   useCheckCouponMutation,
 } from "@/redux/features/cart/cartApiSlice";
-import { useGetPaymentTotalQuery } from "@/redux/features/payment/paymentApiSlice";
+import {
+  useCreateCheckoutSessionMutation,
+  useGetPaymentTotalQuery,
+  useGetPaymentMethodsQuery,
+} from "@/redux/features/payment/paymentApiSlice";
 import { CheckoutSkeleton } from "@/components/skeletons/CheckoutSkeleton";
-import CheckoutItems from "./CheckoutItems";
-import ShippingForm from "./ShippingForm";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
+
+import { usePayment } from "@/hooks/use-payment";
 
 const CheckoutDetails = () => {
   const router = useRouter();
@@ -30,6 +37,17 @@ const CheckoutDetails = () => {
     total_after_coupon: 0,
   });
 
+  // Estado para el método de pago seleccionado
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(
+    () => localStorage.getItem("selectedPaymentMethod") || ""
+  );
+
+  useEffect(() => {
+    if (selectedPaymentMethod) {
+      localStorage.setItem("selectedPaymentMethod", selectedPaymentMethod);
+    }
+  }, [selectedPaymentMethod]);
+
   // Queries y Mutations
   const { data: cartData, isLoading: isLoadingCart } = useGetItemsQuery();
   const { data: shippingData, isLoading: isLoadingShipping } =
@@ -40,6 +58,7 @@ const CheckoutDetails = () => {
       skip: !formState.shipping_id,
     }
   );
+  const { data: paymentMethods } = useGetPaymentMethodsQuery();
   const [checkCoupon] = useCheckCouponMutation();
 
   // Procesar datos del carrito
@@ -156,33 +175,35 @@ const CheckoutDetails = () => {
       }
 
       try {
-        // Mostrar indicador de carga
         toast.loading("Iniciando proceso de pago...");
 
         await handlePayment({
-          ...formState,
-          total_amount: totalAmount,
-          currency: "USD", // Agregar moneda si es necesario
-          items: items.map((item) => ({
-            id: item.id,
-            quantity: item.quantity,
-            price: item.store_price,
-          })),
+          shipping_id: formState.shipping_id,
+          payment_option: selectedPaymentMethod,
         });
       } catch (error) {
         console.error("Error en checkout:", error);
       }
     },
-    [formState, paymentTotal, handlePayment, items]
+    [formState, paymentTotal, handlePayment, items, selectedPaymentMethod]
   );
 
   const renderPaymentButton = () => (
     <div className="payment-info">
+      {/* <PaymentMethodSelector
+        selectedMethod={selectedPaymentMethod}
+        onMethodChange={setSelectedPaymentMethod}
+      /> */}
       <Button
         type="submit"
         variant="warning"
         className="w-full mt-4"
-        disabled={isProcessing || !items.length || !formState.shipping_id}
+        disabled={
+          isProcessing ||
+          !items.length ||
+          !formState.shipping_id ||
+          !selectedPaymentMethod
+        }
       >
         {isProcessing ? (
           <div className="flex items-center justify-center gap-2">
@@ -190,7 +211,7 @@ const CheckoutDetails = () => {
             <span>Procesando pago...</span>
           </div>
         ) : (
-          "Pagar con Stripe"
+          "Continuar con el pago"
         )}
       </Button>
       {error && (
@@ -218,7 +239,13 @@ const CheckoutDetails = () => {
 
   return (
     <div className="mt-12 lg:grid lg:grid-cols-12 lg:gap-x-12">
-      <CheckoutItems items={items} isProcessing={isProcessing} />
+      <div className="lg:col-span-5 space-y-6">
+        <CheckoutItems items={items} isProcessing={isProcessing} />
+        <PaymentMethodSelector
+          selectedMethod={selectedPaymentMethod}
+          onMethodChange={setSelectedPaymentMethod}
+        />
+      </div>
 
       <ShippingForm
         shippingOptions={
@@ -231,7 +258,25 @@ const CheckoutDetails = () => {
         onChange={handleInputChange}
         onCouponSubmit={handleCouponSubmit}
         onPaymentSubmit={handlePaymentSubmit}
-        renderPaymentInfo={renderPaymentButton()}
+        renderPaymentInfo={
+          <div>
+            {!selectedPaymentMethod ? (
+              <div className="text-sm text-gray-500 mb-2">
+                No se ha seleccionado método de pago.
+              </div>
+            ) : (
+              <div className="text-sm text-green-700 mb-2">
+                Método seleccionado:{" "}
+                <b>
+                  {paymentMethods?.methods?.find(
+                    (m) => m.value === selectedPaymentMethod
+                  )?.label || ""}
+                </b>
+              </div>
+            )}
+            {renderPaymentButton()}
+          </div>
+        }
         paymentTotal={paymentTotal}
         isProcessing={isProcessing}
         error={error}

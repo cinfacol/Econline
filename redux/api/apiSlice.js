@@ -53,6 +53,7 @@ export const apiSlice = createApi({
     "Order",
     "Products",
     "Payment",
+    "PaymentMethods",
     "PaymentTotal",
     "Token",
     "User",
