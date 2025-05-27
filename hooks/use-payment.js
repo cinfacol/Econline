@@ -61,7 +61,6 @@ export function usePayment() {
         toast.warning("Hay un pago en proceso");
         return;
       }
-      console.log("Handling payment with formData:", formData);
 
       setPaymentState(PAYMENT_STATES.PROCESSING);
       setError(null);
@@ -121,7 +120,6 @@ export function usePayment() {
       setPaymentState(PAYMENT_STATES.PROCESSING);
 
       try {
-        // Intentar procesar el pago
         const result = await processPayment(storedPaymentId).unwrap();
 
         if (result.status === "success" || result.payment_status === "C") {

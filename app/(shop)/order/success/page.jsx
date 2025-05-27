@@ -6,6 +6,7 @@ import { useVerifyPaymentQuery } from "@/redux/features/payment/paymentApiSlice"
 import { useClearCartMutation } from "@/redux/features/cart/cartApiSlice";
 import { toast } from "sonner";
 import { CheckCircleIcon } from "@heroicons/react/24/outline";
+import { PaymentStatus } from "@/components/Payment/PaymentStatus";
 
 export default function SuccessPage() {
   const router = useRouter();
@@ -50,9 +51,9 @@ export default function SuccessPage() {
           toast.success("¡Pago confirmado y carrito limpiado!");
 
           // Redirigir después de un momento
-          setTimeout(() => {
+          /* setTimeout(() => {
             router.push("/dashboard/orders");
-          }, 2000);
+          }, 2000); */
         } catch (error) {
           console.error("Error al limpiar el carrito:", error);
           toast.error("Error al limpiar el carrito");
@@ -93,6 +94,10 @@ export default function SuccessPage() {
         <p className="mt-2 text-sm text-gray-600">
           Tu orden ha sido procesada correctamente.
         </p>
+        <div>
+          <h1>¡Gracias por tu compra!</h1>
+          <PaymentStatus paymentId={paymentId} />
+        </div>
         <div className="mt-6">
           <button
             onClick={() => router.push("/dashboard/orders")}

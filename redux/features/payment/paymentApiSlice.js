@@ -44,7 +44,12 @@ export const paymentApiSlice = apiSlice.injectEndpoints({
         url: `/payments/${paymentId}/process/`,
         method: "POST",
       }),
-      invalidatesTags: ["Payment", "Order", "Cart"],
+      transformResponse: (response) => response,
+      invalidatesTags: (result, error, { paymentId }) => [
+        { type: "Payment", id: paymentId },
+        "Order",
+        "Cart",
+      ],
     }),
 
     verifyPayment: builder.query({
