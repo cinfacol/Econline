@@ -24,6 +24,7 @@ function RetrieveUserInfo() {
       </div>
     );
   }
+  console.log("Profile photo URL:", profile_photo);
 
   return (
     <>

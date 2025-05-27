@@ -3,7 +3,6 @@
 import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { PaymentMethodSelector } from "./PaymentMethodSelector";
-import { getPaymentMethodLabel } from "./paymentMethodLabels";
 import CheckoutItems from "./CheckoutItems";
 import ShippingForm from "./ShippingForm";
 import { Button } from "@/components/ui/button";
@@ -174,26 +173,39 @@ const CheckoutDetails = () => {
         return;
       }
 
+      // Buscar el método seleccionado por key
+      const selectedMethodObj = paymentMethods?.methods?.find(
+        (m) => m.key === selectedPaymentMethod
+      );
+      if (!selectedMethodObj) {
+        toast.error("Por favor selecciona un método de pago.");
+        return;
+      }
+
       try {
         toast.loading("Iniciando proceso de pago...");
 
         await handlePayment({
           shipping_id: formState.shipping_id,
-          payment_option: selectedPaymentMethod,
+          payment_method_id: selectedMethodObj.id,
+          payment_option: selectedMethodObj.key,
         });
       } catch (error) {
         console.error("Error en checkout:", error);
       }
     },
-    [formState, paymentTotal, handlePayment, items, selectedPaymentMethod]
+    [
+      formState,
+      paymentTotal,
+      handlePayment,
+      items,
+      selectedPaymentMethod,
+      paymentMethods,
+    ]
   );
 
   const renderPaymentButton = () => (
     <div className="payment-info">
-      {/* <PaymentMethodSelector
-        selectedMethod={selectedPaymentMethod}
-        onMethodChange={setSelectedPaymentMethod}
-      /> */}
       <Button
         type="submit"
         variant="warning"
@@ -269,7 +281,7 @@ const CheckoutDetails = () => {
                 Método seleccionado:{" "}
                 <b>
                   {paymentMethods?.methods?.find(
-                    (m) => m.value === selectedPaymentMethod
+                    (m) => m.key === selectedPaymentMethod
                   )?.label || ""}
                 </b>
               </div>

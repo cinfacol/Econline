@@ -30,8 +30,6 @@ export default function CartDetails() {
 
   const { ids = [], entities = {} } = data || {};
   const items = ids.map((id) => entities[id]).filter(Boolean);
-  console.log("items", items);
-  // Memoizar cálculos
   const { taxes, subTotal, total, save } = useMemo(() => {
     if (!items?.length) {
       return {
@@ -61,10 +59,6 @@ export default function CartDetails() {
       { taxes: 0, subTotal: 0, save: 0, total: 0 }
     );
   }, [items]);
-  console.log("subTotal", subTotal);
-  console.log("taxes", taxes);
-  console.log("total", total);
-  console.log("save", save);
 
   // Handlers optimizados
   const handleCheckoutRedirect = useCallback(async () => {

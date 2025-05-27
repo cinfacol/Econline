@@ -1,6 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { loadStripe } from "@stripe/stripe-js";
 import { toast } from "sonner";
 import {
   useCreateCheckoutSessionMutation,
@@ -62,29 +61,30 @@ export function usePayment() {
         toast.warning("Hay un pago en proceso");
         return;
       }
+      console.log("Handling payment with formData:", formData);
 
       setPaymentState(PAYMENT_STATES.PROCESSING);
       setError(null);
 
       try {
-        // Validar datos del formulario
         if (!formData?.shipping_id) {
           throw new Error("Método de envío requerido");
         }
-        if (!formData?.payment_option) {
-          // payment_option debe venir del formData
-          // (lo pasas desde CheckoutDetails.jsx)
+        if (!formData?.payment_method_id) {
           throw new Error("Método de pago requerido");
         }
 
         // 1. Crear sesión de checkout
         const result = await createCheckoutSession({
           shipping_id: formData.shipping_id,
-          payment_option: formData.payment_option, // <-- aquí el valor correcto
+          payment_method_id: formData.payment_method_id,
         }).unwrap();
 
         // Si el método es Stripe (SC), redirige a Stripe
-        if (formData.payment_option === "SC" && result?.sessionId) {
+        if (
+          (formData.payment_option === "SC" || result?.is_stripe) &&
+          result?.sessionId
+        ) {
           localStorage.setItem("payment_id", result.payment_id);
           sessionStorage.setItem(STORAGE_KEYS.PAYMENT_INTENT, result.sessionId);
 
@@ -110,12 +110,14 @@ export function usePayment() {
 
   // Verificación del pago mejorada
   useEffect(() => {
+    let alreadyProcessed = false;
     const verifyPayment = async () => {
       const sessionId = searchParams.get("session_id");
       const storedPaymentId = sessionStorage.getItem(STORAGE_KEYS.PAYMENT_ID);
 
-      if (!sessionId || !storedPaymentId) return;
+      if (!sessionId || !storedPaymentId || alreadyProcessed) return;
 
+      alreadyProcessed = true;
       setPaymentState(PAYMENT_STATES.PROCESSING);
 
       try {
@@ -124,7 +126,14 @@ export function usePayment() {
 
         if (result.status === "success" || result.payment_status === "C") {
           // Limpiar carrito solo si el pago fue exitoso
-          await clearCart().unwrap();
+          try {
+            await clearCart().unwrap();
+            toast.success("Carrito limpiado exitosamente");
+          } catch (cartErr) {
+            toast.error(
+              "El pago fue exitoso, pero no se pudo limpiar el carrito."
+            );
+          }
           setPaymentState(PAYMENT_STATES.SUCCESS);
 
           // Guardar ID para la página de éxito y limpiar session storage

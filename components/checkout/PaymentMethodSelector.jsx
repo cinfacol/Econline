@@ -1,6 +1,5 @@
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
 import { useGetPaymentMethodsQuery } from "@/redux/features/payment/paymentApiSlice";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export function PaymentMethodSelector({ selectedMethod, onMethodChange }) {
   const { data: paymentData, isLoading, error } = useGetPaymentMethodsQuery();
@@ -14,7 +13,7 @@ export function PaymentMethodSelector({ selectedMethod, onMethodChange }) {
       <div className="p-4 text-red-500">Error al cargar métodos de pago</div>
     );
   }
-
+  console.log("Payment methods data:", paymentData?.methods);
   if (!paymentData?.methods?.length) {
     return (
       <div className="p-4">
@@ -26,29 +25,40 @@ export function PaymentMethodSelector({ selectedMethod, onMethodChange }) {
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-medium">Seleccionar método de pago</h3>
-      <RadioGroup
-        value={selectedMethod ?? ""}
-        onValueChange={onMethodChange}
-        className="space-y-2"
-      >
-        {paymentData.methods.map((method) => (
-          <div
-            key={method.value}
-            className="flex items-center space-x-3 p-3 border rounded-lg"
-          >
-            <RadioGroupItem
-              value={method.value}
-              id={`payment-${method.value}`}
-            />
-            <Label
-              htmlFor={`payment-${method.value}`}
-              className="flex items-center space-x-3"
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {paymentData.methods.map((method) => {
+          const isSelected = selectedMethod === method.key;
+          return (
+            <button
+              type="button"
+              key={method.key}
+              onClick={() => onMethodChange(method.key)}
+              className={`w-full text-left rounded-lg border p-4 transition
+                ${
+                  isSelected
+                    ? "border-blue-600 ring-2 ring-blue-200 bg-blue-50 shadow"
+                    : "border-gray-300 bg-white hover:border-blue-400"
+                }
+                focus:outline-none`}
             >
-              {method.label}
-            </Label>
-          </div>
-        ))}
-      </RadioGroup>
+              <div className="flex items-center space-x-3">
+                <figure className="flex items-start sm:items-center">
+                  <div className="relative">
+                    <Avatar className="h-15 w-15">
+                      <AvatarImage src={method.icon_image} alt={method.label} />
+                      <AvatarFallback>{method.key}</AvatarFallback>
+                    </Avatar>
+                  </div>
+                </figure>
+                <span className="font-semibold">{method.label}</span>
+                {isSelected && (
+                  <span className="ml-auto text-blue-600 font-bold">✓</span>
+                )}
+              </div>
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
