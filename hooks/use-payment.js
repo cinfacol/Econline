@@ -43,10 +43,13 @@ export function usePayment() {
   const handleError = useCallback(
     (err, context = "") => {
       const errorMessage =
-        err?.data?.error ||
-        err?.data?.detail ||
-        err?.message ||
-        "Error en el proceso de pago";
+        [
+          `Contexto: ${context}`,
+          err?.data?.error,
+          err?.data?.detail,
+          err?.message,
+          "Error en el proceso de pago",
+        ].find((msg) => msg) || "Error desconocido";
       setError(errorMessage);
       toast.error(errorMessage);
       cleanupStorage();
@@ -66,28 +69,70 @@ export function usePayment() {
       setError(null);
 
       try {
-        if (!formData?.shipping_id) {
-          throw new Error("Método de envío requerido");
+        if (
+          !formData?.shipping_id ||
+          typeof formData.shipping_id !== "string"
+        ) {
+          throw new Error("Método de envío inválido o no proporcionado");
         }
-        if (!formData?.payment_method_id) {
-          throw new Error("Método de pago requerido");
+        if (
+          !formData?.payment_method_id ||
+          typeof formData.payment_method_id !== "string"
+        ) {
+          throw new Error("Método de pago inválido o no proporcionado");
         }
 
-        // 1. Crear sesión de checkout
         const result = await createCheckoutSession({
           shipping_id: formData.shipping_id,
           payment_method_id: formData.payment_method_id,
         }).unwrap();
 
-        // Si el método es Stripe (SC), redirige a Stripe
+        if (!result?.payment_id) {
+          console.error(
+            "El payment_id no está presente en la respuesta:",
+            result
+          );
+        } else {
+          localStorage.setItem("payment_id", result.payment_id);
+        }
+        if (!result?.payment_id) {
+          console.error(
+            "El payment_id no está presente en la respuesta:",
+            result
+          );
+        } else {
+          localStorage.setItem("payment_id", result.payment_id);
+        }
+        if (!result?.payment_id) {
+          console.error(
+            "El payment_id no está presente en la respuesta:",
+            result
+          );
+        } else {
+          localStorage.setItem("payment_id", result.payment_id);
+        }
+        if (!result?.payment_id) {
+          console.error(
+            "El payment_id no está presente en la respuesta:",
+            result
+          );
+        } else {
+          localStorage.setItem("payment_id", result.payment_id);
+        }
+
         if (
           (formData.payment_option === "SC" || result?.is_stripe) &&
           result?.sessionId
         ) {
-          localStorage.setItem("payment_id", result.payment_id);
+          if (result?.payment_id) {
+            localStorage.setItem("payment_id", result.payment_id);
+          } else {
+            console.error("payment_id no disponible en la respuesta:", result);
+          }
           sessionStorage.setItem(STORAGE_KEYS.PAYMENT_INTENT, result.sessionId);
 
           const stripe = await getStripe();
+          await new Promise((resolve) => setTimeout(resolve, 5000));
           const { error: stripeError } = await stripe.redirectToCheckout({
             sessionId: result.sessionId,
           });
@@ -101,7 +146,10 @@ export function usePayment() {
           // Aquí podrías redirigir a una página de instrucciones, etc.
         }
       } catch (err) {
+        console.error("Error en handlePayment:", err);
         handleError(err, "handlePayment");
+      } finally {
+        setPaymentState(PAYMENT_STATES.IDLE);
       }
     },
     [createCheckoutSession, handleError, paymentState]
@@ -111,12 +159,19 @@ export function usePayment() {
   useEffect(() => {
     let alreadyProcessed = false;
     const verifyPayment = async () => {
-      const sessionId = searchParams.get("session_id");
-      const storedPaymentId = sessionStorage.getItem(STORAGE_KEYS.PAYMENT_ID);
+      const sessionId =
+        searchParams.get("session_id") ||
+        sessionStorage.getItem(STORAGE_KEYS.PAYMENT_INTENT);
+      const storedPaymentId =
+        sessionStorage.getItem(STORAGE_KEYS.PAYMENT_ID) ||
+        localStorage.getItem("payment_id");
 
-      if (!sessionId || !storedPaymentId || alreadyProcessed) return;
+      if (!sessionId || !storedPaymentId) return;
 
-      alreadyProcessed = true;
+      setPaymentState((prevState) => {
+        if (prevState === PAYMENT_STATES.PROCESSING) return prevState;
+        return PAYMENT_STATES.PROCESSING;
+      });
       setPaymentState(PAYMENT_STATES.PROCESSING);
 
       try {

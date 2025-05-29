@@ -178,7 +178,8 @@ const CheckoutDetails = () => {
         (m) => m.key === selectedPaymentMethod
       );
       if (!selectedMethodObj) {
-        toast.error("Por favor selecciona un método de pago.");
+        toast.error("Por favor selecciona un método de pago válido.");
+        console.error("Método de pago inválido:", selectedPaymentMethod);
         return;
       }
 
@@ -187,7 +188,7 @@ const CheckoutDetails = () => {
 
         await handlePayment({
           shipping_id: formState.shipping_id,
-          payment_method_id: selectedMethodObj.id,
+          payment_method_id: String(selectedMethodObj.id),
           payment_option: selectedMethodObj.key,
         });
       } catch (error) {

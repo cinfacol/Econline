@@ -13,7 +13,7 @@ export function PaymentMethodSelector({ selectedMethod, onMethodChange }) {
       <div className="p-4 text-red-500">Error al cargar métodos de pago</div>
     );
   }
-  console.log("Payment methods data:", paymentData?.methods);
+
   if (!paymentData?.methods?.length) {
     return (
       <div className="p-4">

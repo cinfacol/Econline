@@ -11,10 +11,16 @@ export const paymentApiSlice = apiSlice.injectEndpoints({
         method: "GET",
         params: { shipping_id },
       }),
-      transformResponse: (response) => ({
-        ...response,
-        calculatedTotal: response.total_amount,
-      }),
+      transformResponse: (response) => {
+        if (!response || typeof response.total_amount !== "number") {
+          console.error("Invalid response for getPaymentTotal:", response);
+          return { calculatedTotal: 0 };
+        }
+        return {
+          ...response,
+          calculatedTotal: response.total_amount,
+        };
+      },
       providesTags: ["PaymentTotal"],
     }),
 
@@ -23,14 +29,23 @@ export const paymentApiSlice = apiSlice.injectEndpoints({
         url: "/payments/payment-methods/",
         method: "GET",
       }),
-      transformResponse: (response) => ({
-        methods: response.payment_methods || [],
-        hasPaymentMethods: response.has_payment_methods,
-      }),
+      transformResponse: (response) => {
+        if (!response || !Array.isArray(response.payment_methods)) {
+          console.error("Invalid response for getPaymentMethods:", response);
+          return { methods: [], hasPaymentMethods: false };
+        }
+        return {
+          methods: response.payment_methods,
+          hasPaymentMethods: response.has_payment_methods || false,
+        };
+      },
       providesTags: ["PaymentMethods"],
     }),
 
     createCheckoutSession: builder.mutation({
+      transformResponse: (response) => {
+        return response;
+      },
       query: (paymentData) => ({
         url: `/payments/create-checkout-session/`,
         method: "POST",
@@ -44,7 +59,13 @@ export const paymentApiSlice = apiSlice.injectEndpoints({
         url: `/payments/${paymentId}/process/`,
         method: "POST",
       }),
-      transformResponse: (response) => response,
+      transformResponse: (response) => {
+        if (!response || typeof response !== "object") {
+          console.error("Invalid response for processPayment:", response);
+          return {};
+        }
+        return response;
+      },
       invalidatesTags: (result, error, { paymentId }) => [
         { type: "Payment", id: paymentId },
         "Order",
