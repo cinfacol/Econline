@@ -28,33 +28,26 @@ const ShippingForm = ({
   const [calculateShipping, { isLoading: isCalculatingShipping }] = useCalculateShippingMutation();
   const [shippingError, setShippingError] = useState(null);
   const sub_total = data?.subtotal || 0;
-  const total_to_pay = parseFloat(sub_total) + parseFloat(shipping_cost);
+  const total_to_pay = parseFloat(sub_total || 0) + parseFloat(shipping_cost || 0);
 
   // Convertir la estructura normalizada a un array para el renderizado
   const shippingOptionsArray = React.useMemo(() => {
-    console.log('Raw shippingOptions:', shippingOptions); // Para debugging
-    
     if (!shippingOptions) {
-      console.log('No shipping options provided');
       return [];
     }
     
-    // Si shippingOptions es un array, usarlo directamente
+    // Si shippingOptions es un array, filtrar solo los activos
     if (Array.isArray(shippingOptions)) {
-      console.log('Shipping options is an array:', shippingOptions);
-      return shippingOptions;
+      return shippingOptions.filter(option => option.is_active);
     }
     
     // Si tiene la estructura normalizada
     if (shippingOptions.ids && shippingOptions.entities) {
-      const options = shippingOptions.ids
+      return shippingOptions.ids
         .map(id => shippingOptions.entities[id])
-        .filter(Boolean);
-      console.log('Normalized shipping options:', options);
-      return options;
+        .filter(option => option && option.is_active);
     }
     
-    console.log('Invalid shipping options structure:', shippingOptions);
     return [];
   }, [shippingOptions]);
 
@@ -87,15 +80,13 @@ const ShippingForm = ({
 
   // Renderizado de opciones de envío
   const renderShippingOptions = () => {
-    console.log('Rendering shipping options:', shippingOptionsArray); // Para debugging
-    
     if (!shippingOptionsArray.length) {
       return (
         <div className="text-gray-500">
           No hay opciones de envío disponibles
           {process.env.NODE_ENV === 'development' && (
             <div className="text-xs text-gray-400 mt-1">
-              (Debug: shippingOptionsArray está vacío)
+              (Debug: No hay opciones de envío activas)
             </div>
           )}
         </div>
@@ -105,7 +96,7 @@ const ShippingForm = ({
     return (
       <div className="mb-5 space-y-4">
         {shippingOptionsArray.map((option) => {
-          if (!option || !option.id) return null;
+          if (!option || !option.id || !option.is_active) return null;
           
           return (
             <div 

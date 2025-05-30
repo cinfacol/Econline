@@ -5,17 +5,19 @@ import { useEffect, useState } from "react";
 const formatter = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
 });
 
 const Currency = ({ value = 0 }) => {
-  const [isMounted, setIsMounted] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true);
+    setMounted(true);
   }, []);
 
-  if (!isMounted) {
-    return null;
+  if (!mounted) {
+    return <span className="font-semibold">$0.00 USD</span>;
   }
 
   return (
