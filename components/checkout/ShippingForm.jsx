@@ -36,16 +36,16 @@ const ShippingForm = ({
       return [];
     }
     
-    // Si shippingOptions es un array, filtrar solo los activos
+    // Si shippingOptions es un array, usarlo directamente
     if (Array.isArray(shippingOptions)) {
-      return shippingOptions.filter(option => option.is_active);
+      return shippingOptions;
     }
     
     // Si tiene la estructura normalizada
     if (shippingOptions.ids && shippingOptions.entities) {
       return shippingOptions.ids
         .map(id => shippingOptions.entities[id])
-        .filter(option => option && option.is_active);
+        .filter(Boolean);
     }
     
     return [];
@@ -86,7 +86,7 @@ const ShippingForm = ({
           No hay opciones de envío disponibles
           {process.env.NODE_ENV === 'development' && (
             <div className="text-xs text-gray-400 mt-1">
-              (Debug: No hay opciones de envío activas)
+              (Debug: No hay opciones de envío disponibles)
             </div>
           )}
         </div>
@@ -96,7 +96,7 @@ const ShippingForm = ({
     return (
       <div className="mb-5 space-y-4">
         {shippingOptionsArray.map((option) => {
-          if (!option || !option.id || !option.is_active) return null;
+          if (!option || !option.id) return null;
           
           return (
             <div 
