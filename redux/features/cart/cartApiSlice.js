@@ -7,7 +7,12 @@ const cartAdapter = createEntityAdapter({
   sortComparer: (a, b) => b.date.localeCompare(a.date),
 });
 
+const shippingAdapter = createEntityAdapter({
+  sortComparer: (a, b) => a.standard_shipping_cost - b.standard_shipping_cost,
+});
+
 const initialState = cartAdapter.getInitialState();
+const shippingInitialState = shippingAdapter.getInitialState();
 
 export const cartApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -120,20 +125,36 @@ export const cartApiSlice = apiSlice.injectEndpoints({
     }),
     getShippingOptions: builder.query({
       query: () => ({
-        url: "/shipping/get-shipping-options/",
+        url: "/shipping/",
       }),
-      providesTags: ["Cart"],
+      providesTags: ["Shipping"],
       transformResponse: (responseData) => {
-        const loadedItems = responseData?.shipping_options ?? [];
-
-        loadedItems.forEach((item, idx) => {
-          if (!item.date) {
-            item.date = sub(new Date(), { minutes: idx + 1 }).toISOString();
-          }
-        });
-
-        return cartAdapter.setAll(initialState, loadedItems);
+        const shippingOptions = responseData?.shipping_options || [];
+        
+        return {
+          ids: shippingOptions.map(item => item.id),
+          entities: shippingOptions.reduce((acc, item) => {
+            acc[item.id] = item;
+            return acc;
+          }, {})
+        };
       },
+    }),
+    calculateShipping: builder.mutation({
+      query: ({ shipping_id, order_total }) => ({
+        url: "/shipping/calculate_shipping/",
+        method: "POST",
+        body: { shipping_id, order_total },
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      }),
+      transformResponse: (response) => response,
+      transformErrorResponse: (error) => ({
+        success: false,
+        error: error.data?.detail || "Error al calcular el envío",
+      }),
     }),
     checkCoupon: builder.mutation({
       query: ({ coupon_name }) => ({
@@ -158,4 +179,5 @@ export const {
   useGetShippingOptionsQuery,
   useCheckCouponMutation,
   useClearCartMutation,
+  useCalculateShippingMutation,
 } = cartApiSlice;

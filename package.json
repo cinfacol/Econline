@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@babel/runtime": "^7.27.3",
+    "@babel/runtime": "^7.27.4",
     "@headlessui/react": "^2.2.4",
     "@heroicons/react": "^2.2.0",
     "@radix-ui/react-avatar": "^1.1.10",
@@ -28,8 +28,8 @@
     "countries-list": "^3.1.1",
     "date-fns": "^4.1.0",
     "lucide-react": "^0.476.0",
-    "next": "^15.3.2",
-    "postcss": "^8.5.3",
+    "next": "^15.3.3",
+    "postcss": "^8.5.4",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-icons": "^5.5.0",
@@ -37,7 +37,7 @@
     "react-star-ratings": "^2.3.0",
     "react-tooltip": "^5.28.1",
     "sonner": "^2.0.3",
-    "stripe": "^18.1.1",
+    "stripe": "^18.2.0",
     "tailwind-merge": "^3.3.0",
     "tailwindcss": "^4.1.8",
     "tailwindcss-animate": "^1.0.7",

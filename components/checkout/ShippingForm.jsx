@@ -2,11 +2,14 @@
 
 import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
 import { TicketIcon } from "@heroicons/react/24/outline";
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
 import Link from "next/link";
 import AddressDefault from "@/components/user/Addressdefault";
 import { Currency } from "@/components/ui";
 import { useGetPaymentTotalQuery } from "@/redux/features/payment/paymentApiSlice";
+import { useCalculateShippingMutation } from "@/redux/features/cart/cartApiSlice";
+import { toast } from "sonner";
+import React from "react";
 
 const ShippingForm = ({
   onChange,
@@ -22,37 +25,135 @@ const ShippingForm = ({
   total_after_coupon,
 }) => {
   const { data } = useGetPaymentTotalQuery(shipping_id);
+  const [calculateShipping, { isLoading: isCalculatingShipping }] = useCalculateShippingMutation();
+  const [shippingError, setShippingError] = useState(null);
   const sub_total = data?.subtotal || 0;
   const total_to_pay = parseFloat(sub_total) + parseFloat(shipping_cost);
 
+  // Convertir la estructura normalizada a un array para el renderizado
+  const shippingOptionsArray = React.useMemo(() => {
+    console.log('Raw shippingOptions:', shippingOptions); // Para debugging
+    
+    if (!shippingOptions) {
+      console.log('No shipping options provided');
+      return [];
+    }
+    
+    // Si shippingOptions es un array, usarlo directamente
+    if (Array.isArray(shippingOptions)) {
+      console.log('Shipping options is an array:', shippingOptions);
+      return shippingOptions;
+    }
+    
+    // Si tiene la estructura normalizada
+    if (shippingOptions.ids && shippingOptions.entities) {
+      const options = shippingOptions.ids
+        .map(id => shippingOptions.entities[id])
+        .filter(Boolean);
+      console.log('Normalized shipping options:', options);
+      return options;
+    }
+    
+    console.log('Invalid shipping options structure:', shippingOptions);
+    return [];
+  }, [shippingOptions]);
+
+  // Calcular envío cuando cambia el método o el total
+  useEffect(() => {
+    if (shipping_id && sub_total > 0) {
+      setShippingError(null);
+      calculateShipping({
+        shipping_id,
+        order_total: sub_total,
+      })
+        .unwrap()
+        .then((response) => {
+          if (response.is_free_shipping) {
+            onShippingChange({ target: { value: shipping_id } }, 0);
+            toast.success("¡Felicidades! Tu pedido califica para envío gratuito");
+          }
+        })
+        .catch((error) => {
+          console.error("Error al calcular envío:", error);
+          setShippingError(error.data?.detail || "Error al calcular el envío");
+          // Si hay error, usar el costo estándar
+          const selectedOption = shippingOptionsArray?.find(opt => opt.id === shipping_id);
+          if (selectedOption) {
+            onShippingChange({ target: { value: shipping_id } }, selectedOption.standard_shipping_cost);
+          }
+        });
+    }
+  }, [shipping_id, sub_total]);
+
   // Renderizado de opciones de envío
   const renderShippingOptions = () => {
-    if (!shippingOptions?.length) {
-      return <div>No hay opciones de envío disponibles</div>;
+    console.log('Rendering shipping options:', shippingOptionsArray); // Para debugging
+    
+    if (!shippingOptionsArray.length) {
+      return (
+        <div className="text-gray-500">
+          No hay opciones de envío disponibles
+          {process.env.NODE_ENV === 'development' && (
+            <div className="text-xs text-gray-400 mt-1">
+              (Debug: shippingOptionsArray está vacío)
+            </div>
+          )}
+        </div>
+      );
     }
 
     return (
-      <div className="mb-5">
-        {shippingOptions.map((option) => (
-          <div key={option.id} className="flex items-center mb-2">
-            <input
-              type="radio"
-              id={`shipping-${option.id}`}
-              name="shipping_id"
-              value={option.id}
-              checked={shipping_id === option.id}
-              onChange={(e) => onShippingChange(e, option.price)}
-              className="h-4 w-4 text-indigo-600 focus:ring-indigo-500"
-            />
-            <label
-              htmlFor={`shipping-${option.id}`}
-              className="ml-3 block text-sm font-medium text-gray-700"
+      <div className="mb-5 space-y-4">
+        {shippingOptionsArray.map((option) => {
+          if (!option || !option.id) return null;
+          
+          return (
+            <div 
+              key={`shipping-option-${option.id}`}
+              className={`flex items-start p-4 border rounded-lg hover:bg-gray-50 ${
+                isCalculatingShipping && shipping_id === option.id ? 'opacity-50' : ''
+              }`}
             >
-              {option.name} - <Currency value={option.price} /> (
-              {option.time_to_delivery})
-            </label>
+              <input
+                type="radio"
+                id={`shipping-${option.id}`}
+                name="shipping_id"
+                value={option.id}
+                checked={shipping_id === option.id}
+                onChange={(e) => onShippingChange(e, option.standard_shipping_cost)}
+                className="h-4 w-4 mt-1 text-indigo-600 focus:ring-indigo-500"
+                disabled={isCalculatingShipping}
+              />
+              <label
+                htmlFor={`shipping-${option.id}`}
+                className="ml-3 flex-1"
+              >
+                <div className="flex justify-between">
+                  <span className="block text-sm font-medium text-gray-900">
+                    {option.name || 'Opción de envío'}
+                  </span>
+                  <span className="text-sm font-medium text-gray-900">
+                    <Currency value={option.standard_shipping_cost || 0} />
+                  </span>
+                </div>
+                <div className="mt-1 text-sm text-gray-500">
+                  <span className="block">{option.time_to_delivery || 'Tiempo de entrega no especificado'}</span>
+                  {option.free_shipping_threshold > 0 && (
+                    <span className="block mt-1 text-green-600">
+                      Envío gratis en pedidos mayores a{" "}
+                      <Currency value={option.free_shipping_threshold} />
+                    </span>
+                  )}
+                </div>
+              </label>
+            </div>
+          );
+        })}
+        {shippingError && (
+          <div className="text-sm text-red-500 mt-2">
+            {shippingError}
           </div>
-        ))}
+        )}
       </div>
     );
   };
