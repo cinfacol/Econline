@@ -15,7 +15,6 @@ const ShippingForm = ({
   onChange,
   shippingOptions,
   shipping_cost,
-  shipping_id,
   onShippingChange,
   renderPaymentInfo,
   onPaymentSubmit,
@@ -24,11 +23,11 @@ const ShippingForm = ({
   coupon_name,
   total_after_coupon,
 }) => {
-  const { data } = useGetPaymentTotalQuery(shipping_id);
+  const { data } = useGetPaymentTotalQuery();
   const [calculateShipping, { isLoading: isCalculatingShipping }] = useCalculateShippingMutation();
   const [shippingError, setShippingError] = useState(null);
+  const [isShippingCalculated, setIsShippingCalculated] = useState(false);
   const sub_total = data?.subtotal || 0;
-  const total_to_pay = parseFloat(sub_total || 0) + parseFloat(shipping_cost || 0);
 
   // Convertir la estructura normalizada a un array para el renderizado
   const shippingOptionsArray = React.useMemo(() => {
@@ -36,12 +35,10 @@ const ShippingForm = ({
       return [];
     }
     
-    // Si shippingOptions es un array, usarlo directamente
     if (Array.isArray(shippingOptions)) {
       return shippingOptions;
     }
     
-    // Si tiene la estructura normalizada
     if (shippingOptions.ids && shippingOptions.entities) {
       return shippingOptions.ids
         .map(id => shippingOptions.entities[id])
@@ -51,35 +48,39 @@ const ShippingForm = ({
     return [];
   }, [shippingOptions]);
 
-  // Calcular envío cuando cambia el método o el total
+  // Calcular envío automáticamente cuando cambia el total
   useEffect(() => {
-    if (shipping_id && sub_total > 0) {
+    if (sub_total > 0 && shippingOptionsArray.length > 0) {
       setShippingError(null);
+      // Usar la primera opción de envío disponible
+      const defaultShippingOption = shippingOptionsArray[0];
+      
       calculateShipping({
-        shipping_id,
+        shipping_id: defaultShippingOption.id,
         order_total: sub_total,
       })
         .unwrap()
         .then((response) => {
-          if (response.is_free_shipping) {
-            onShippingChange({ target: { value: shipping_id } }, 0);
+          const newShippingCost = response.is_free_shipping ? 0 : response.shipping_cost;
+          // Solo mostrar el toast si el envío es gratis y el costo actual no es 0
+          if (response.is_free_shipping && shipping_cost !== 0) {
             toast.success("¡Felicidades! Tu pedido califica para envío gratuito");
           }
+          onShippingChange({ target: { value: defaultShippingOption.id } }, newShippingCost);
+          setIsShippingCalculated(true);
         })
         .catch((error) => {
           console.error("Error al calcular envío:", error);
           setShippingError(error.data?.detail || "Error al calcular el envío");
           // Si hay error, usar el costo estándar
-          const selectedOption = shippingOptionsArray?.find(opt => opt.id === shipping_id);
-          if (selectedOption) {
-            onShippingChange({ target: { value: shipping_id } }, selectedOption.standard_shipping_cost);
-          }
+          onShippingChange({ target: { value: defaultShippingOption.id } }, defaultShippingOption.standard_shipping_cost);
+          setIsShippingCalculated(true);
         });
     }
-  }, [shipping_id, sub_total]);
+  }, [sub_total, shippingOptionsArray]);
 
-  // Renderizado de opciones de envío
-  const renderShippingOptions = () => {
+  // Renderizado de información de envío
+  const renderShippingInfo = () => {
     if (!shippingOptionsArray.length) {
       return (
         <div className="text-gray-500">
@@ -93,53 +94,34 @@ const ShippingForm = ({
       );
     }
 
+    const selectedOption = shippingOptionsArray[0];
+    const isFreeShipping = shipping_cost === 0;
+
     return (
-      <div className="mb-5 space-y-4">
-        {shippingOptionsArray.map((option) => {
-          if (!option || !option.id) return null;
-          
-          return (
-            <div 
-              key={`shipping-option-${option.id}`}
-              className={`flex items-start p-4 border rounded-lg hover:bg-gray-50 ${
-                isCalculatingShipping && shipping_id === option.id ? 'opacity-50' : ''
-              }`}
-            >
-              <input
-                type="radio"
-                id={`shipping-${option.id}`}
-                name="shipping_id"
-                value={option.id}
-                checked={shipping_id === option.id}
-                onChange={(e) => onShippingChange(e, option.standard_shipping_cost)}
-                className="h-4 w-4 mt-1 text-indigo-600 focus:ring-indigo-500"
-                disabled={isCalculatingShipping}
-              />
-              <label
-                htmlFor={`shipping-${option.id}`}
-                className="ml-3 flex-1"
-              >
-                <div className="flex justify-between">
-                  <span className="block text-sm font-medium text-gray-900">
-                    {option.name || 'Opción de envío'}
-                  </span>
-                  <span className="text-sm font-medium text-gray-900">
-                    <Currency value={option.standard_shipping_cost || 0} />
-                  </span>
-                </div>
-                <div className="mt-1 text-sm text-gray-500">
-                  <span className="block">{option.time_to_delivery || 'Tiempo de entrega no especificado'}</span>
-                  {option.free_shipping_threshold > 0 && (
-                    <span className="block mt-1 text-green-600">
-                      Envío gratis en pedidos mayores a{" "}
-                      <Currency value={option.free_shipping_threshold} />
-                    </span>
-                  )}
-                </div>
-              </label>
-            </div>
-          );
-        })}
+      <div className="mb-5">
+        <div className="flex justify-between items-center">
+          <div>
+            <span className="block text-sm font-medium text-gray-900">
+              {selectedOption.name}
+            </span>
+            <span className="block text-sm text-gray-500">
+              {selectedOption.time_to_delivery}
+            </span>
+          </div>
+          <div className="text-right">
+            {isFreeShipping ? (
+              <span className="text-green-600 font-medium">Gratis</span>
+            ) : (
+              <Currency value={shipping_cost} />
+            )}
+          </div>
+        </div>
+        {selectedOption.free_shipping_threshold > 0 && !isFreeShipping && (
+          <div className="mt-2 text-sm text-green-600">
+            Envío gratis en pedidos mayores a{" "}
+            <Currency value={selectedOption.free_shipping_threshold} />
+          </div>
+        )}
         {shippingError && (
           <div className="text-sm text-red-500 mt-2">
             {shippingError}
@@ -148,6 +130,8 @@ const ShippingForm = ({
       </div>
     );
   };
+
+  const total_to_pay = parseFloat(sub_total || 0) + parseFloat(shipping_cost || 0);
 
   return (
     <section
@@ -159,41 +143,39 @@ const ShippingForm = ({
       </h2>
       <dl className="mt-6 space-y-4">
         <div className="flex items-center justify-between">
-          {renderShippingOptions()}
+          {renderShippingInfo()}
         </div>
         <div className="flex items-center justify-between">
-          {
-            <form onSubmit={(e) => apply_coupon(e)}>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Discount Coupon
-              </label>
-              <div className="mt-1 flex rounded-md shadow-sm">
-                <div className="relative flex items-stretch flex-grow focus-within:z-10">
-                  <input
-                    name="coupon_name"
-                    type="text"
-                    onChange={(e) => onChange(e)}
-                    value={coupon_name}
-                    className="focus:ring-indigo-500 focus:border-indigo-500 block w-full rounded-none rounded-l-md pl-4 sm:text-sm border-gray-300"
-                    placeholder="Enter Code"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="-ml-px relative inline-flex items-center space-x-2 px-4 py-2 border border-gray-300 text-sm font-medium rounded-r-md text-gray-700 bg-gray-50 hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
-                >
-                  <TicketIcon
-                    className="h-5 w-5 text-gray-400"
-                    aria-hidden="true"
-                  />
-                  <span>Apply Coupon</span>
-                </button>
+          <form onSubmit={(e) => apply_coupon(e)}>
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Discount Coupon
+            </label>
+            <div className="mt-1 flex rounded-md shadow-sm">
+              <div className="relative flex items-stretch flex-grow focus-within:z-10">
+                <input
+                  name="coupon_name"
+                  type="text"
+                  onChange={(e) => onChange(e)}
+                  value={coupon_name}
+                  className="focus:ring-indigo-500 focus:border-indigo-500 block w-full rounded-none rounded-l-md pl-4 sm:text-sm border-gray-300"
+                  placeholder="Enter Code"
+                />
               </div>
-            </form>
-          }
+              <button
+                type="submit"
+                className="-ml-px relative inline-flex items-center space-x-2 px-4 py-2 border border-gray-300 text-sm font-medium rounded-r-md text-gray-700 bg-gray-50 hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+              >
+                <TicketIcon
+                  className="h-5 w-5 text-gray-400"
+                  aria-hidden="true"
+                />
+                <span>Apply Coupon</span>
+              </button>
+            </div>
+          </form>
         </div>
         {coupon !== null && coupon !== undefined ? (
           <div className="text-green-500">
@@ -225,12 +207,10 @@ const ShippingForm = ({
             </Link>
           </dt>
           <dd className="text-sm font-medium text-gray-900">
-            {shipping_cost !== 0 ? (
-              <Currency value={shipping_cost} />
+            {shipping_cost === 0 ? (
+              <span className="text-green-600">Gratis</span>
             ) : (
-              <div className="text-red-500">
-                (Please select shipping option)
-              </div>
+              <Currency value={shipping_cost} />
             )}
           </dd>
         </div>
@@ -267,7 +247,14 @@ const ShippingForm = ({
       </div>
 
       <div className="mt-6">
-        <form onSubmit={onPaymentSubmit}>{renderPaymentInfo}</form>
+        <form onSubmit={onPaymentSubmit}>
+          {typeof renderPaymentInfo === 'function' 
+            ? renderPaymentInfo({ 
+                isShippingCalculated, 
+                isCalculatingShipping 
+              }) 
+            : renderPaymentInfo}
+        </form>
       </div>
     </section>
   );

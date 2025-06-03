@@ -2,7 +2,6 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { PaymentMethodSelector } from "./PaymentMethodSelector";
 import CheckoutItems from "./CheckoutItems";
 import ShippingForm from "./ShippingForm";
 import { Button } from "@/components/ui/button";
@@ -18,7 +17,6 @@ import {
   useGetPaymentMethodsQuery,
 } from "@/redux/features/payment/paymentApiSlice";
 import { CheckoutSkeleton } from "@/components/skeletons/CheckoutSkeleton";
-
 import { usePayment } from "@/hooks/use-payment";
 
 const CheckoutDetails = () => {
@@ -35,28 +33,14 @@ const CheckoutDetails = () => {
     discount: 0,
     total_after_coupon: 0,
   });
-
-  // Estado para el método de pago seleccionado
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(
-    () => localStorage.getItem("selectedPaymentMethod") || ""
-  );
-
-  useEffect(() => {
-    if (selectedPaymentMethod) {
-      localStorage.setItem("selectedPaymentMethod", selectedPaymentMethod);
-    }
-  }, [selectedPaymentMethod]);
+  const [isCalculatingShipping, setIsCalculatingShipping] = useState(false);
 
   // Queries y Mutations
   const { data: cartData, isLoading: isLoadingCart } = useGetItemsQuery();
-  const { data: shippingData, isLoading: isLoadingShipping } =
-    useGetShippingOptionsQuery();
-  const { data: paymentTotal } = useGetPaymentTotalQuery(
-    formState.shipping_id,
-    {
-      skip: !formState.shipping_id,
-    }
-  );
+  const { data: shippingData, isLoading: isLoadingShipping } = useGetShippingOptionsQuery();
+  const { data: paymentTotal } = useGetPaymentTotalQuery(formState.shipping_id, {
+    skip: !formState.shipping_id,
+  });
   const { data: paymentMethods } = useGetPaymentMethodsQuery();
   const [checkCoupon] = useCheckCouponMutation();
 
@@ -92,13 +76,10 @@ const CheckoutDetails = () => {
         ...prev,
         shipping_id: value,
         shipping_cost: shippingCost,
-        // Resetear cupón al cambiar envío
         coupon: null,
         coupon_applied: false,
         discount: 0,
         total_after_coupon: 0,
-        // Opcional: Limpiar el input del cupón si se resetea
-        // coupon_name: "",
       }));
       if (formState.coupon_applied) {
         toast.info(
@@ -144,7 +125,6 @@ const CheckoutDetails = () => {
   useEffect(() => {
     if (paymentState === "error" && error) {
       toast.error(error);
-      // Opcionalmente, limpiar el formulario o redirigir
       localStorage.removeItem("checkoutForm");
     }
   }, [paymentState, error]);
@@ -163,7 +143,6 @@ const CheckoutDetails = () => {
         return;
       }
 
-      // Validar monto mínimo si es necesario
       const totalAmount = formState.coupon_applied
         ? formState.total_after_coupon
         : paymentTotal?.total_amount;
@@ -173,65 +152,134 @@ const CheckoutDetails = () => {
         return;
       }
 
-      // Buscar el método seleccionado por key
-      const selectedMethodObj = paymentMethods?.methods?.find(
-        (m) => m.key === selectedPaymentMethod
-      );
-      if (!selectedMethodObj) {
-        toast.error("Por favor selecciona un método de pago válido.");
-        console.error("Método de pago inválido:", selectedPaymentMethod);
+      if (!paymentMethods?.methods?.length) {
+        toast.error("No hay métodos de pago disponibles");
         return;
       }
 
       try {
-        toast.loading("Iniciando proceso de pago...");
+        const toastId = toast.loading("Iniciando proceso de pago...");
 
-        await handlePayment({
+        // Usar el método de pago por defecto (el primero disponible)
+        const defaultPaymentMethod = paymentMethods.methods[0];
+        
+        const paymentData = {
           shipping_id: formState.shipping_id,
-          payment_method_id: String(selectedMethodObj.id),
-          payment_option: selectedMethodObj.key,
-        });
+          payment_method_id: String(defaultPaymentMethod.id),
+          payment_option: defaultPaymentMethod.key,
+        };
+
+        console.log("Datos de pago:", paymentData); // Para debugging
+
+        const result = await handlePayment(paymentData);
+        console.log("Resultado del pago:", result); // Para debugging
+        toast.dismiss(toastId);
       } catch (error) {
-        console.error("Error en checkout:", error);
+        console.error("Error en handlePayment:", error);
+        const errorMessage = error?.message || error?.data?.detail || "Error al procesar el pago. Por favor, intente nuevamente.";
+        toast.error(errorMessage);
+        throw error; // Re-lanzar el error para que sea manejado por el hook usePayment
       }
     },
-    [
-      formState,
-      paymentTotal,
-      handlePayment,
-      items,
-      selectedPaymentMethod,
-      paymentMethods,
-    ]
+    [formState, paymentTotal, handlePayment, items, paymentMethods]
   );
 
-  const renderPaymentButton = () => (
-    <div className="payment-info">
-      <Button
-        type="submit"
-        variant="warning"
-        className="w-full mt-4"
-        disabled={
-          isProcessing ||
-          !items.length ||
-          !formState.shipping_id ||
-          !selectedPaymentMethod
+  // Optimizar el cálculo de envío para evitar llamadas repetidas
+  useEffect(() => {
+    let timeoutId;
+    let mounted = true;
+    
+    const calculateInitialShipping = async () => {
+      if (isCalculatingShipping || !shippingData?.entities || !mounted) return;
+      
+      setIsCalculatingShipping(true);
+      const shippingOptionsArray = Object.values(shippingData.entities);
+      const defaultShippingOption = shippingOptionsArray[0];
+      
+      try {
+        const response = await calculateShipping({
+          shipping_id: defaultShippingOption.id,
+          order_total: paymentTotal?.total_amount || 0,
+        }).unwrap();
+        
+        if (!mounted) return;
+
+        const newShippingCost = response.is_free_shipping ? 0 : response.shipping_cost;
+        if (response.is_free_shipping && formState.shipping_cost !== 0) {
+          toast.success("¡Felicidades! Tu pedido califica para envío gratuito");
         }
-      >
-        {isProcessing ? (
-          <div className="flex items-center justify-center gap-2">
-            <span className="animate-spin">⭕</span>
-            <span>Procesando pago...</span>
-          </div>
-        ) : (
-          "Continuar con el pago"
-        )}
-      </Button>
-      {error && (
-        <p className="text-red-500 text-sm mt-2 text-center">{error}</p>
-      )}
-    </div>
-  );
+        handleShippingChange({ target: { value: defaultShippingOption.id } }, newShippingCost);
+      } catch (error) {
+        if (!mounted) return;
+        console.error("Error al calcular envío:", error);
+        toast.error(error.data?.detail || "Error al calcular el envío");
+        handleShippingChange(
+          { target: { value: defaultShippingOption.id } }, 
+          defaultShippingOption.standard_shipping_cost
+        );
+      } finally {
+        if (mounted) {
+          setIsCalculatingShipping(false);
+        }
+      }
+    };
+
+    // Solo calcular el envío inicial si no hay un shipping_id seleccionado y no estamos calculando
+    if (!formState.shipping_id && shippingData?.entities && !isCalculatingShipping && paymentTotal?.total_amount) {
+      timeoutId = setTimeout(calculateInitialShipping, 500);
+    }
+
+    return () => {
+      mounted = false;
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [shippingData, formState.shipping_id, handleShippingChange, isCalculatingShipping, paymentTotal?.total_amount]);
+
+  const renderPaymentButton = ({ isShippingCalculated, isCalculatingShipping }) => {
+    return (
+      <div className="mt-6">
+        <button
+          type="submit"
+          disabled={!isShippingCalculated || isCalculatingShipping}
+          className={`w-full flex justify-center items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white ${
+            !isShippingCalculated || isCalculatingShipping
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          }`}
+        >
+          {isCalculatingShipping ? (
+            <div className="flex items-center">
+              <svg
+                className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              Calculando envío...
+            </div>
+          ) : (
+            "Continuar con el pago"
+          )}
+        </button>
+      </div>
+    );
+  };
 
   // Loading states
   if (isLoadingCart || isLoadingShipping) {
@@ -254,10 +302,6 @@ const CheckoutDetails = () => {
     <div className="mt-12 lg:grid lg:grid-cols-12 lg:gap-x-12">
       <div className="lg:col-span-5 space-y-6">
         <CheckoutItems items={items} isProcessing={isProcessing} />
-        <PaymentMethodSelector
-          selectedMethod={selectedPaymentMethod}
-          onMethodChange={setSelectedPaymentMethod}
-        />
       </div>
 
       <ShippingForm
@@ -273,21 +317,10 @@ const CheckoutDetails = () => {
         onPaymentSubmit={handlePaymentSubmit}
         renderPaymentInfo={
           <div>
-            {!selectedPaymentMethod ? (
-              <div className="text-sm text-gray-500 mb-2">
-                No se ha seleccionado método de pago.
-              </div>
-            ) : (
-              <div className="text-sm text-green-700 mb-2">
-                Método seleccionado:{" "}
-                <b>
-                  {paymentMethods?.methods?.find(
-                    (m) => m.key === selectedPaymentMethod
-                  )?.label || ""}
-                </b>
-              </div>
-            )}
-            {renderPaymentButton()}
+            {renderPaymentButton({ 
+              isShippingCalculated: !!formState.shipping_id,
+              isCalculatingShipping
+            })}
           </div>
         }
         paymentTotal={paymentTotal}
