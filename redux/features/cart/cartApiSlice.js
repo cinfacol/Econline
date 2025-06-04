@@ -130,7 +130,7 @@ export const cartApiSlice = apiSlice.injectEndpoints({
       providesTags: ["Shipping"],
       transformResponse: (responseData) => {
         const shippingOptions = responseData?.shipping_options || [];
-        
+
         return {
           ids: shippingOptions.map(item => item.id),
           entities: shippingOptions.reduce((acc, item) => {
@@ -156,16 +156,21 @@ export const cartApiSlice = apiSlice.injectEndpoints({
         error: error.data?.detail || "Error al calcular el envío",
       }),
     }),
-    checkCoupon: builder.mutation({
-      query: ({ coupon_name }) => ({
+    checkCoupon: builder.query({
+      query: ({ code, cart_total }) => ({
         url: "/coupons/check/",
-        method: "POST",
-        body: JSON.stringify(coupon_name),
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
+        method: "GET",
+        params: { code, cart_total }
       }),
+      transformResponse: (response) => {
+        // Transformar la respuesta para manejar ambos tipos de cupones
+        return {
+          coupon: response.coupon,
+          discount: response.discount,
+          is_valid: response.is_valid,
+          error: response.error
+        };
+      }
     }),
   }),
 });
@@ -177,7 +182,7 @@ export const {
   useIncQtyMutation,
   useRemoveItemMutation,
   useGetShippingOptionsQuery,
-  useCheckCouponMutation,
+  useCheckCouponQuery,
   useClearCartMutation,
   useCalculateShippingMutation,
 } = cartApiSlice;

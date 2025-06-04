@@ -35,7 +35,7 @@ const AddressDefault = () => {
 
   return (
     <div className="mb-5 gap-4">
-      <h2 className="text-2xl pb-3 font-bold tracking-tight text-gray-900">
+      <h2 className="text-1xl pb-3 font-bold tracking-tight text-gray-900">
         Shipping Address
       </h2>
       <div className="w-full flex justify-between align-center bg-gray-100 p-4 rounded-md cursor-pointer">

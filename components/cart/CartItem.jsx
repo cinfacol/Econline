@@ -13,14 +13,16 @@ export function CartItem({ item, onQuantityChange, onRemove }) {
     <div className="rounded-lg border bg-white p-4 shadow-sm dark:bg-gray-800">
       <div className="flex items-center gap-4">
         <Link href={`/product/${inventory.id}`} className="shrink-0">
-          <Image
-            loader={cloudinaryImageLoader}
-            src={inventory.image[0].image}
-            alt={inventory.image[0].alt_text}
-            width={100}
-            height={100}
-            className="rounded-md object-cover"
-          />
+          <div className="relative w-20 h-20 flex-shrink-0">
+            <Image
+              loader={cloudinaryImageLoader}
+              src={inventory.image[0].image}
+              alt={inventory.image[0].alt_text}
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              className="object-cover rounded-md"
+            />
+          </div>
         </Link>
 
         <div className="flex-1 space-y-2">
