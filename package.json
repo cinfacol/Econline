@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@babel/runtime": "^7.27.4",
+    "@babel/runtime": "^7.27.6",
     "@headlessui/react": "^2.2.4",
     "@heroicons/react": "^2.2.0",
     "@radix-ui/react-avatar": "^1.1.10",
