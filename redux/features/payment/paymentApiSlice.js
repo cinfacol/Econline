@@ -12,13 +12,23 @@ export const paymentApiSlice = apiSlice.injectEndpoints({
         params: { shipping_id },
       }),
       transformResponse: (response) => {
-        if (!response || typeof response.total_amount !== "number") {
+        if (!response) {
           console.error("Invalid response for getPaymentTotal:", response);
           return { calculatedTotal: 0 };
         }
+
+        // Convertir los valores string a números
+        const totalAmount = parseFloat(response.total_amount) || 0;
+        const subtotal = parseFloat(response.subtotal) || 0;
+        const shippingCost = parseFloat(response.shipping_cost) || 0;
+        const discount = parseFloat(response.discount) || 0;
         return {
           ...response,
-          calculatedTotal: response.total_amount,
+          total_amount: totalAmount,
+          subtotal: subtotal,
+          shipping_cost: shippingCost,
+          discount: discount,
+          calculatedTotal: totalAmount,
         };
       },
       providesTags: ["PaymentTotal"],
