@@ -157,20 +157,42 @@ export const cartApiSlice = apiSlice.injectEndpoints({
       }),
     }),
     checkCoupon: builder.query({
-      query: ({ code, cart_total }) => ({
-        url: "/coupons/check/",
-        method: "GET",
-        params: { code, cart_total }
-      }),
+      query: ({ code, name, cart_total }) => {
+        // Construir los parámetros de la query
+        const params = new URLSearchParams();
+        params.append('cart_total', cart_total);
+        
+        // Siempre usar el valor como nombre del cupón
+        const couponName = (name || code || '').trim().toUpperCase();
+        if (couponName) {
+          params.append('name', couponName);
+        }
+    
+        return {
+          url: `/coupons/check/?${params.toString()}`,
+          method: "GET"
+        };
+      },
       transformResponse: (response) => {
-        // Transformar la respuesta para manejar ambos tipos de cupones
         return {
           coupon: response.coupon,
           discount: response.discount,
           is_valid: response.is_valid,
           error: response.error
         };
-      }
+      },
+      transformErrorResponse: (response) => {
+        const error = response.data?.error || 'Error al verificar el cupón';
+        return {
+          error,
+          is_valid: false,
+          discount: 0
+        };
+      },
+      providesTags: ['Coupon'],
+      keepUnusedDataFor: 300,
+      retry: 2,
+      retryDelay: 1000,
     }),
   }),
 });

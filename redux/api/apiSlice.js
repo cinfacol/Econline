@@ -44,12 +44,13 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
 export const apiSlice = createApi({
   reducerPath: "api",
   tagTypes: [
-    "Inventories",
-    "Inventory",
     "Address",
     "Cart",
     "CartItems",
     "ClientToken",
+    "Coupon",
+    "Inventories",
+    "Inventory",
     "Order",
     "Products",
     "Payment",

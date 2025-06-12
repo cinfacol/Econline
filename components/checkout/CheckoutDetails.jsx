@@ -71,11 +71,20 @@ const CheckoutDetails = () => {
       return;
     }
 
-    const totalAmount = state.coupon.applied
+    const subtotal = state.coupon.applied
       ? state.coupon.totalAfterDiscount
-      : paymentTotal?.total_amount;
+      : cartTotal;
+
+    const totalAmount = subtotal + (state.shipping.cost || 0);
 
     if (!totalAmount || totalAmount <= 0) {
+      console.error('Monto inválido:', { 
+        subtotal, 
+        shippingCost: state.shipping.cost, 
+        totalAmount,
+        couponApplied: state.coupon.applied,
+        couponDiscount: state.coupon.discount
+      });
       toast.error("El monto a pagar no es válido");
       return;
     }
@@ -93,6 +102,11 @@ const CheckoutDetails = () => {
         shipping_id: state.shipping.id,
         payment_method_id: String(defaultPaymentMethod.id),
         payment_option: defaultPaymentMethod.key,
+        coupon_id: state.coupon.applied ? state.coupon.coupon.id : null,
+        total_amount: totalAmount,
+        subtotal: subtotal,
+        shipping_cost: state.shipping.cost || 0,
+        discount: state.coupon.applied ? state.coupon.discount : 0
       };
 
       await handlePayment(paymentData);
@@ -105,7 +119,7 @@ const CheckoutDetails = () => {
         payload: errorMessage
       });
     }
-  }, [state, paymentTotal, handlePayment, items, paymentMethods, dispatch]);
+  }, [state, cartTotal, handlePayment, items, paymentMethods, dispatch]);
 
   if (isLoadingCart || isLoadingShipping) {
     return <CheckoutSkeleton />;

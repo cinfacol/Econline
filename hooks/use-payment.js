@@ -13,6 +13,7 @@ const STORAGE_KEYS = {
   PAYMENT_ID: "pendingPaymentId",
   PAYMENT_INTENT: "paymentIntent",
   PAYMENT_STATUS: "paymentStatus",
+  PAYMENT_ID_LOCAL: "payment_id",
 };
 
 const PAYMENT_STATES = {
@@ -22,24 +23,28 @@ const PAYMENT_STATES = {
   ERROR: "error",
 };
 
-export function usePayment() {
+const usePayment = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [paymentState, setPaymentState] = useState(PAYMENT_STATES.IDLE);
   const [error, setError] = useState(null);
+  const [shouldVerify, setShouldVerify] = useState(false);
 
   const [createCheckoutSession] = useCreateCheckoutSessionMutation();
   const [processPayment] = useProcessPaymentMutation();
   const [clearCart] = useClearCartMutation();
 
-  // Limpiar storage al desmontar o en error
   const cleanupStorage = useCallback(() => {
-    Object.values(STORAGE_KEYS).forEach((key) =>
-      sessionStorage.removeItem(key)
-    );
+    // Limpiar sessionStorage
+    Object.values(STORAGE_KEYS).forEach((key) => {
+      sessionStorage.removeItem(key);
+    });
+    
+    // Limpiar localStorage
+    localStorage.removeItem(STORAGE_KEYS.PAYMENT_ID_LOCAL);
+    localStorage.removeItem(STORAGE_KEYS.PAYMENT_STATUS);
   }, []);
 
-  // Manejo de errores mejorado
   const handleError = useCallback(
     (err, context = "") => {
       const errorMessage =
@@ -65,21 +70,15 @@ export function usePayment() {
         return;
       }
 
+      // Limpiar cualquier estado anterior antes de iniciar un nuevo pago
+      cleanupStorage();
       setPaymentState(PAYMENT_STATES.PROCESSING);
       setError(null);
+      setShouldVerify(true);
 
       try {
-        if (
-          !formData?.shipping_id ||
-          typeof formData.shipping_id !== "string"
-        ) {
-          throw new Error("Método de envío inválido o no proporcionado");
-        }
-        if (
-          !formData?.payment_method_id ||
-          typeof formData.payment_method_id !== "string"
-        ) {
-          throw new Error("Método de pago inválido o no proporcionado");
+        if (!formData?.shipping_id || !formData?.payment_method_id) {
+          throw new Error("Datos de pago incompletos");
         }
 
         const result = await createCheckoutSession({
@@ -88,135 +87,152 @@ export function usePayment() {
         }).unwrap();
 
         if (!result?.payment_id) {
-          console.error(
-            "El payment_id no está presente en la respuesta:",
-            result
-          );
-        } else {
-          localStorage.setItem("payment_id", result.payment_id);
-        }
-        if (!result?.payment_id) {
-          console.error(
-            "El payment_id no está presente en la respuesta:",
-            result
-          );
-        } else {
-          localStorage.setItem("payment_id", result.payment_id);
-        }
-        if (!result?.payment_id) {
-          console.error(
-            "El payment_id no está presente en la respuesta:",
-            result
-          );
-        } else {
-          localStorage.setItem("payment_id", result.payment_id);
-        }
-        if (!result?.payment_id) {
-          console.error(
-            "El payment_id no está presente en la respuesta:",
-            result
-          );
-        } else {
-          localStorage.setItem("payment_id", result.payment_id);
+          throw new Error("No se recibió un ID de pago válido");
         }
 
-        if (
-          (formData.payment_option === "SC" || result?.is_stripe) &&
-          result?.sessionId
-        ) {
-          if (result?.payment_id) {
-            localStorage.setItem("payment_id", result.payment_id);
-          } else {
-            console.error("payment_id no disponible en la respuesta:", result);
-          }
+        // Guardar el payment_id en ambos storages
+        sessionStorage.setItem(STORAGE_KEYS.PAYMENT_ID, result.payment_id);
+        localStorage.setItem(STORAGE_KEYS.PAYMENT_ID_LOCAL, result.payment_id);
+
+        if ((formData.payment_option === "SC" || result?.is_stripe) && result?.sessionId) {
           sessionStorage.setItem(STORAGE_KEYS.PAYMENT_INTENT, result.sessionId);
-
           const stripe = await getStripe();
-          await new Promise((resolve) => setTimeout(resolve, 5000));
           const { error: stripeError } = await stripe.redirectToCheckout({
             sessionId: result.sessionId,
           });
           if (stripeError) throw stripeError;
         } else if (result?.checkout_url) {
-          // Si el backend retorna una URL para otros métodos (PayPal, PSE, etc.)
           window.location.href = result.checkout_url;
         } else {
-          // Si es efectivo u otro método sin redirección
           toast.success("Sesión de pago creada correctamente");
-          // Aquí podrías redirigir a una página de instrucciones, etc.
         }
       } catch (err) {
         console.error("Error en handlePayment:", err);
         handleError(err, "handlePayment");
+        setShouldVerify(false);
       } finally {
         setPaymentState(PAYMENT_STATES.IDLE);
       }
     },
-    [createCheckoutSession, handleError, paymentState]
+    [createCheckoutSession, handleError, paymentState, cleanupStorage]
   );
 
-  // Verificación del pago mejorada
   useEffect(() => {
-    let alreadyProcessed = false;
+    let retryCount = 0;
+    const maxRetries = 5;
+    const retryDelay = 2000;
+    let isVerifying = false;
+    let verificationTimeout = null;
+
     const verifyPayment = async () => {
-      const sessionId =
-        searchParams.get("session_id") ||
-        sessionStorage.getItem(STORAGE_KEYS.PAYMENT_INTENT);
-      const storedPaymentId =
-        sessionStorage.getItem(STORAGE_KEYS.PAYMENT_ID) ||
-        localStorage.getItem("payment_id");
+      // Solo verificar si shouldVerify es true
+      if (!shouldVerify) {
+        console.log('No hay verificación pendiente');
+        return;
+      }
 
-      if (!sessionId || !storedPaymentId) return;
+      // Prevent multiple simultaneous verifications
+      if (isVerifying) {
+        console.log('Ya hay una verificación en proceso');
+        return;
+      }
 
-      setPaymentState((prevState) => {
-        if (prevState === PAYMENT_STATES.PROCESSING) return prevState;
-        return PAYMENT_STATES.PROCESSING;
+      const sessionId = searchParams.get("session_id") || sessionStorage.getItem(STORAGE_KEYS.PAYMENT_INTENT);
+      const storedPaymentId = sessionStorage.getItem(STORAGE_KEYS.PAYMENT_ID) || localStorage.getItem(STORAGE_KEYS.PAYMENT_ID_LOCAL);
+
+      console.log('Verificando pago:', {
+        sessionId,
+        storedPaymentId,
+        paymentState,
+        shouldVerify,
+        searchParams: Object.fromEntries(searchParams.entries())
       });
+
+      // Si no hay datos de pago activos, limpiar y salir
+      if (!sessionId && !storedPaymentId) {
+        console.log('No hay datos de pago activos, limpiando storage');
+        cleanupStorage();
+        setShouldVerify(false);
+        return;
+      }
+
+      // Si ya estamos en estado de procesamiento, no verificar de nuevo
+      if (paymentState === PAYMENT_STATES.PROCESSING) {
+        console.log('Ya estamos procesando un pago');
+        return;
+      }
+
+      isVerifying = true;
       setPaymentState(PAYMENT_STATES.PROCESSING);
 
       try {
+        console.log('Procesando pago con ID:', storedPaymentId);
         const result = await processPayment(storedPaymentId).unwrap();
+        console.log('Resultado del pago:', result);
 
-        if (result.status === "success" || result.payment_status === "C") {
-          // Limpiar carrito solo si el pago fue exitoso
+        if (result.status === "success" || result.payment_status === "C" || result.message === "Payment already completed") {
+          setPaymentState(PAYMENT_STATES.SUCCESS);
+          localStorage.setItem(STORAGE_KEYS.PAYMENT_STATUS, "success");
+          
           try {
             await clearCart().unwrap();
             toast.success("Carrito limpiado exitosamente");
           } catch (cartErr) {
-            toast.error(
-              "El pago fue exitoso, pero no se pudo limpiar el carrito."
-            );
+            console.error('Error al limpiar el carrito:', cartErr);
+            toast.error("El pago fue exitoso, pero no se pudo limpiar el carrito.");
           }
-          setPaymentState(PAYMENT_STATES.SUCCESS);
 
-          // Guardar ID para la página de éxito y limpiar session storage
-          localStorage.setItem(STORAGE_KEYS.PAYMENT_STATUS, "success");
           cleanupStorage();
-
+          setShouldVerify(false);
           toast.success("Pago procesado exitosamente");
           router.push("/order/success");
+        } else if (result.status === "P" && retryCount < maxRetries) {
+          retryCount++;
+          console.log(`Pago pendiente, reintentando (${retryCount}/${maxRetries})`);
+          verificationTimeout = setTimeout(() => {
+            isVerifying = false;
+            verifyPayment();
+          }, retryDelay);
         } else {
           throw new Error(result.message || "El pago no pudo ser completado");
         }
       } catch (err) {
-        handleError(err, "verifyPayment");
-        router.push("/order/cancelled");
+        console.error('Error en verificación de pago:', err);
+        if (retryCount < maxRetries) {
+          retryCount++;
+          console.log(`Error en verificación, reintentando (${retryCount}/${maxRetries})`);
+          verificationTimeout = setTimeout(() => {
+            isVerifying = false;
+            verifyPayment();
+          }, retryDelay);
+        } else {
+          handleError(err, "verifyPayment");
+          cleanupStorage();
+          setShouldVerify(false);
+          // Solo redirigir a cancelled si estamos en una página de pago
+          if (window.location.pathname.includes('/payment') || window.location.pathname.includes('/checkout')) {
+            router.push("/order/cancelled");
+          }
+        }
       } finally {
-        setPaymentState(PAYMENT_STATES.IDLE);
+        if (retryCount >= maxRetries) {
+          setPaymentState(PAYMENT_STATES.IDLE);
+          isVerifying = false;
+        }
       }
     };
 
     verifyPayment();
-  }, [
-    searchParams,
-    processPayment,
-    clearCart,
-    router,
-    handleError,
-    cleanupStorage,
-  ]);
 
-  // Cleanup al desmontar
+    return () => {
+      retryCount = maxRetries;
+      isVerifying = false;
+      if (verificationTimeout) {
+        clearTimeout(verificationTimeout);
+      }
+    };
+  }, [searchParams, processPayment, clearCart, router, handleError, cleanupStorage, paymentState, shouldVerify]);
+
   useEffect(() => {
     return () => {
       if (paymentState === PAYMENT_STATES.ERROR) {
@@ -232,3 +248,5 @@ export function usePayment() {
     paymentState,
   };
 }
+
+export { usePayment };
