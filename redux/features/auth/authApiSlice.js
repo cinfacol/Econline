@@ -79,6 +79,18 @@ const authApiSlice = apiSlice.injectEndpoints({
         body: { uid, token, new_password, re_new_password },
       }),
     }),
+    getProfile: builder.query({
+      query: () => "/profile/me/",
+      providesTags: ["User"],
+    }),
+    updateProfile: builder.mutation({
+      query: ({ username, data }) => ({
+        url: `/profile/update/${username}/`,
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: ["User"],
+    }),
   }),
 });
 
@@ -92,4 +104,6 @@ export const {
   useActivationMutation,
   useResetPasswordMutation,
   useResetPasswordConfirmMutation,
+  useGetProfileQuery,
+  useUpdateProfileMutation,
 } = authApiSlice;

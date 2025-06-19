@@ -18,9 +18,9 @@ const DashboardPage = async () => {
     <Container className="bg-white overflow-hidden">
       <div className="relative isolate px-6 pt-2 lg:px-8">
         <header className="text-center py-8 bg-gradient-to-r from-blue-500 to-purple-600 text-white mt-8 mb-8">
-          <h1 className="text-4xl font-bold tracking-tight sm:text-6xl">
+          <h2 className="text-4xl font-bold tracking-tight sm:text-6xl">
             Dashboard
-          </h1>
+          </h2>
         </header>
       </div>
       <main className="mx-auto max-w-7xl py-6 my-8 sm:px-6 lg:px-8">
