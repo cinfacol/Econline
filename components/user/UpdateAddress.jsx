@@ -80,7 +80,7 @@ const UpdateAddressPage = ({ address }) => {
           await setDefaultAddress({ addressId }).unwrap();
         }
         toast.success("Address Updated");
-        router.push("/dashboard/");
+        router.push("/profile/");
       } catch (error) {
         toast.error("Failed to update address");
       }
@@ -92,7 +92,7 @@ const UpdateAddressPage = ({ address }) => {
     try {
       await deleteAddress(addressId).unwrap();
       toast.success("Address Deleted");
-      router.push("/dashboard/");
+      router.push("/profile/");
     } catch (error) {
       toast.error("Failed to delete address");
     }

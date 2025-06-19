@@ -9,7 +9,7 @@ const AddAddressButton = () => {
     <Button
       variant="warning"
       className="font-bold"
-      onClick={() => router.push("/dashboard/address/new")}
+      onClick={() => router.push("/profile/address/new")}
     >
       <MapPinPlus />
       New address

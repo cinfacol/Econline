@@ -17,7 +17,7 @@ const DashboardPage = async () => {
   return (
     <Container className="bg-white overflow-hidden">
       <div className="relative isolate px-6 pt-2 lg:px-8">
-        <header className="text-center py-8 bg-gradient-to-r from-blue-500 to-purple-600 text-white mt-8 mb-8">
+        <header className="text-center py-8 bg-gradient-to-r from-blue-500 to-purple-600 text-white mt-8 mb-8 rounded-xl">
           <h2 className="text-4xl font-bold tracking-tight sm:text-6xl">
             Dashboard
           </h2>
@@ -28,11 +28,8 @@ const DashboardPage = async () => {
       </main>
       <hr className="border-b border-gray-900/10 pb-8" />
       <article className="border border-gray-200 bg-white shadow-sm rounded mb-5 p-3 lg:p-5">
-        <UserAddresses />
-        {/* </article>
-      <hr className="border-b border-gray-900/10 pb-8" />
-      <article> */}
-        <AddAddressButton />
+        {/* <UserAddresses />
+        <AddAddressButton /> */}
       </article>
     </Container>
   );

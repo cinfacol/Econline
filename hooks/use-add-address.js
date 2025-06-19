@@ -64,7 +64,7 @@ export default function useAddAddress() {
         toast.success("Address is set as default");
       }
 
-      router.push("/dashboard");
+      router.push("/profile");
     } catch (error) {
       toast.error("Failed to register new Address");
     }

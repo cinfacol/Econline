@@ -71,7 +71,7 @@ const AddressItem = ({ address, onSetDefault }) => {
             />
             Default
           </label>
-          <Link href={`/dashboard/address/${address.id}`}>
+          <Link href={`/profile/address/${address.id}`}>
             <PencilSquareIcon
               className="h-6 w-6 hover:bg-orange-300 border border-transparent rounded-md"
               aria-hidden="true"
