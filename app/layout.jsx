@@ -1,6 +1,7 @@
 import { Navbar, Footer } from "@/components/common";
 import ModalProvider from "@/providers/modal-provider";
 import { Setup } from "@/components/utils";
+import AuthInitializer from "@/components/utils/AuthInitializer";
 import CustomProvider from "@/redux/provider";
 import { Urbanist } from "next/font/google";
 import "@/styles/globals.css";
@@ -20,11 +21,13 @@ export default function RootLayout({ children }) {
         <CustomProvider>
           <ModalProvider />
           <Setup />
-          <Navbar />
-          <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
-            {children}
-          </div>
-          <Footer />
+          <AuthInitializer>
+            <Navbar />
+            <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+              {children}
+            </div>
+            <Footer />
+          </AuthInitializer>
         </CustomProvider>
       </body>
     </html>

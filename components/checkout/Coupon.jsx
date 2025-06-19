@@ -11,7 +11,7 @@ const Coupon = ({ onCouponChange, couponState, cartTotal }) => {
     data: couponData, 
     error, 
     isLoading,
-    isError 
+    isError
   } = useCheckCouponQuery(
     { 
       name: couponInput.trim().toUpperCase(),
@@ -71,7 +71,6 @@ const Coupon = ({ onCouponChange, couponState, cartTotal }) => {
       const totalAfterDiscount = cartTotal - couponData.discount;
 
       onCouponChange({
-        code: couponData.coupon.code,
         name: couponData.coupon.name,
         applied: true,
         discount: couponData.discount,
@@ -105,13 +104,14 @@ const Coupon = ({ onCouponChange, couponState, cartTotal }) => {
 
   const handleRemoveCoupon = () => {
     onCouponChange({
-      code: '',
       name: '',
       applied: false,
       discount: 0,
       coupon: null
     });
     setCouponInput('');
+    setSkip(true);
+    setIsSubmitting(false);
     toast.success("Cupón removido correctamente");
   };
 
@@ -149,12 +149,12 @@ const Coupon = ({ onCouponChange, couponState, cartTotal }) => {
               </p>
               {couponState.coupon.min_purchase_amount && (
                 <p className="text-sm text-gray-500">
-                  Monto mínimo: ${couponState.coupon.min_purchase_amount.toFixed(2)}
+                  Monto mínimo: ${Number(couponState.coupon.min_purchase_amount).toFixed(2)}
                 </p>
               )}
               {couponState.coupon.max_discount_amount && (
                 <p className="text-sm text-gray-500">
-                  Descuento máximo: ${couponState.coupon.max_discount_amount.toFixed(2)}
+                  Descuento máximo: ${Number(couponState.coupon.max_discount_amount).toFixed(2)}
                 </p>
               )}
             </div>

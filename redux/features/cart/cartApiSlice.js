@@ -1,18 +1,12 @@
 import { createEntityAdapter } from "@reduxjs/toolkit";
 import { sub } from "date-fns";
-// import { apiAppSlice } from "@/redux/api/apiAppSlice";
 import { apiSlice } from "@/redux/api/apiSlice";
 
 const cartAdapter = createEntityAdapter({
   sortComparer: (a, b) => b.date.localeCompare(a.date),
 });
 
-const shippingAdapter = createEntityAdapter({
-  sortComparer: (a, b) => a.standard_shipping_cost - b.standard_shipping_cost,
-});
-
 const initialState = cartAdapter.getInitialState();
-const shippingInitialState = shippingAdapter.getInitialState();
 
 export const cartApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -132,11 +126,11 @@ export const cartApiSlice = apiSlice.injectEndpoints({
         const shippingOptions = responseData?.shipping_options || [];
 
         return {
-          ids: shippingOptions.map(item => item.id),
+          ids: shippingOptions.map((item) => item.id),
           entities: shippingOptions.reduce((acc, item) => {
             acc[item.id] = item;
             return acc;
-          }, {})
+          }, {}),
         };
       },
     }),
@@ -157,20 +151,20 @@ export const cartApiSlice = apiSlice.injectEndpoints({
       }),
     }),
     checkCoupon: builder.query({
-      query: ({ code, name, cart_total }) => {
+      query: ({ name, cart_total }) => {
         // Construir los parámetros de la query
         const params = new URLSearchParams();
-        params.append('cart_total', cart_total);
-        
+        params.append("cart_total", cart_total);
+
         // Siempre usar el valor como nombre del cupón
-        const couponName = (name || code || '').trim().toUpperCase();
+        const couponName = (name || "").trim().toUpperCase();
         if (couponName) {
-          params.append('name', couponName);
+          params.append("name", couponName);
         }
-    
+
         return {
           url: `/coupons/check/?${params.toString()}`,
-          method: "GET"
+          method: "GET",
         };
       },
       transformResponse: (response) => {
@@ -178,18 +172,18 @@ export const cartApiSlice = apiSlice.injectEndpoints({
           coupon: response.coupon,
           discount: response.discount,
           is_valid: response.is_valid,
-          error: response.error
+          error: response.error,
         };
       },
       transformErrorResponse: (response) => {
-        const error = response.data?.error || 'Error al verificar el cupón';
+        const error = response.data?.error || "Error al verificar el cupón";
         return {
           error,
           is_valid: false,
-          discount: 0
+          discount: 0,
         };
       },
-      providesTags: ['Coupon'],
+      providesTags: ["Coupon"],
       keepUnusedDataFor: 300,
       retry: 2,
       retryDelay: 1000,

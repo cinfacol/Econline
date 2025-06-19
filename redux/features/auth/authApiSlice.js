@@ -44,6 +44,12 @@ const authApiSlice = apiSlice.injectEndpoints({
         url: "/auth/jwt/verify/",
         method: "POST",
       }),
+      transformResponse: (response) => {
+        if (response.is_guest) {
+          return { isGuest: true };
+        }
+        return { isAuthenticated: true };
+      },
     }),
     logout: builder.mutation({
       query: () => ({
