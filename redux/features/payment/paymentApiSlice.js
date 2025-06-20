@@ -6,10 +6,13 @@ const paymentAdapter = createEntityAdapter();
 export const paymentApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getPaymentTotal: builder.query({
-      query: (shipping_id) => ({
+      query: ({ shipping_id, coupon_id = null }) => ({
         url: `/payments/calculate-total/`,
         method: "GET",
-        params: { shipping_id },
+        params: { 
+          shipping_id,
+          coupon_id: coupon_id || undefined
+        },
       }),
       transformResponse: (response) => {
         if (!response) {

@@ -1,5 +1,5 @@
 import { useCallback, useState, useEffect } from 'react';
-import { useCheckCouponQuery } from '@/redux/features/cart/cartApiSlice';
+import { useCheckCouponQuery } from '@/redux/features/shipping/shippingApiSlice';
 import { toast } from 'sonner';
 
 const Coupon = ({ onCouponChange, couponState, cartTotal }) => {
@@ -78,7 +78,6 @@ const Coupon = ({ onCouponChange, couponState, cartTotal }) => {
         totalAfterDiscount: totalAfterDiscount
       });
 
-      toast.success("Cupón aplicado correctamente");
       setSkip(true);
       setIsSubmitting(false);
     }

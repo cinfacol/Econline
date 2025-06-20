@@ -1,5 +1,6 @@
 import Image from "next/image";
 import cloudinaryImageLoader from "@/actions/imageLoader";
+import { Currency } from "@/components/ui";
 
 const CheckoutItems = ({ items, isProcessing }) => {
   return (
@@ -21,12 +22,12 @@ const CheckoutItems = ({ items, isProcessing }) => {
             <div className="flex-1 min-w-0">
               <h3 className="text-sm font-medium text-gray-900 truncate">{item.name}</h3>
               <p className="text-sm text-gray-500">Cantidad: {item.quantity}</p>
-              <p className="text-sm text-gray-500">Precio unitario: ${item.inventory.store_price}</p>
+              <span className="text-sm text-gray-500">Precio unitario: <Currency value={item.inventory.store_price} /></span>
             </div>
             <div className="flex-shrink-0 text-right">
-              <p className="text-sm font-medium text-gray-900">
-                ${(item.inventory.store_price * item.quantity).toFixed(2)}
-              </p>
+              <span className="text-sm font-medium text-gray-900">
+                <Currency value={item.inventory.store_price * item.quantity} />
+              </span>
             </div>
           </div>
         ))}

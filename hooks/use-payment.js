@@ -81,10 +81,20 @@ const usePayment = () => {
           throw new Error("Datos de pago incompletos");
         }
 
+        console.log("Enviando datos de pago:", formData);
+
+        // Enviar todos los datos calculados al backend para consistencia
         const result = await createCheckoutSession({
           shipping_id: formData.shipping_id,
           payment_method_id: formData.payment_method_id,
+          coupon_id: formData.coupon_id,
+          total_amount: formData.total_amount,
+          subtotal: formData.subtotal,
+          shipping_cost: formData.shipping_cost,
+          discount: formData.discount
         }).unwrap();
+
+        console.log("Respuesta del backend:", result);
 
         if (!result?.payment_id) {
           throw new Error("No se recibió un ID de pago válido");
@@ -107,7 +117,33 @@ const usePayment = () => {
           toast.success("Sesión de pago creada correctamente");
         }
       } catch (err) {
-        console.error("Error en handlePayment:", err);
+        console.error("Error detallado en handlePayment:", {
+          error: err,
+          message: err?.message,
+          data: err?.data,
+          status: err?.status,
+          stack: err?.stack,
+          originalError: err?.originalError,
+          response: err?.response,
+          statusText: err?.statusText
+        });
+        
+        // Intentar obtener más información del error
+        let errorMessage = "Error al procesar el pago";
+        
+        if (err?.data?.detail) {
+          errorMessage = err.data.detail;
+        } else if (err?.data?.message) {
+          errorMessage = err.data.message;
+        } else if (err?.message) {
+          errorMessage = err.message;
+        } else if (err?.status === 502) {
+          errorMessage = "Error en el servidor de pagos. Por favor, inténtalo de nuevo.";
+        } else if (err?.status === 400) {
+          errorMessage = "Datos de pago inválidos. Verifica la información e inténtalo de nuevo.";
+        }
+        
+        console.error("Mensaje de error final:", errorMessage);
         handleError(err, "handlePayment");
         setShouldVerify(false);
       } finally {

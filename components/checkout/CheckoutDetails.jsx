@@ -9,10 +9,8 @@ import CheckoutOrder from "./CheckoutOrder";
 import { Button } from "@/components/ui/button";
 import { useCheckout } from "@/contexts/CheckoutContext";
 import { toast } from "sonner";
-import {
-  useGetItemsQuery,
-  useGetShippingOptionsQuery,
-} from "@/redux/features/cart/cartApiSlice";
+import { useGetItemsQuery } from "@/redux/features/cart/cartApiSlice";
+import { useGetShippingOptionsQuery } from "@/redux/features/shipping/shippingApiSlice";
 import {
   useGetPaymentTotalQuery,
   useGetPaymentMethodsQuery,
@@ -28,10 +26,18 @@ const CheckoutDetails = () => {
 
   const { data: cartData, isLoading: isLoadingCart } = useGetItemsQuery();
   const { data: shippingData, isLoading: isLoadingShipping } = useGetShippingOptionsQuery();
-  const { data: paymentTotal } = useGetPaymentTotalQuery(state.shipping.id, {
-    skip: !state.shipping.id,
-  });
   const { data: paymentMethods } = useGetPaymentMethodsQuery();
+
+  // Hook para obtener los totales calculados desde el backend
+  const { data: paymentTotal } = useGetPaymentTotalQuery(
+    { 
+      shipping_id: state.shipping.id,
+      coupon_id: state.coupon.applied && state.coupon.coupon?.id ? state.coupon.coupon.id : null
+    }, 
+    {
+      skip: !state.shipping.id,
+    }
+  );
 
   const { ids = [], entities = {} } = cartData || {};
   const items = ids.map((id) => entities[id]).filter(Boolean);
@@ -71,21 +77,8 @@ const CheckoutDetails = () => {
       return;
     }
 
-    const subtotal = state.coupon.applied
-      ? state.coupon.totalAfterDiscount
-      : cartTotal;
-
-    const totalAmount = subtotal + (state.shipping.cost || 0);
-
-    if (!totalAmount || totalAmount <= 0) {
-      console.error('Monto inválido:', { 
-        subtotal, 
-        shippingCost: state.shipping.cost, 
-        totalAmount,
-        couponApplied: state.coupon.applied,
-        couponDiscount: state.coupon.discount
-      });
-      toast.error("El monto a pagar no es válido");
+    if (!paymentTotal) {
+      toast.error("Error al calcular el total del pedido");
       return;
     }
 
@@ -98,16 +91,20 @@ const CheckoutDetails = () => {
       const toastId = toast.loading("Iniciando proceso de pago...");
       const defaultPaymentMethod = paymentMethods.methods[0];
 
+      // Usar los datos del hook useGetPaymentTotalQuery para consistencia
       const paymentData = {
         shipping_id: state.shipping.id,
         payment_method_id: String(defaultPaymentMethod.id),
         payment_option: defaultPaymentMethod.key,
-        coupon_id: state.coupon.applied ? state.coupon.coupon.id : null,
-        total_amount: totalAmount,
-        subtotal: subtotal,
-        shipping_cost: state.shipping.cost || 0,
-        discount: state.coupon.applied ? state.coupon.discount : 0
+        coupon_id: state.coupon.applied && state.coupon.coupon?.id ? state.coupon.coupon.id : null,
+        total_amount: paymentTotal.total_amount,
+        subtotal: paymentTotal.subtotal,
+        shipping_cost: paymentTotal.shipping_cost,
+        discount: paymentTotal.discount
       };
+
+      console.log("Datos de pago que se enviarán:", paymentData);
+      console.log("PaymentTotal completo:", paymentTotal);
 
       await handlePayment(paymentData);
       toast.dismiss(toastId);
@@ -119,7 +116,7 @@ const CheckoutDetails = () => {
         payload: errorMessage
       });
     }
-  }, [state, cartTotal, handlePayment, items, paymentMethods, dispatch]);
+  }, [state, paymentTotal, handlePayment, items, paymentMethods, dispatch]);
 
   if (isLoadingCart || isLoadingShipping) {
     return <CheckoutSkeleton />;
@@ -151,11 +148,11 @@ const CheckoutDetails = () => {
           shippingOptions={shippingData?.entities ? Object.values(shippingData.entities) : []}
           onShippingChange={handleShippingChange}
           shippingState={state.shipping}
+          cartTotal={cartTotal}
         />
         <CheckoutOrder
-          items={items}
-          shipping={state.shipping}
-          coupon={state.coupon}
+          shipping_id={state.shipping.id}
+          coupon_id={state.coupon.applied && state.coupon.coupon?.id ? state.coupon.coupon.id : null}
           onPaymentSubmit={handlePaymentSubmit}
           isProcessing={isProcessing}
         />
