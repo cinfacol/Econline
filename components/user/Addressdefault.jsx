@@ -24,7 +24,7 @@ const AddressDefault = () => {
         <p className="text-red-600">No default address found.</p>
         <p>
           Please, set a default address. Go to{" "}
-          <Link href="/dashboard" className="text-blue-600 underline">
+          <Link href="/profile/address/new" className="text-blue-600 underline">
             Set or Create a default Address
           </Link>
           .

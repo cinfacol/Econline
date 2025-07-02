@@ -9,9 +9,9 @@ export const paymentApiSlice = apiSlice.injectEndpoints({
       query: ({ shipping_id, coupon_id = null }) => ({
         url: `/payments/calculate-total/`,
         method: "GET",
-        params: { 
+        params: {
           shipping_id,
-          coupon_id: coupon_id || undefined
+          coupon_id: coupon_id || undefined,
         },
       }),
       transformResponse: (response) => {
@@ -101,6 +101,37 @@ export const paymentApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["Payment"],
     }),
+
+    cancelPayment: builder.mutation({
+      query: (paymentId) => ({
+        url: `/payments/${paymentId}/cancel/`,
+        method: "POST",
+      }),
+      invalidatesTags: (result, error, paymentId) => [
+        { type: "Payment", id: paymentId },
+        "Order",
+        "Cart",
+      ],
+    }),
+
+    getPaymentBySession: builder.query({
+      query: (sessionId) => ({
+        url: `/payments/get-payment-by-session/`,
+        method: "GET",
+        params: { session_id: sessionId },
+      }),
+      transformResponse: (response) => {
+        if (!response || typeof response !== "object") {
+          console.error("Invalid response for getPaymentBySession:", response);
+          return null;
+        }
+        return response;
+      },
+      providesTags: (result, error, sessionId) => [
+        { type: "Payment", id: result?.payment_id },
+        "Order",
+      ],
+    }),
   }),
 });
 
@@ -111,4 +142,6 @@ export const {
   useVerifyPaymentQuery,
   useRetryPaymentMutation,
   useGetPaymentMethodsQuery,
+  useCancelPaymentMutation,
+  useGetPaymentBySessionQuery,
 } = paymentApiSlice;

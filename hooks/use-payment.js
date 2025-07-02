@@ -94,8 +94,6 @@ const usePayment = () => {
           discount: formData.discount
         }).unwrap();
 
-        console.log("Respuesta del backend:", result);
-
         if (!result?.payment_id) {
           throw new Error("No se recibió un ID de pago válido");
         }
