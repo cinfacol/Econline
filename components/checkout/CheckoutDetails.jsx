@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import CheckoutItems from "./CheckoutItems";
 import Shipping from "./Shipping";
@@ -22,18 +22,23 @@ import AddressDefault from "@/components/user/Addressdefault";
 const CheckoutDetails = () => {
   const router = useRouter();
   const { state, dispatch } = useCheckout();
-  const { handlePayment, isProcessing } = usePayment();
+  const { handlePayment, isProcessing, error, paymentState, setError } =
+    usePayment();
 
   const { data: cartData, isLoading: isLoadingCart } = useGetItemsQuery();
-  const { data: shippingData, isLoading: isLoadingShipping } = useGetShippingOptionsQuery();
+  const { data: shippingData, isLoading: isLoadingShipping } =
+    useGetShippingOptionsQuery();
   const { data: paymentMethods } = useGetPaymentMethodsQuery();
 
   // Hook para obtener los totales calculados desde el backend
   const { data: paymentTotal } = useGetPaymentTotalQuery(
-    { 
+    {
       shipping_id: state.shipping.id,
-      coupon_id: state.coupon.applied && state.coupon.coupon?.id ? state.coupon.coupon.id : null
-    }, 
+      coupon_id:
+        state.coupon.applied && state.coupon.coupon?.id
+          ? state.coupon.coupon.id
+          : null,
+    },
     {
       skip: !state.shipping.id,
     }
@@ -43,80 +48,106 @@ const CheckoutDetails = () => {
   const items = ids.map((id) => entities[id]).filter(Boolean);
 
   const cartTotal = useMemo(() => {
-    return items.reduce((sum, item) => sum + (item.inventory.store_price * item.quantity), 0);
+    return items.reduce(
+      (sum, item) => sum + item.inventory.store_price * item.quantity,
+      0
+    );
   }, [items]);
 
-  const handleShippingChange = useCallback((shippingId, shippingCost) => {
-    dispatch({
-      type: 'SET_SHIPPING',
-      payload: {
-        id: shippingId,
-        cost: shippingCost,
-        isCalculating: false
-      }
-    });
-  }, [dispatch]);
+  // Limpia el error si cambia el método de envío o cupón
+  useEffect(() => {
+    if (setError) setError(null);
+  }, [
+    state.shipping.id,
+    state.coupon.coupon?.id,
+    state.paymentMethod?.id,
+    setError,
+  ]);
 
-  const handleCouponChange = useCallback((couponData) => {
-    dispatch({
-      type: 'SET_COUPON',
-      payload: couponData
-    });
-  }, [dispatch]);
-
-  const handlePaymentSubmit = useCallback(async (e) => {
-    e.preventDefault();
-
-    if (!state.shipping.id) {
-      toast.error("Por favor seleccione un método de envío");
-      return;
-    }
-
-    if (!items.length) {
-      toast.error("El carrito está vacío");
-      return;
-    }
-
-    if (!paymentTotal) {
-      toast.error("Error al calcular el total del pedido");
-      return;
-    }
-
-    if (!paymentMethods?.methods?.length) {
-      toast.error("No hay métodos de pago disponibles");
-      return;
-    }
-
-    try {
-      const toastId = toast.loading("Iniciando proceso de pago...");
-      const defaultPaymentMethod = paymentMethods.methods[0];
-
-      // Usar los datos del hook useGetPaymentTotalQuery para consistencia
-      const paymentData = {
-        shipping_id: state.shipping.id,
-        payment_method_id: String(defaultPaymentMethod.id),
-        payment_option: defaultPaymentMethod.key,
-        coupon_id: state.coupon.applied && state.coupon.coupon?.id ? state.coupon.coupon.id : null,
-        total_amount: paymentTotal.total_amount,
-        subtotal: paymentTotal.subtotal,
-        shipping_cost: paymentTotal.shipping_cost,
-        discount: paymentTotal.discount
-      };
-
-      console.log("Datos de pago que se enviarán:", paymentData);
-      console.log("PaymentTotal completo:", paymentTotal);
-
-      await handlePayment(paymentData);
-      toast.dismiss(toastId);
-    } catch (error) {
-      const errorMessage = error?.message || error?.data?.detail || "Error al procesar el pago";
-      toast.error(errorMessage);
+  const handleShippingChange = useCallback(
+    (shippingId, shippingCost) => {
       dispatch({
-        type: 'SET_PAYMENT_ERROR',
-        payload: errorMessage
+        type: "SET_SHIPPING",
+        payload: {
+          id: shippingId,
+          cost: shippingCost,
+          isCalculating: false,
+        },
       });
-    }
-  }, [state, paymentTotal, handlePayment, items, paymentMethods, dispatch]);
+    },
+    [dispatch]
+  );
+
+  const handleCouponChange = useCallback(
+    (couponData) => {
+      dispatch({
+        type: "SET_COUPON",
+        payload: couponData,
+      });
+    },
+    [dispatch]
+  );
+
+  const handlePaymentSubmit = useCallback(
+    async (e) => {
+      e.preventDefault();
+
+      if (!state.shipping.id) {
+        toast.error("Por favor seleccione un método de envío");
+        return;
+      }
+
+      if (!items.length) {
+        toast.error("El carrito está vacío");
+        return;
+      }
+
+      if (!paymentTotal) {
+        toast.error("Error al calcular el total del pedido");
+        return;
+      }
+
+      if (!paymentMethods?.methods?.length) {
+        toast.error("No hay métodos de pago disponibles");
+        return;
+      }
+
+      try {
+        const toastId = toast.loading("Iniciando proceso de pago...");
+        const defaultPaymentMethod = paymentMethods.methods[0];
+
+        // Usar los datos del hook useGetPaymentTotalQuery para consistencia
+        const paymentData = {
+          shipping_id: state.shipping.id,
+          payment_method_id: String(defaultPaymentMethod.id),
+          payment_option: defaultPaymentMethod.key,
+          coupon_id:
+            state.coupon.applied && state.coupon.coupon?.id
+              ? state.coupon.coupon.id
+              : null,
+          total_amount: paymentTotal.total_amount,
+          subtotal: paymentTotal.subtotal,
+          shipping_cost: paymentTotal.shipping_cost,
+          discount: paymentTotal.discount,
+        };
+
+        console.log("Datos de pago que se enviarán:", paymentData);
+        console.log("PaymentTotal completo:", paymentTotal);
+
+        await handlePayment(paymentData);
+        toast.dismiss(toastId);
+      } catch (error) {
+        const errorMessage =
+          error?.message || error?.data?.detail || "Error al procesar el pago";
+        toast.error(errorMessage);
+        dispatch({
+          type: "SET_PAYMENT_ERROR",
+          payload: errorMessage,
+        });
+      }
+    },
+    [state, paymentTotal, handlePayment, items, paymentMethods, dispatch]
+  );
 
   if (isLoadingCart || isLoadingShipping) {
     return <CheckoutSkeleton />;
@@ -145,14 +176,32 @@ const CheckoutDetails = () => {
           cartTotal={cartTotal}
         />
         <Shipping
-          shippingOptions={shippingData?.entities ? Object.values(shippingData.entities) : []}
+          shippingOptions={
+            shippingData?.entities ? Object.values(shippingData.entities) : []
+          }
           onShippingChange={handleShippingChange}
           shippingState={state.shipping}
           cartTotal={cartTotal}
         />
+
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            {error}
+          </div>
+        )}
+        {paymentState === "success" && (
+          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+            ¡Pago realizado con éxito!
+          </div>
+        )}
+
         <CheckoutOrder
           shipping_id={state.shipping.id}
-          coupon_id={state.coupon.applied && state.coupon.coupon?.id ? state.coupon.coupon.id : null}
+          coupon_id={
+            state.coupon.applied && state.coupon.coupon?.id
+              ? state.coupon.coupon.id
+              : null
+          }
           onPaymentSubmit={handlePaymentSubmit}
           isProcessing={isProcessing}
         />
