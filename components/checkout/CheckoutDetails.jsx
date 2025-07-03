@@ -25,24 +25,63 @@ const CheckoutDetails = () => {
   const { handlePayment, isProcessing, error, paymentState, setError } =
     usePayment();
 
-  const { data: cartData, isLoading: isLoadingCart } = useGetItemsQuery();
-  const { data: shippingData, isLoading: isLoadingShipping } =
-    useGetShippingOptionsQuery();
-  const { data: paymentMethods } = useGetPaymentMethodsQuery();
+  const {
+    data: cartData,
+    isLoading: isLoadingCart,
+    refetch: refetchCart,
+  } = useGetItemsQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
+
+  const {
+    data: shippingData,
+    isLoading: isLoadingShipping,
+    refetch: refetchShipping,
+  } = useGetShippingOptionsQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
+
+  const { data: paymentMethods, refetch: refetchPaymentMethods } =
+    useGetPaymentMethodsQuery(undefined, {
+      refetchOnMountOrArgChange: true,
+    });
 
   // Hook para obtener los totales calculados desde el backend
-  const { data: paymentTotal } = useGetPaymentTotalQuery(
-    {
-      shipping_id: state.shipping.id,
-      coupon_id:
-        state.coupon.applied && state.coupon.coupon?.id
-          ? state.coupon.coupon.id
-          : null,
-    },
-    {
-      skip: !state.shipping.id,
+  const { data: paymentTotal, refetch: refetchPaymentTotal } =
+    useGetPaymentTotalQuery(
+      {
+        shipping_id: state.shipping.id,
+        coupon_id:
+          state.coupon.applied && state.coupon.coupon?.id
+            ? state.coupon.coupon.id
+            : null,
+      },
+      {
+        skip: !state.shipping.id,
+        refetchOnMountOrArgChange: true,
+      }
+    );
+
+  // Refresca los datos al montar el componente o cuando cambia el shipping/cupón
+  useEffect(() => {
+    refetchCart();
+    refetchShipping();
+    refetchPaymentMethods();
+    if (state.shipping.id) {
+      refetchPaymentTotal();
     }
-  );
+    // Limpia el error si cambia el método de envío, cupón o método de pago
+    if (setError) setError(null);
+  }, [
+    state.shipping.id,
+    state.coupon.coupon?.id,
+    state.paymentMethod?.id,
+    setError,
+    refetchCart,
+    refetchShipping,
+    refetchPaymentMethods,
+    refetchPaymentTotal,
+  ]);
 
   const { ids = [], entities = {} } = cartData || {};
   const items = ids.map((id) => entities[id]).filter(Boolean);
@@ -53,16 +92,6 @@ const CheckoutDetails = () => {
       0
     );
   }, [items]);
-
-  // Limpia el error si cambia el método de envío o cupón
-  useEffect(() => {
-    if (setError) setError(null);
-  }, [
-    state.shipping.id,
-    state.coupon.coupon?.id,
-    state.paymentMethod?.id,
-    setError,
-  ]);
 
   const handleShippingChange = useCallback(
     (shippingId, shippingCost) => {
@@ -136,6 +165,8 @@ const CheckoutDetails = () => {
 
         await handlePayment(paymentData);
         toast.dismiss(toastId);
+        // Refresca el carrito tras el pago
+        refetchCart();
       } catch (error) {
         const errorMessage =
           error?.message || error?.data?.detail || "Error al procesar el pago";
@@ -146,7 +177,15 @@ const CheckoutDetails = () => {
         });
       }
     },
-    [state, paymentTotal, handlePayment, items, paymentMethods, dispatch]
+    [
+      state,
+      paymentTotal,
+      handlePayment,
+      items,
+      paymentMethods,
+      dispatch,
+      refetchCart,
+    ]
   );
 
   if (isLoadingCart || isLoadingShipping) {
