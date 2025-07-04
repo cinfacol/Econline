@@ -2,8 +2,11 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { XCircleIcon } from "@heroicons/react/24/outline";
-import { useGetPaymentBySessionQuery } from "@/redux/features/payment/paymentApiSlice";
-import { useEffect } from "react";
+import {
+  useGetPaymentBySessionQuery,
+  useCancelPaymentMutation,
+} from "@/redux/features/payment/paymentApiSlice";
+import { useEffect, useRef, useState } from "react";
 
 export default function CancelledPage() {
   const router = useRouter();
@@ -12,9 +15,63 @@ export default function CancelledPage() {
   const errorCode = searchParams.get("error_code");
 
   // Obtener información del pago usando el session_id
-  const { data: paymentInfo, isLoading, error } = useGetPaymentBySessionQuery(sessionId, {
+  const {
+    data: paymentInfo,
+    isLoading,
+    error,
+    refetch,
+  } = useGetPaymentBySessionQuery(sessionId, {
     skip: !sessionId,
   });
+
+  // Hook para cancelar el pago
+  const [cancelPayment, { isLoading: isCancelling, isSuccess: cancelSuccess }] =
+    useCancelPaymentMutation();
+
+  // Control de reintentos y spinner
+  const cancelAttempted = useRef(false);
+  const [isPolling, setIsPolling] = useState(false);
+  const [pollCount, setPollCount] = useState(0);
+  const MAX_POLLS = 6; // ~12 segundos si el delay es 2s
+
+  // Efecto: Si el pago está pendiente/cancelable, invocar cancelación y empezar polling
+  useEffect(() => {
+    // Solo intentar cancelar si hay info, id, y no se ha intentado antes
+    if (paymentInfo && paymentInfo.payment_id && !cancelAttempted.current) {
+      cancelAttempted.current = true;
+      setIsPolling(true);
+      // Llamar SIEMPRE a cancelPayment, aunque esté en polling
+      (async () => {
+        try {
+          await cancelPayment(paymentInfo.payment_id).unwrap();
+        } catch (e) {
+          // Ignorar error, igual se hace polling
+        } finally {
+          setTimeout(() => setPollCount((c) => c + 1), 2000);
+        }
+      })();
+    }
+  }, [paymentInfo, cancelPayment]);
+
+  // Polling: mientras isPolling y no esté cancelado, reintenta refetch
+  useEffect(() => {
+    if (!isPolling) return;
+    if (!paymentInfo || !paymentInfo.status) return;
+    const status = (paymentInfo.status || "").toLowerCase();
+    if (["cancelled", "canceled", "failed"].includes(status)) {
+      setIsPolling(false);
+      return;
+    }
+    if (pollCount > 0 && pollCount < MAX_POLLS) {
+      // Espera 2s y refetch
+      setTimeout(() => {
+        refetch();
+        setPollCount((c) => c + 1);
+      }, 2000);
+    } else if (pollCount >= MAX_POLLS) {
+      setIsPolling(false);
+    }
+  }, [isPolling, pollCount, paymentInfo, refetch]);
 
   const getErrorMessage = (code) => {
     switch (code) {
@@ -52,13 +109,38 @@ export default function CancelledPage() {
     );
   }
 
-  // Si está cargando, mostrar loading
-  if (isLoading) {
+  // Mostrar spinner si está cargando, cancelando o haciendo polling
+  if (isLoading || isCancelling || isPolling) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-          <p className="mt-4 text-sm text-gray-600">Verificando estado del pago...</p>
+          <svg
+            className="animate-spin h-12 w-12 text-indigo-600 mx-auto"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            ></circle>
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v8z"
+            ></path>
+          </svg>
+          <p className="mt-4 text-sm text-gray-600">
+            {isCancelling
+              ? "Cancelando pago..."
+              : isPolling
+              ? "Esperando confirmación de cancelación..."
+              : "Verificando estado del pago..."}
+          </p>
         </div>
       </div>
     );
@@ -74,7 +156,8 @@ export default function CancelledPage() {
             Error al verificar el pago
           </h1>
           <p className="mt-2 text-sm text-gray-600">
-            No se pudo verificar el estado del pago. Por favor, contacta soporte.
+            No se pudo verificar el estado del pago. Por favor, contacta
+            soporte.
           </p>
           <div className="mt-6">
             <button
@@ -108,11 +191,26 @@ export default function CancelledPage() {
               Detalles del pago
             </h3>
             <div className="text-sm text-gray-600 space-y-1">
-              <p><span className="font-medium">ID de pago:</span> {paymentInfo.payment_id}</p>
-              <p><span className="font-medium">ID de orden:</span> {paymentInfo.order_id}</p>
-              <p><span className="font-medium">Monto:</span> ${paymentInfo.amount} {paymentInfo.currency}</p>
-              <p><span className="font-medium">Estado:</span> {paymentInfo.status_display}</p>
-              <p><span className="font-medium">Estado de orden:</span> {paymentInfo.order_status_display}</p>
+              <p>
+                <span className="font-medium">ID de pago:</span>{" "}
+                {paymentInfo.payment_id}
+              </p>
+              <p>
+                <span className="font-medium">ID de orden:</span>{" "}
+                {paymentInfo.order_id}
+              </p>
+              <p>
+                <span className="font-medium">Monto:</span> $
+                {paymentInfo.amount} {paymentInfo.currency}
+              </p>
+              <p>
+                <span className="font-medium">Estado:</span>{" "}
+                {paymentInfo.status_display}
+              </p>
+              <p>
+                <span className="font-medium">Estado de orden:</span>{" "}
+                {paymentInfo.order_status_display}
+              </p>
             </div>
           </div>
 
