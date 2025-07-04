@@ -47,6 +47,10 @@ export default function CancelledPage() {
         } catch (e) {
           // Ignorar error, igual se hace polling
         } finally {
+          // Limpieza de sessionStorage/localStorage tras cancelar
+          sessionStorage.removeItem("pendingPaymentId");
+          sessionStorage.removeItem("paymentIntent");
+          localStorage.removeItem("payment_id");
           setTimeout(() => setPollCount((c) => c + 1), 2000);
         }
       })();
