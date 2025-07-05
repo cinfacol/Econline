@@ -3,9 +3,8 @@
 import { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Heart, Trash2, MoveRight, Minus, Plus } from "lucide-react";
-import { Skeleton } from "@/components/ui";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   useGetItemsQuery,
   useDecQtyMutation,
@@ -13,7 +12,6 @@ import {
   useRemoveItemMutation,
   useClearCartMutation,
 } from "@/redux/features/cart/cartApiSlice";
-import AddItem from "./AddItem";
 import { CartItemSkeleton } from "@/components/skeletons";
 import { EmptyCart } from "./EmptyCart";
 import { CartItem } from "./CartItem";
