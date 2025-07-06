@@ -1,23 +1,24 @@
-import { useCallback, useState, useEffect } from 'react';
-import { useCheckCouponQuery } from '@/redux/features/shipping/shippingApiSlice';
-import { toast } from 'sonner';
+import { useCallback, useState, useEffect } from "react";
+import { useCheckCouponQuery } from "@/redux/features/shipping/shippingApiSlice";
+import { toast } from "sonner";
 
 const Coupon = ({ onCouponChange, couponState, cartTotal }) => {
-  const [couponInput, setCouponInput] = useState('');
+  const [couponInput, setCouponInput] = useState("");
   const [skip, setSkip] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  console.log("Estado del cupón:", couponState);
 
-  const { 
-    data: couponData, 
-    error, 
+  const {
+    data: couponData,
+    error,
     isLoading,
-    isError
+    isError,
   } = useCheckCouponQuery(
-    { 
+    {
       name: couponInput.trim().toUpperCase(),
-      cart_total: cartTotal 
+      cart_total: cartTotal,
     },
-    { 
+    {
       skip,
       pollingInterval: 0,
       refetchOnMountOrArgChange: true,
@@ -37,19 +38,22 @@ const Coupon = ({ onCouponChange, couponState, cartTotal }) => {
     return null;
   };
 
-  const handleCouponSubmit = useCallback(async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+  const handleCouponSubmit = useCallback(
+    async (e) => {
+      e.preventDefault();
+      setIsSubmitting(true);
 
-    const validationError = validateCouponInput(couponInput);
-    if (validationError) {
-      toast.error(validationError);
-      setIsSubmitting(false);
-      return;
-    }
+      const validationError = validateCouponInput(couponInput);
+      if (validationError) {
+        toast.error(validationError);
+        setIsSubmitting(false);
+        return;
+      }
 
-    setSkip(false);
-  }, [couponInput]);
+      setSkip(false);
+    },
+    [couponInput]
+  );
 
   const handleInputChange = (e) => {
     const value = e.target.value;
@@ -75,7 +79,7 @@ const Coupon = ({ onCouponChange, couponState, cartTotal }) => {
         applied: true,
         discount: couponData.discount,
         coupon: couponData.coupon,
-        totalAfterDiscount: totalAfterDiscount
+        totalAfterDiscount: totalAfterDiscount,
       });
 
       setSkip(true);
@@ -95,7 +99,7 @@ const Coupon = ({ onCouponChange, couponState, cartTotal }) => {
   // Limpiar el estado cuando se desmonte el componente
   useEffect(() => {
     return () => {
-      setCouponInput('');
+      setCouponInput("");
       setSkip(true);
       setIsSubmitting(false);
     };
@@ -103,12 +107,12 @@ const Coupon = ({ onCouponChange, couponState, cartTotal }) => {
 
   const handleRemoveCoupon = () => {
     onCouponChange({
-      name: '',
+      name: "",
       applied: false,
       discount: 0,
-      coupon: null
+      coupon: null,
     });
-    setCouponInput('');
+    setCouponInput("");
     setSkip(true);
     setIsSubmitting(false);
     toast.success("Cupón removido correctamente");
@@ -133,7 +137,11 @@ const Coupon = ({ onCouponChange, couponState, cartTotal }) => {
           className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
           disabled={isLoading || isSubmitting}
         >
-          {isLoading ? 'Verificando...' : isSubmitting ? 'Aplicando...' : 'Aplicar'}
+          {isLoading
+            ? "Verificando..."
+            : isSubmitting
+            ? "Aplicando..."
+            : "Aplicar"}
         </button>
       </form>
       {couponState.applied && (
@@ -148,12 +156,14 @@ const Coupon = ({ onCouponChange, couponState, cartTotal }) => {
               </p>
               {couponState.coupon.min_purchase_amount && (
                 <p className="text-sm text-gray-500">
-                  Monto mínimo: ${Number(couponState.coupon.min_purchase_amount).toFixed(2)}
+                  Monto mínimo: $
+                  {Number(couponState.coupon.min_purchase_amount).toFixed(2)}
                 </p>
               )}
               {couponState.coupon.max_discount_amount && (
                 <p className="text-sm text-gray-500">
-                  Descuento máximo: ${Number(couponState.coupon.max_discount_amount).toFixed(2)}
+                  Descuento máximo: $
+                  {Number(couponState.coupon.max_discount_amount).toFixed(2)}
                 </p>
               )}
             </div>

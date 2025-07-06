@@ -109,6 +109,7 @@ const CheckoutDetails = () => {
 
   const handleCouponChange = useCallback(
     (couponData) => {
+      console.log("Datos del cupón recibidos:", couponData);
       dispatch({
         type: "SET_COUPON",
         payload: couponData,

@@ -33,7 +33,7 @@ export function CartSummary({
 }) {
   return (
     <div className="rounded-lg border bg-white p-6 shadow-sm dark:bg-gray-800">
-      <h2 className="text-lg font-semibold">Resumen del pedido</h2>
+      <h2 className="text-lg font-semibold">Resumen de la Compra</h2>
 
       <div className="mt-6 space-y-4">
         <SummaryRow label="Subtotal" value={subTotal} />
