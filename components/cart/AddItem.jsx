@@ -9,8 +9,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 
 const AddItem = ({ data, access, ButtonComponent }) => {
-  const { data: cartId } = useGetItemsQuery();
-  const [addItem, { isLoading, error }] = useAddItemToCartMutation();
+  const [addItem, { isLoading }] = useAddItemToCartMutation();
 
   if (isLoading) {
     return <h1>Loading...</h1>;
@@ -19,19 +18,30 @@ const AddItem = ({ data, access, ButtonComponent }) => {
   const token = access;
 
   const onAddToCart = async () => {
-    const id = cartId?.ids[0];
-    const cart_id = cartId?.entities[id]?.cart;
     const inventory_id = data?.id;
     const quantity = 1;
-    const coupon = {};
-    const newItem = { inventory_id, quantity, coupon };
+    
     try {
-      await addItem({ newItem })
-        .unwrap()
-        .then((payload) => toast.success("Product added to Cart successfully"))
-        .catch((error) => toast.error(`${error.error}`));
-    } catch (err) {
-      toast.error(`Error: ${error?.data?.error}`);
+      const result = await addItem({ inventory_id, quantity }).unwrap();
+      
+      if (result.success) {
+        toast.success("Producto agregado al carrito exitosamente");
+      } else {
+        toast.error(result.error || "Error al agregar el producto");
+      }
+    } catch (error) {
+      // El error ya viene transformado desde el slice
+      if (error?.error) {
+        toast.error(error.error);
+      } else if (error?.data?.error) {
+        // Fallback para errores no transformados
+        toast.error(error.data.error);
+      } else if (error?.message) {
+        // Fallback para errores con message
+        toast.error(error.message);
+      } else {
+        toast.error("Error al agregar el producto al carrito");
+      }
     }
   };
 

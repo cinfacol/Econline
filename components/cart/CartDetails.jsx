@@ -32,6 +32,15 @@ export default function CartDetails() {
   const cart_total = data?.cart_total ?? 0;
   const discount_amount = data?.discount_amount ?? 0;
 
+  // Función para calcular el total de artículos en el carrito
+  const totalProducts = useMemo(() => {
+    if (!items?.length) return 0;
+
+    return items.reduce((total, item) => {
+      return total + (item.quantity || 0);
+    }, 0);
+  }, [items]);
+
   // Remove local calculation useMemo
   // const { taxes, subTotal, total, save } = useMemo(() => {
   //   if (!items?.length) {
@@ -79,14 +88,25 @@ export default function CartDetails() {
     async (inventoryId, action) => {
       try {
         if (action === "inc") {
-          await incQty({ inventoryId }).unwrap();
+          await incQty(inventoryId).unwrap();
           toast.success("Cantidad incrementada");
         } else {
-          await decQty({ inventoryId }).unwrap();
+          await decQty(inventoryId).unwrap();
           toast.success("Cantidad reducida");
         }
       } catch (error) {
-        toast.error(error?.data?.error || "Error al actualizar cantidad");
+        console.error("Error updating quantity:", error);
+        
+        // Manejar errores específicos
+        if (error?.data?.error === "Item is not in cart") {
+          toast.error("El producto no está en el carrito");
+        } else if (error?.data?.error === "Not enough stock available") {
+          toast.error("No hay suficiente stock disponible");
+        } else if (error?.data?.error === "Inventory ID is required") {
+          toast.error("Error al identificar el producto");
+        } else {
+          toast.error(error?.data?.error || "Error al actualizar cantidad");
+        }
       }
     },
     [incQty, decQty]
@@ -118,16 +138,19 @@ export default function CartDetails() {
         // Enviar el ID del inventario como espera el backend
         const response = await removeItem({ itemId }).unwrap();
 
-        if (response.success) {
+        // Verificar si la respuesta es exitosa
+        if (response && (response.success || response.cart !== undefined)) {
           toast.dismiss(toastId);
           toast.success(
             `${item.inventory.name || "Producto"} eliminado del carrito`
           );
         } else {
-          throw new Error(response.error);
+          throw new Error(response?.error || "Error desconocido");
         }
       } catch (error) {
         toast.dismiss(toastId);
+
+        console.error("Error completo al eliminar producto:", error);
 
         // Manejar errores específicos según la estructura del backend
         if (error?.data?.error === "Item is not in cart") {
@@ -140,9 +163,26 @@ export default function CartDetails() {
           return;
         }
 
+        // Manejar errores de red
+        if (error?.status === 404) {
+          toast.error("Producto no encontrado en el carrito");
+          return;
+        }
+
+        if (error?.status === 401) {
+          toast.error("Sesión expirada. Por favor, inicia sesión nuevamente");
+          return;
+        }
+
+        if (error?.status === 500) {
+          toast.error("Error del servidor. Inténtalo más tarde");
+          return;
+        }
+
         // Manejar otros errores
         const errorMessage =
           error?.data?.error ||
+          error?.error ||
           error.message ||
           "No se pudo eliminar el producto";
 
@@ -155,6 +195,7 @@ export default function CartDetails() {
           cartId: item.cart,
           error: error?.data || error,
           status: error?.status,
+          response: error?.data,
         });
       }
     },
@@ -201,6 +242,7 @@ export default function CartDetails() {
           total={cart_total || 0} // Use cart_total from backend as total
           discountAmount={discount_amount || 0} // Pass discount_amount
           onCheckout={handleCheckoutRedirect}
+          totalProducts={totalProducts}
           isLoading={isRedirecting}
         />
       </div>

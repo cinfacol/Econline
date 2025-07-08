@@ -4,13 +4,14 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 // Componente interno para las filas del resumen
-function SummaryRow({ label, value, className, strikethrough = false }) {
+function SummaryRow({ label, value, className, strikethrough = false, smallValue = false }) {
   return (
     <div className={cn("flex items-center justify-between", className)}>
       <span className="text-sm text-gray-500">{label}</span>
       <span
         className={cn(
           "font-medium",
+          smallValue && "text-sm",
           strikethrough && "line-through decoration-red-500"
         )}
       >
@@ -26,6 +27,7 @@ function SummaryRow({ label, value, className, strikethrough = false }) {
 export function CartSummary({
   subTotal,
   total,
+  totalProducts, // Accept totalProducts prop
   discountAmount, // Accept discountAmount prop
   onCheckout,
   isLoading,
@@ -35,7 +37,18 @@ export function CartSummary({
       <h2 className="text-lg font-semibold">Resumen de la Compra</h2>
 
       <div className="mt-6 space-y-4">
-        <SummaryRow label="Subtotal" value={subTotal} />
+        <SummaryRow 
+          label={
+            <span>
+              Productos
+              <span className="ml-1 text-xs text-gray-400">
+                ({totalProducts})
+              </span>
+            </span>
+          } 
+          value={subTotal}
+          smallValue={true}
+        />
         {/* Remove Impuestos row as it's not provided by backend in this context */}
         {/* <SummaryRow label="Impuestos" value={taxes} /> */}
         {discountAmount > 0 && ( // Show discount if greater than 0
@@ -43,6 +56,7 @@ export function CartSummary({
             label="Descuento"
             value={discountAmount}
             className="text-green-600"
+            smallValue={true}
             // strikethrough // Strikethrough might not be appropriate for discount amount itself
           />
         )}
