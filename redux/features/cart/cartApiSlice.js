@@ -24,7 +24,21 @@ export const cartApiSlice = apiSlice.injectEndpoints({
           }
         });
 
-        return cartAdapter.setAll(initialState, loadedItems);
+        // Capture backend totals and coupons
+        const subtotal = responseData?.subtotal ?? 0;
+        const cart_total = responseData?.cart_total ?? 0;
+        const discount_amount = responseData?.discount_amount ?? 0;
+        const coupons = responseData?.coupons ?? [];
+
+
+        // Return normalized items along with backend totals and coupons
+        return {
+            ...cartAdapter.setAll(initialState, loadedItems),
+            subtotal,
+            cart_total,
+            discount_amount,
+            coupons,
+        };
       },
     }),
     addItemToCart: builder.mutation({

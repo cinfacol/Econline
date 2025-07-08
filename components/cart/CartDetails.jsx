@@ -28,35 +28,40 @@ export default function CartDetails() {
 
   const { ids = [], entities = {} } = data || {};
   const items = ids.map((id) => entities[id]).filter(Boolean);
-  const { taxes, subTotal, total, save } = useMemo(() => {
-    if (!items?.length) {
-      return {
-        taxes: 0,
-        subTotal: 0,
-        total: 0,
-        save: 0,
-      };
-    }
+  const subtotal = data?.subtotal ?? 0;
+  const cart_total = data?.cart_total ?? 0;
+  const discount_amount = data?.discount_amount ?? 0;
 
-    return items.reduce(
-      (acc, item) => {
-        const itemTax =
-          item.inventory.taxe * item.inventory.store_price * item.quantity;
-        const itemSubtotal = item.inventory.store_price * item.quantity;
-        const itemSavings =
-          (item.inventory.retail_price - item.inventory.store_price) *
-          item.quantity;
+  // Remove local calculation useMemo
+  // const { taxes, subTotal, total, save } = useMemo(() => {
+  //   if (!items?.length) {
+  //     return {
+  //       taxes: 0,
+  //       subTotal: 0,
+  //       total: 0,
+  //       save: 0,
+  //     };
+  //   }
 
-        return {
-          taxes: acc.taxes + itemTax,
-          subTotal: acc.subTotal + itemSubtotal - itemTax / items.length,
-          save: acc.save + itemSavings,
-          total: acc.total + itemSubtotal,
-        };
-      },
-      { taxes: 0, subTotal: 0, save: 0, total: 0 }
-    );
-  }, [items]);
+  //   return items.reduce(
+  //     (acc, item) => {
+  //       const itemTax =
+  //         item.inventory.taxe * item.inventory.store_price * item.quantity;
+  //       const itemSubtotal = item.inventory.store_price * item.quantity;
+  //       const itemSavings =
+  //         (item.inventory.retail_price - item.inventory.store_price) *
+  //         item.quantity;
+
+  //       return {
+  //         taxes: acc.taxes + itemTax,
+  //         subTotal: acc.subTotal + itemSubtotal - itemTax / items.length,
+  //         save: acc.save + itemSavings,
+  //         total: acc.total + itemSubtotal,
+  //       };
+  //     },
+  //     { taxes: 0, subTotal: 0, save: 0, total: 0 }
+  //   );
+  // }, [items]);
 
   // Handlers optimizados
   const handleCheckoutRedirect = useCallback(async () => {
@@ -192,10 +197,9 @@ export default function CartDetails() {
       {/* Resumen del carrito */}
       <div className="lg:col-span-4">
         <CartSummary
-          subTotal={subTotal}
-          taxes={taxes}
-          total={total}
-          savings={save}
+          subTotal={subtotal || 0} // Use subtotal from backend
+          total={cart_total || 0} // Use cart_total from backend as total
+          discountAmount={discount_amount || 0} // Pass discount_amount
           onCheckout={handleCheckoutRedirect}
           isLoading={isRedirecting}
         />

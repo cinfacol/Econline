@@ -25,9 +25,8 @@ function SummaryRow({ label, value, className, strikethrough = false }) {
 
 export function CartSummary({
   subTotal,
-  taxes,
   total,
-  savings,
+  discountAmount, // Accept discountAmount prop
   onCheckout,
   isLoading,
 }) {
@@ -37,15 +36,25 @@ export function CartSummary({
 
       <div className="mt-6 space-y-4">
         <SummaryRow label="Subtotal" value={subTotal} />
-        <SummaryRow label="Impuestos" value={taxes} />
-        {savings > 0 && (
+        {/* Remove Impuestos row as it's not provided by backend in this context */}
+        {/* <SummaryRow label="Impuestos" value={taxes} /> */}
+        {discountAmount > 0 && ( // Show discount if greater than 0
+          <SummaryRow
+            label="Descuento"
+            value={discountAmount}
+            className="text-green-600"
+            // strikethrough // Strikethrough might not be appropriate for discount amount itself
+          />
+        )}
+        {/* Remove Ahorro row as discountAmount replaces it */}
+        {/* {savings > 0 && (
           <SummaryRow
             label="Ahorro"
             value={savings}
             className="text-green-600"
             strikethrough
           />
-        )}
+        )} */}
         <SummaryRow
           label="Total"
           value={total}
