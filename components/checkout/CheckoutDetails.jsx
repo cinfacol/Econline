@@ -62,6 +62,7 @@ const CheckoutDetails = () => {
       }
     );
 
+  console.log("CheckoutDetails paymentTotal:", paymentTotal);
   // Refresca los datos al montar el componente o cuando cambia el shipping/cupón
   useEffect(() => {
     refetchCart();
@@ -85,6 +86,7 @@ const CheckoutDetails = () => {
 
   const { ids = [], entities = {} } = cartData || {};
   const items = ids.map((id) => entities[id]).filter(Boolean);
+  console.log("CheckoutDetails items:", items);
 
   const cartTotal = useMemo(() => {
     return items.reduce(
@@ -207,7 +209,10 @@ const CheckoutDetails = () => {
   return (
     <div className="mt-12 lg:grid lg:grid-cols-12 lg:gap-x-12">
       <section className="lg:col-span-5">
-        <CheckoutItems items={items} isProcessing={isProcessing} />
+        <CheckoutItems items={items} isProcessing={isProcessing} 
+          shippingCost={paymentTotal?.shipping_cost}
+          discount={paymentTotal?.discount}
+        />
       </section>
       <section className="lg:col-span-7">
         <Coupon
