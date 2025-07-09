@@ -3,7 +3,10 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useVerifyPaymentQuery } from "@/redux/features/payment/paymentApiSlice";
-import { useClearCartMutation, useRemoveAllCouponsMutation } from "@/redux/features/cart/cartApiSlice";
+import {
+  useClearCartMutation,
+  useRemoveAllCouponsMutation,
+} from "@/redux/features/cart/cartApiSlice";
 import { toast } from "sonner";
 import { XCircleIcon } from "@heroicons/react/24/outline";
 import { PaymentStatus } from "@/components/Payment/PaymentStatus";
@@ -40,7 +43,7 @@ export default function CancelledPage() {
   useEffect(() => {
     if (payment && !hasVerified) {
       setHasVerified(true);
-      
+
       // Limpiar cupones del carrito
       const clearCoupons = async () => {
         try {
@@ -50,7 +53,7 @@ export default function CancelledPage() {
           console.error("Error limpiando cupones:", error);
         }
       };
-      
+
       // Limpiar carrito
       const clearUserCart = async () => {
         try {
@@ -100,7 +103,8 @@ export default function CancelledPage() {
             Error al verificar el pago
           </h1>
           <p className="text-gray-600 mb-6">
-            No se pudo verificar el estado de tu pago. Por favor, contacta al soporte.
+            No se pudo verificar el estado de tu pago. Por favor, contacta al
+            soporte.
           </p>
           <button
             onClick={() => router.push("/checkout")}
@@ -119,22 +123,31 @@ export default function CancelledPage() {
         <div className="mb-6">
           <XCircleIcon className="h-16 w-16 text-red-500 mx-auto" />
         </div>
-        
+
         <h1 className="text-2xl font-bold text-gray-900 mb-4">
           Pago cancelado
         </h1>
-        
+
         <p className="text-gray-600 mb-6">
-          Tu pago ha sido cancelado. No se ha realizado ningún cargo a tu cuenta.
+          Tu pago ha sido cancelado. No se ha realizado ningún cargo a tu
+          cuenta.
         </p>
 
         {payment && (
           <div className="bg-gray-50 rounded-lg p-4 mb-6">
-            <h3 className="font-semibold text-gray-900 mb-2">Detalles del pago:</h3>
+            <h3 className="font-semibold text-gray-900 mb-2">
+              Detalles del pago:
+            </h3>
             <div className="text-sm text-gray-600 space-y-1">
-              <p><strong>ID de Orden:</strong> {payment.order_id}</p>
-              <p><strong>Monto:</strong> ${payment.amount}</p>
-              <p><strong>Estado:</strong> {payment.status_display}</p>
+              <p>
+                <strong>ID de Orden:</strong> {payment.order_id}
+              </p>
+              <p>
+                <strong>Monto:</strong> ${payment.amount}
+              </p>
+              <p>
+                <strong>Estado:</strong> {payment.status_display}
+              </p>
             </div>
           </div>
         )}
@@ -146,9 +159,9 @@ export default function CancelledPage() {
           >
             Intentar de nuevo
           </button>
-          
+
           <button
-            onClick={() => router.push("/products")}
+            onClick={() => router.push("/product")}
             className="w-full bg-gray-200 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-300 transition-colors"
           >
             Continuar comprando

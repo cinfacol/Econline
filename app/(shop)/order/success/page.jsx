@@ -3,22 +3,31 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useVerifyPaymentQuery } from "@/redux/features/payment/paymentApiSlice";
-import { useClearCartMutation, useRemoveAllCouponsMutation } from "@/redux/features/cart/cartApiSlice";
+import {
+  useClearCartMutation,
+  useRemoveAllCouponsMutation,
+} from "@/redux/features/cart/cartApiSlice";
 import { toast } from "sonner";
 import { CheckCircleIcon } from "@heroicons/react/24/outline";
 import { PaymentStatus } from "@/components/Payment/PaymentStatus";
+import { useSearchParams } from "next/navigation";
 
 export default function SuccessPage() {
+  const searchParams = useSearchParams();
+  const sessionId = searchParams.get("session_id");
   const router = useRouter();
   const [paymentId, setPaymentId] = useState(null);
   const [cartCleared, setCartCleared] = useState(false);
   const [hasVerified, setHasVerified] = useState(false);
   const [clearCart] = useClearCartMutation();
   const [removeAllCoupons] = useRemoveAllCouponsMutation();
+  const payment_id = localStorage.getItem("payment_id");
+  console.log("Payment ID from localStorage:", payment_id);
 
   // 1. Efecto inicial para verificar el pago
   useEffect(() => {
     const storedPaymentId = localStorage.getItem("payment_id");
+    console.log("Stored Payment ID:", storedPaymentId);
 
     if (storedPaymentId) {
       setPaymentId(storedPaymentId);
@@ -33,15 +42,15 @@ export default function SuccessPage() {
     data: payment,
     isLoading,
     isError,
-  } = useVerifyPaymentQuery(paymentId, {
-    skip: !paymentId || hasVerified,
+  } = useVerifyPaymentQuery(payment_id, {
+    skip: !payment_id || hasVerified,
   });
 
   // 3. Efecto para manejar la verificación y limpieza
   useEffect(() => {
     if (payment && !hasVerified) {
       setHasVerified(true);
-      
+
       // Limpiar cupones del carrito
       const clearCoupons = async () => {
         try {
@@ -51,7 +60,7 @@ export default function SuccessPage() {
           console.error("Error limpiando cupones:", error);
         }
       };
-      
+
       // Limpiar carrito
       const clearUserCart = async () => {
         try {
@@ -102,7 +111,8 @@ export default function SuccessPage() {
             Error al verificar el pago
           </h1>
           <p className="text-gray-600 mb-6">
-            No se pudo verificar el estado de tu pago. Por favor, contacta al soporte.
+            No se pudo verificar el estado de tu pago. Por favor, contacta al
+            soporte.
           </p>
           <button
             onClick={() => router.push("/checkout")}
@@ -121,22 +131,31 @@ export default function SuccessPage() {
         <div className="mb-6">
           <CheckCircleIcon className="h-16 w-16 text-green-500 mx-auto" />
         </div>
-        
+
         <h1 className="text-2xl font-bold text-gray-900 mb-4">
           ¡Pago exitoso!
         </h1>
-        
+
         <p className="text-gray-600 mb-6">
-          Tu pedido ha sido procesado correctamente. Recibirás un email de confirmación pronto.
+          Tu pedido ha sido procesado correctamente. Recibirás un email de
+          confirmación pronto.
         </p>
 
         {payment && (
           <div className="bg-gray-50 rounded-lg p-4 mb-6">
-            <h3 className="font-semibold text-gray-900 mb-2">Detalles del pago:</h3>
+            <h3 className="font-semibold text-gray-900 mb-2">
+              Detalles del pago:
+            </h3>
             <div className="text-sm text-gray-600 space-y-1">
-              <p><strong>ID de Orden:</strong> {payment.order_id}</p>
-              <p><strong>Monto:</strong> ${payment.amount}</p>
-              <p><strong>Estado:</strong> {payment.status_display}</p>
+              <p>
+                <strong>ID de Orden:</strong> {payment.order_id}
+              </p>
+              <p>
+                <strong>Monto:</strong> ${payment.amount}
+              </p>
+              <p>
+                <strong>Estado:</strong> {payment.status_display}
+              </p>
             </div>
           </div>
         )}
@@ -148,16 +167,16 @@ export default function SuccessPage() {
           >
             Ver mis pedidos
           </button>
-          
+
           <button
-            onClick={() => router.push("/products")}
+            onClick={() => router.push("/product")}
             className="w-full bg-gray-200 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-300 transition-colors"
           >
             Continuar comprando
           </button>
         </div>
 
-        {payment && <PaymentStatus payment={payment} />}
+        {payment_id && <PaymentStatus payment={payment_id} />}
       </div>
     </div>
   );

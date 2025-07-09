@@ -199,7 +199,7 @@ const CheckoutDetails = () => {
     return (
       <div className="text-center py-12">
         <h2 className="text-2xl font-bold mb-4">Tu carrito está vacío</h2>
-        <Button onClick={() => router.push("/products")}>
+        <Button onClick={() => router.push("/product")}>
           Continuar comprando
         </Button>
       </div>
@@ -209,7 +209,9 @@ const CheckoutDetails = () => {
   return (
     <div className="mt-12 lg:grid lg:grid-cols-12 lg:gap-x-12">
       <section className="lg:col-span-5">
-        <CheckoutItems items={items} isProcessing={isProcessing} 
+        <CheckoutItems
+          items={items}
+          isProcessing={isProcessing}
           shippingCost={paymentTotal?.shipping_cost}
           discount={paymentTotal?.discount}
         />
