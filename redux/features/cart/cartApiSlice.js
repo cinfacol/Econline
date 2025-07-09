@@ -239,6 +239,84 @@ export const cartApiSlice = apiSlice.injectEndpoints({
         maxRetries: 0,
       },
     }),
+    removeCoupon: builder.mutation({
+      query: (couponCode) => ({
+        url: "/cart/remove-coupon/",
+        method: "POST",
+        body: { coupon_code: couponCode },
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      }),
+      transformResponse: (response) => {
+        return {
+          success: true,
+          message: response.message || "Cupón removido exitosamente",
+          cart: response.cart,
+          subtotal: response.subtotal,
+          discount_amount: response.discount_amount,
+          final_total: response.final_total,
+        };
+      },
+      transformErrorResponse: (error) => {
+        if (error?.data?.error === "Se requiere el código del cupón a remover") {
+          return {
+            success: false,
+            error: "Se requiere el código del cupón a remover",
+          };
+        }
+        
+        if (error?.data?.error?.includes("no está aplicado al carrito")) {
+          return {
+            success: false,
+            error: error.data.error,
+          };
+        }
+        
+        if (error?.data?.error?.includes("no encontrado")) {
+          return {
+            success: false,
+            error: error.data.error,
+          };
+        }
+        
+        return {
+          success: false,
+          error: error.data?.error || "Error al remover el cupón",
+        };
+      },
+      invalidatesTags: ["Cart"],
+      extraOptions: { maxRetries: 0 },
+    }),
+    removeAllCoupons: builder.mutation({
+      query: () => ({
+        url: "/cart/remove-all-coupons/",
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      }),
+      transformResponse: (response) => {
+        return {
+          success: true,
+          message: response.message || "Cupones removidos exitosamente",
+          cart: response.cart,
+          subtotal: response.subtotal,
+          discount_amount: response.discount_amount,
+          final_total: response.final_total,
+        };
+      },
+      transformErrorResponse: (error) => {
+        return {
+          success: false,
+          error: error.data?.error || "Error al remover los cupones",
+        };
+      },
+      invalidatesTags: ["Cart"],
+      extraOptions: { maxRetries: 0 },
+    }),
   }),
 });
 
@@ -249,4 +327,6 @@ export const {
   useIncQtyMutation,
   useRemoveItemMutation,
   useClearCartMutation,
+  useRemoveCouponMutation,
+  useRemoveAllCouponsMutation,
 } = cartApiSlice;

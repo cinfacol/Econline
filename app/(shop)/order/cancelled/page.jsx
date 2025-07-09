@@ -1,261 +1,161 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useVerifyPaymentQuery } from "@/redux/features/payment/paymentApiSlice";
+import { useClearCartMutation, useRemoveAllCouponsMutation } from "@/redux/features/cart/cartApiSlice";
+import { toast } from "sonner";
 import { XCircleIcon } from "@heroicons/react/24/outline";
-import {
-  useGetPaymentBySessionQuery,
-  useCancelPaymentMutation,
-} from "@/redux/features/payment/paymentApiSlice";
-import { useEffect, useRef, useState } from "react";
+import { PaymentStatus } from "@/components/Payment/PaymentStatus";
 
 export default function CancelledPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const sessionId = searchParams.get("session_id");
-  const errorCode = searchParams.get("error_code");
+  const [paymentId, setPaymentId] = useState(null);
+  const [hasVerified, setHasVerified] = useState(false);
+  const [clearCart] = useClearCartMutation();
+  const [removeAllCoupons] = useRemoveAllCouponsMutation();
 
-  // Obtener información del pago usando el session_id
+  // 1. Efecto inicial para verificar el pago
+  useEffect(() => {
+    const storedPaymentId = localStorage.getItem("payment_id");
+
+    if (storedPaymentId) {
+      setPaymentId(storedPaymentId);
+    } else {
+      toast.error("No se pudo verificar el pago");
+      router.push("/checkout");
+    }
+  }, [router]);
+
+  // 2. Consulta de verificación
   const {
-    data: paymentInfo,
+    data: payment,
     isLoading,
-    error,
-    refetch,
-  } = useGetPaymentBySessionQuery(sessionId, {
-    skip: !sessionId,
+    isError,
+  } = useVerifyPaymentQuery(paymentId, {
+    skip: !paymentId || hasVerified,
   });
 
-  // Hook para cancelar el pago
-  const [cancelPayment, { isLoading: isCancelling, isSuccess: cancelSuccess }] =
-    useCancelPaymentMutation();
-
-  // Control de reintentos y spinner
-  const cancelAttempted = useRef(false);
-  const [isPolling, setIsPolling] = useState(false);
-  const [pollCount, setPollCount] = useState(0);
-  const MAX_POLLS = 6; // ~12 segundos si el delay es 2s
-
-  // Efecto: Si el pago está pendiente/cancelable, invocar cancelación y empezar polling
+  // 3. Efecto para manejar la verificación y limpieza
   useEffect(() => {
-    // Solo intentar cancelar si hay info, id, y no se ha intentado antes
-    if (paymentInfo && paymentInfo.payment_id && !cancelAttempted.current) {
-      cancelAttempted.current = true;
-      setIsPolling(true);
-      // Llamar SIEMPRE a cancelPayment, aunque esté en polling
-      (async () => {
+    if (payment && !hasVerified) {
+      setHasVerified(true);
+      
+      // Limpiar cupones del carrito
+      const clearCoupons = async () => {
         try {
-          await cancelPayment(paymentInfo.payment_id).unwrap();
-        } catch (e) {
-          // Ignorar error, igual se hace polling
-        } finally {
-          // Limpieza de sessionStorage/localStorage tras cancelar
-          sessionStorage.removeItem("pendingPaymentId");
-          sessionStorage.removeItem("paymentIntent");
-          localStorage.removeItem("payment_id");
-          setTimeout(() => setPollCount((c) => c + 1), 2000);
+          await removeAllCoupons().unwrap();
+          console.log("Cupones limpiados exitosamente");
+        } catch (error) {
+          console.error("Error limpiando cupones:", error);
         }
-      })();
-    }
-  }, [paymentInfo, cancelPayment]);
+      };
+      
+      // Limpiar carrito
+      const clearUserCart = async () => {
+        try {
+          await clearCart().unwrap();
+          console.log("Carrito limpiado exitosamente");
+        } catch (error) {
+          console.error("Error limpiando carrito:", error);
+        }
+      };
 
-  // Polling: mientras isPolling y no esté cancelado, reintenta refetch
+      // Ejecutar limpieza
+      clearCoupons();
+      clearUserCart();
+
+      // Limpiar localStorage
+      localStorage.removeItem("payment_id");
+      sessionStorage.clear();
+    }
+  }, [payment, hasVerified, removeAllCoupons, clearCart]);
+
+  // 4. Efecto para manejar errores
   useEffect(() => {
-    if (!isPolling) return;
-    if (!paymentInfo || !paymentInfo.status) return;
-    const status = (paymentInfo.status || "").toLowerCase();
-    if (["cancelled", "canceled", "failed"].includes(status)) {
-      setIsPolling(false);
-      return;
+    if (isError && !hasVerified) {
+      setHasVerified(true);
+      toast.error("Error al verificar el pago");
+      router.push("/checkout");
     }
-    if (pollCount > 0 && pollCount < MAX_POLLS) {
-      // Espera 2s y refetch
-      setTimeout(() => {
-        refetch();
-        setPollCount((c) => c + 1);
-      }, 2000);
-    } else if (pollCount >= MAX_POLLS) {
-      setIsPolling(false);
-    }
-  }, [isPolling, pollCount, paymentInfo, refetch]);
+  }, [isError, hasVerified, router]);
 
-  const getErrorMessage = (code) => {
-    switch (code) {
-      case "card_declined":
-        return "Tu tarjeta fue rechazada. Por favor, intenta con otra.";
-      case "insufficient_funds":
-        return "No había fondos suficientes para completar la transacción.";
-      default:
-        return "El proceso de pago ha sido cancelado o ha fallado.";
-    }
-  };
-
-  // Si no hay session_id, mostrar mensaje genérico
-  if (!sessionId) {
+  if (isLoading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <XCircleIcon className="mx-auto h-12 w-12 text-red-500" />
-          <h1 className="mt-3 text-3xl font-bold text-gray-900">
-            Pago cancelado
-          </h1>
-          <p className="mt-2 text-sm text-gray-600">
-            {getErrorMessage(errorCode)}
-          </p>
-          <div className="mt-6">
-            <button
-              onClick={() => router.push("/checkout")}
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
-            >
-              Intentar nuevamente
-            </button>
-          </div>
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-red-600 mx-auto"></div>
+          <p className="mt-4 text-lg text-gray-600">Verificando pago...</p>
         </div>
       </div>
     );
   }
 
-  // Mostrar spinner si está cargando, cancelando o haciendo polling
-  if (isLoading || isCancelling || isPolling) {
+  if (isError) {
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <svg
-            className="animate-spin h-12 w-12 text-indigo-600 mx-auto"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-            ></circle>
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8v8z"
-            ></path>
-          </svg>
-          <p className="mt-4 text-sm text-gray-600">
-            {isCancelling
-              ? "Cancelando pago..."
-              : isPolling
-              ? "Esperando confirmación de cancelación..."
-              : "Verificando estado del pago..."}
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  // Si hay error, mostrar mensaje de error
-  if (error) {
-    return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="text-center">
-          <XCircleIcon className="mx-auto h-12 w-12 text-red-500" />
-          <h1 className="mt-3 text-3xl font-bold text-gray-900">
+          <div className="text-red-500 text-6xl mb-4">❌</div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">
             Error al verificar el pago
           </h1>
-          <p className="mt-2 text-sm text-gray-600">
-            No se pudo verificar el estado del pago. Por favor, contacta
-            soporte.
+          <p className="text-gray-600 mb-6">
+            No se pudo verificar el estado de tu pago. Por favor, contacta al soporte.
           </p>
-          <div className="mt-6">
-            <button
-              onClick={() => router.push("/checkout")}
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
-            >
-              Volver al checkout
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Si tenemos información del pago, mostrar detalles
-  if (paymentInfo) {
-    return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="text-center">
-          <XCircleIcon className="mx-auto h-12 w-12 text-red-500" />
-          <h1 className="mt-3 text-3xl font-bold text-gray-900">
-            Pago cancelado
-          </h1>
-          <p className="mt-2 text-sm text-gray-600">
-            {getErrorMessage(errorCode)}
-          </p>
-
-          {/* Información adicional del pago */}
-          <div className="mt-6 bg-gray-50 rounded-lg p-4 max-w-md mx-auto">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              Detalles del pago
-            </h3>
-            <div className="text-sm text-gray-600 space-y-1">
-              <p>
-                <span className="font-medium">ID de pago:</span>{" "}
-                {paymentInfo.payment_id}
-              </p>
-              <p>
-                <span className="font-medium">ID de orden:</span>{" "}
-                {paymentInfo.order_id}
-              </p>
-              <p>
-                <span className="font-medium">Monto:</span> $
-                {paymentInfo.amount} {paymentInfo.currency}
-              </p>
-              <p>
-                <span className="font-medium">Estado:</span>{" "}
-                {paymentInfo.status_display}
-              </p>
-              <p>
-                <span className="font-medium">Estado de orden:</span>{" "}
-                {paymentInfo.order_status_display}
-              </p>
-            </div>
-          </div>
-
-          <div className="mt-6 space-x-4">
-            <button
-              onClick={() => router.push("/checkout")}
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
-            >
-              Intentar nuevamente
-            </button>
-            <button
-              onClick={() => router.push("/")}
-              className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-            >
-              Volver al inicio
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Fallback
-  return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="text-center">
-        <XCircleIcon className="mx-auto h-12 w-12 text-red-500" />
-        <h1 className="mt-3 text-3xl font-bold text-gray-900">
-          Pago cancelado
-        </h1>
-        <p className="mt-2 text-sm text-gray-600">
-          {getErrorMessage(errorCode)}
-        </p>
-        <div className="mt-6">
           <button
             onClick={() => router.push("/checkout")}
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
+            className="bg-indigo-600 text-white px-6 py-2 rounded-md hover:bg-indigo-700"
           >
-            Intentar nuevamente
+            Volver al checkout
           </button>
         </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center">
+        <div className="mb-6">
+          <XCircleIcon className="h-16 w-16 text-red-500 mx-auto" />
+        </div>
+        
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Pago cancelado
+        </h1>
+        
+        <p className="text-gray-600 mb-6">
+          Tu pago ha sido cancelado. No se ha realizado ningún cargo a tu cuenta.
+        </p>
+
+        {payment && (
+          <div className="bg-gray-50 rounded-lg p-4 mb-6">
+            <h3 className="font-semibold text-gray-900 mb-2">Detalles del pago:</h3>
+            <div className="text-sm text-gray-600 space-y-1">
+              <p><strong>ID de Orden:</strong> {payment.order_id}</p>
+              <p><strong>Monto:</strong> ${payment.amount}</p>
+              <p><strong>Estado:</strong> {payment.status_display}</p>
+            </div>
+          </div>
+        )}
+
+        <div className="space-y-3">
+          <button
+            onClick={() => router.push("/checkout")}
+            className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition-colors"
+          >
+            Intentar de nuevo
+          </button>
+          
+          <button
+            onClick={() => router.push("/products")}
+            className="w-full bg-gray-200 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-300 transition-colors"
+          >
+            Continuar comprando
+          </button>
+        </div>
+
+        {payment && <PaymentStatus payment={payment} />}
       </div>
     </div>
   );

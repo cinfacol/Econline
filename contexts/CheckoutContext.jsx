@@ -42,6 +42,17 @@ function checkoutReducer(state, action) {
           ...action.payload
         }
       };
+    case 'CLEAR_COUPON':
+      return {
+        ...state,
+        coupon: {
+          name: "",
+          applied: false,
+          type: null,
+          discount: 0,
+          coupon: null
+        }
+      };
     case 'SET_PAYMENT_ERROR':
       return {
         ...state,

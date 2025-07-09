@@ -1,5 +1,6 @@
 import { useCallback, useState, useEffect } from "react";
 import { useCheckCouponQuery } from "@/redux/features/shipping/shippingApiSlice";
+import { useRemoveCouponMutation } from "@/redux/features/cart/cartApiSlice";
 import { toast } from "sonner";
 
 const Coupon = ({ onCouponChange, couponState, cartTotal }) => {
@@ -7,6 +8,8 @@ const Coupon = ({ onCouponChange, couponState, cartTotal }) => {
   const [skip, setSkip] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   console.log("Estado del cupón:", couponState);
+
+  const [removeCoupon, { isLoading: isRemovingCoupon }] = useRemoveCouponMutation();
 
   const {
     data: couponData,
@@ -105,17 +108,44 @@ const Coupon = ({ onCouponChange, couponState, cartTotal }) => {
     };
   }, []);
 
-  const handleRemoveCoupon = () => {
-    onCouponChange({
-      name: "",
-      applied: false,
-      discount: 0,
-      coupon: null,
-    });
-    setCouponInput("");
-    setSkip(true);
-    setIsSubmitting(false);
-    toast.success("Cupón removido correctamente");
+  const handleRemoveCoupon = async () => {
+    if (!couponState.coupon?.code) {
+      // Si no hay código de cupón, solo limpiar el estado local
+      onCouponChange({
+        name: "",
+        applied: false,
+        discount: 0,
+        coupon: null,
+      });
+      setCouponInput("");
+      setSkip(true);
+      setIsSubmitting(false);
+      toast.success("Cupón removido correctamente");
+      return;
+    }
+
+    try {
+      const result = await removeCoupon(couponState.coupon.code).unwrap();
+      
+      if (result.success) {
+        // Actualizar el estado local con los datos del backend
+        onCouponChange({
+          name: "",
+          applied: false,
+          discount: 0,
+          coupon: null,
+        });
+        setCouponInput("");
+        setSkip(true);
+        setIsSubmitting(false);
+        toast.success(result.message || "Cupón removido correctamente");
+      } else {
+        toast.error(result.error || "Error al remover el cupón");
+      }
+    } catch (error) {
+      console.error("Error removing coupon:", error);
+      toast.error(error?.data?.error || "Error al remover el cupón");
+    }
   };
 
   return (
@@ -169,9 +199,10 @@ const Coupon = ({ onCouponChange, couponState, cartTotal }) => {
             </div>
             <button
               onClick={handleRemoveCoupon}
-              className="text-sm text-red-600 hover:text-red-800"
+              disabled={isRemovingCoupon}
+              className="text-sm text-red-600 hover:text-red-800 disabled:opacity-50"
             >
-              Remover cupón
+              {isRemovingCoupon ? "Removiendo..." : "Remover cupón"}
             </button>
           </div>
         </div>
