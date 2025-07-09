@@ -7,9 +7,9 @@ const Coupon = ({ onCouponChange, couponState, cartTotal }) => {
   const [couponInput, setCouponInput] = useState("");
   const [skip, setSkip] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  console.log("Estado del cupón:", couponState);
 
-  const [removeCoupon, { isLoading: isRemovingCoupon }] = useRemoveCouponMutation();
+  const [removeCoupon, { isLoading: isRemovingCoupon }] =
+    useRemoveCouponMutation();
 
   const {
     data: couponData,
@@ -126,7 +126,7 @@ const Coupon = ({ onCouponChange, couponState, cartTotal }) => {
 
     try {
       const result = await removeCoupon(couponState.coupon.code).unwrap();
-      
+
       if (result.success) {
         // Actualizar el estado local con los datos del backend
         onCouponChange({

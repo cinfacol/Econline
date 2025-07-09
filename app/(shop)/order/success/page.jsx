@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useVerifyPaymentQuery } from "@/redux/features/payment/paymentApiSlice";
 import {
   useClearCartMutation,
@@ -10,40 +10,76 @@ import {
 import { toast } from "sonner";
 import { CheckCircleIcon } from "@heroicons/react/24/outline";
 import { PaymentStatus } from "@/components/Payment/PaymentStatus";
-import { useSearchParams } from "next/navigation";
 
 export default function SuccessPage() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
-  const router = useRouter();
+
   const [paymentId, setPaymentId] = useState(null);
   const [cartCleared, setCartCleared] = useState(false);
   const [hasVerified, setHasVerified] = useState(false);
+  const [isLoadingPaymentId, setIsLoadingPaymentId] = useState(false);
+
   const [clearCart] = useClearCartMutation();
   const [removeAllCoupons] = useRemoveAllCouponsMutation();
-  const payment_id = localStorage.getItem("payment_id");
-  console.log("Payment ID from localStorage:", payment_id);
 
-  // 1. Efecto inicial para verificar el pago
+  // 1. Efecto inicial para obtener el payment_id de localStorage o del backend
   useEffect(() => {
-    const storedPaymentId = localStorage.getItem("payment_id");
-    console.log("Stored Payment ID:", storedPaymentId);
+    const getPaymentId = async () => {
+      let storedPaymentId = localStorage.getItem("payment_id");
 
-    if (storedPaymentId) {
-      setPaymentId(storedPaymentId);
-    } else {
-      toast.error("No se pudo verificar el pago");
-      router.push("/checkout");
-    }
-  }, [router]);
+      // Si el valor es la cadena 'undefined', bórralo
+      if (storedPaymentId === "undefined") {
+        localStorage.removeItem("payment_id");
+        storedPaymentId = null;
+      }
 
-  // 2. Consulta de verificación (sin polling)
+      if (storedPaymentId) {
+        setPaymentId(storedPaymentId);
+        return;
+      }
+
+      if (sessionId) {
+        setIsLoadingPaymentId(true);
+        try {
+          const response = await fetch(
+            `/api/payments/get_payment_by_session/?session_id=${sessionId}`
+          );
+          const data = await response.json();
+
+          if (data.payment_id && data.payment_id !== "undefined") {
+            setPaymentId(data.payment_id);
+            localStorage.setItem("payment_id", data.payment_id);
+          } else {
+            throw new Error("No payment_id found in response");
+          }
+        } catch (error) {
+          console.error(
+            "[SuccessPage] Error getting payment_id from session:",
+            error
+          );
+          toast.error("No se pudo verificar el pago");
+          router.push("/checkout");
+        } finally {
+          setIsLoadingPaymentId(false);
+        }
+      } else {
+        toast.error("No se pudo verificar el pago");
+        router.push("/checkout");
+      }
+    };
+
+    getPaymentId();
+  }, [router, sessionId]);
+
+  // 2. Consulta de verificación (robusta)
   const {
     data: payment,
-    isLoading,
+    isLoading: isLoadingPayment,
     isError,
-  } = useVerifyPaymentQuery(payment_id, {
-    skip: !payment_id || hasVerified,
+  } = useVerifyPaymentQuery(paymentId, {
+    skip: !paymentId || paymentId === "undefined" || hasVerified,
   });
 
   // 3. Efecto para manejar la verificación y limpieza
@@ -55,9 +91,8 @@ export default function SuccessPage() {
       const clearCoupons = async () => {
         try {
           await removeAllCoupons().unwrap();
-          console.log("Cupones limpiados exitosamente");
         } catch (error) {
-          console.error("Error limpiando cupones:", error);
+          console.error("[SuccessPage] Error limpiando cupones:", error);
         }
       };
 
@@ -66,9 +101,8 @@ export default function SuccessPage() {
         try {
           await clearCart().unwrap();
           setCartCleared(true);
-          console.log("Carrito limpiado exitosamente");
         } catch (error) {
-          console.error("Error limpiando carrito:", error);
+          console.error("[SuccessPage] Error limpiando carrito:", error);
         }
       };
 
@@ -91,7 +125,22 @@ export default function SuccessPage() {
     }
   }, [isError, hasVerified, router]);
 
-  if (isLoading) {
+  // Mostrar loading mientras se obtiene el payment_id
+  if (isLoadingPaymentId) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600 mx-auto"></div>
+          <p className="mt-4 text-lg text-gray-600">
+            Obteniendo información del pago...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Mostrar loading mientras se verifica el pago
+  if (isLoadingPayment) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -156,6 +205,11 @@ export default function SuccessPage() {
               <p>
                 <strong>Estado:</strong> {payment.status_display}
               </p>
+              {payment.transaction_id && (
+                <p>
+                  <strong>ID de Transacción:</strong> {payment.transaction_id}
+                </p>
+              )}
             </div>
           </div>
         )}
@@ -176,7 +230,7 @@ export default function SuccessPage() {
           </button>
         </div>
 
-        {payment_id && <PaymentStatus payment={payment_id} />}
+        {payment && <PaymentStatus paymentId={paymentId} />}
       </div>
     </div>
   );

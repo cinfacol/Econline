@@ -62,7 +62,6 @@ const CheckoutDetails = () => {
       }
     );
 
-  console.log("CheckoutDetails paymentTotal:", paymentTotal);
   // Refresca los datos al montar el componente o cuando cambia el shipping/cupón
   useEffect(() => {
     refetchCart();
@@ -86,7 +85,6 @@ const CheckoutDetails = () => {
 
   const { ids = [], entities = {} } = cartData || {};
   const items = ids.map((id) => entities[id]).filter(Boolean);
-  console.log("CheckoutDetails items:", items);
 
   const cartTotal = useMemo(() => {
     return items.reduce(
@@ -111,7 +109,6 @@ const CheckoutDetails = () => {
 
   const handleCouponChange = useCallback(
     (couponData) => {
-      console.log("Datos del cupón recibidos:", couponData);
       dispatch({
         type: "SET_COUPON",
         payload: couponData,
@@ -162,9 +159,6 @@ const CheckoutDetails = () => {
           shipping_cost: paymentTotal.shipping_cost,
           discount: paymentTotal.discount,
         };
-
-        console.log("Datos de pago que se enviarán:", paymentData);
-        console.log("PaymentTotal completo:", paymentTotal);
 
         await handlePayment(paymentData);
         toast.dismiss(toastId);

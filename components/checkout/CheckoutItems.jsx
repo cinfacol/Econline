@@ -2,8 +2,12 @@ import Image from "next/image";
 import cloudinaryImageLoader from "@/actions/imageLoader";
 import { Currency } from "@/components/ui";
 
-const CheckoutItems = ({ items, isProcessing, shippingCost = 0, discount = 0 }) => {
-  console.log("CheckoutItems", items);
+const CheckoutItems = ({
+  items,
+  isProcessing,
+  shippingCost = 0,
+  discount = 0,
+}) => {
   return (
     <div className="bg-white rounded-lg shadow p-6">
       <h2 className="text-lg font-medium text-gray-900 mb-4">

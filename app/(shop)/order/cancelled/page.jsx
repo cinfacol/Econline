@@ -48,7 +48,6 @@ export default function CancelledPage() {
       const clearCoupons = async () => {
         try {
           await removeAllCoupons().unwrap();
-          console.log("Cupones limpiados exitosamente");
         } catch (error) {
           console.error("Error limpiando cupones:", error);
         }
@@ -58,7 +57,6 @@ export default function CancelledPage() {
       const clearUserCart = async () => {
         try {
           await clearCart().unwrap();
-          console.log("Carrito limpiado exitosamente");
         } catch (error) {
           console.error("Error limpiando carrito:", error);
         }
