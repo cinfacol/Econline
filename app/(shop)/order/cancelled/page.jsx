@@ -1,45 +1,110 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useVerifyPaymentQuery } from "@/redux/features/payment/paymentApiSlice";
-import {
-  useClearCartMutation,
-  useRemoveAllCouponsMutation,
-} from "@/redux/features/cart/cartApiSlice";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useVerifyPaymentQuery, useCancelPaymentMutation } from "@/redux/features/payment/paymentApiSlice";
+import { useRemoveAllCouponsMutation } from "@/redux/features/cart/cartApiSlice";
 import { toast } from "sonner";
 import { XCircleIcon } from "@heroicons/react/24/outline";
 import { PaymentStatus } from "@/components/Payment/PaymentStatus";
 
 export default function CancelledPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const sessionId = searchParams.get("session_id");
+
   const [paymentId, setPaymentId] = useState(null);
   const [hasVerified, setHasVerified] = useState(false);
-  const [clearCart] = useClearCartMutation();
+  const [isLoadingPaymentId, setIsLoadingPaymentId] = useState(false);
+  const [hasCancelled, setHasCancelled] = useState(false);
+
   const [removeAllCoupons] = useRemoveAllCouponsMutation();
+  const [cancelPayment] = useCancelPaymentMutation();
 
-  // 1. Efecto inicial para verificar el pago
+  // 1. Efecto inicial para obtener el payment_id de localStorage o del backend
   useEffect(() => {
-    const storedPaymentId = localStorage.getItem("payment_id");
+    const getPaymentId = async () => {
+      let storedPaymentId = localStorage.getItem("payment_id");
 
-    if (storedPaymentId) {
-      setPaymentId(storedPaymentId);
-    } else {
-      toast.error("No se pudo verificar el pago");
-      router.push("/checkout");
-    }
-  }, [router]);
+      // Si el valor es la cadena 'undefined', bórralo
+      if (storedPaymentId === "undefined") {
+        localStorage.removeItem("payment_id");
+        storedPaymentId = null;
+      }
 
-  // 2. Consulta de verificación
+      if (storedPaymentId) {
+        setPaymentId(storedPaymentId);
+        return;
+      }
+
+      if (sessionId) {
+        setIsLoadingPaymentId(true);
+        try {
+          const response = await fetch(
+            `/api/payments/get_payment_by_session/?session_id=${sessionId}`
+          );
+          const data = await response.json();
+
+          if (data.payment_id && data.payment_id !== "undefined") {
+            setPaymentId(data.payment_id);
+            localStorage.setItem("payment_id", data.payment_id);
+          } else {
+            throw new Error("No payment_id found in response");
+          }
+        } catch (error) {
+          console.error(
+            "[CancelledPage] Error getting payment_id from session:",
+            error
+          );
+          toast.error("No se pudo verificar el pago");
+          router.push("/checkout");
+        } finally {
+          setIsLoadingPaymentId(false);
+        }
+      } else {
+        toast.error("No se pudo verificar el pago");
+        router.push("/checkout");
+      }
+    };
+
+    getPaymentId();
+  }, [router, sessionId]);
+
+  // 2. Efecto para cancelar el pago cuando se obtiene el payment_id
+  useEffect(() => {
+    const handleCancellation = async () => {
+      if (!paymentId || hasCancelled) return;
+
+      try {
+        console.log("[CancelledPage] Cancelling payment:", paymentId);
+        const result = await cancelPayment(paymentId).unwrap();
+        
+        if (result?.success || result?.message) {
+          console.log("[CancelledPage] Payment cancelled successfully:", result);
+          setHasCancelled(true);
+        } else {
+          console.warn("[CancelledPage] Unexpected cancellation response:", result);
+        }
+      } catch (error) {
+        console.error("[CancelledPage] Error cancelling payment:", error);
+        // No mostrar error al usuario ya que ya está en la página de cancelación
+        // Solo log para debugging
+      }
+    };
+
+    handleCancellation();
+  }, [paymentId, hasCancelled, cancelPayment]);
+
+  // 3. Consulta de verificación
   const {
     data: payment,
-    isLoading,
+    isLoading: isLoadingPayment,
     isError,
   } = useVerifyPaymentQuery(paymentId, {
-    skip: !paymentId || hasVerified,
+    skip: !paymentId || paymentId === "undefined" || hasVerified,
   });
 
-  // 3. Efecto para manejar la verificación y limpieza
+  // 4. Efecto para manejar la verificación y limpieza
   useEffect(() => {
     if (payment && !hasVerified) {
       setHasVerified(true);
@@ -53,26 +118,16 @@ export default function CancelledPage() {
         }
       };
 
-      // Limpiar carrito
-      const clearUserCart = async () => {
-        try {
-          await clearCart().unwrap();
-        } catch (error) {
-          console.error("Error limpiando carrito:", error);
-        }
-      };
-
       // Ejecutar limpieza
       clearCoupons();
-      clearUserCart();
 
       // Limpiar localStorage
       localStorage.removeItem("payment_id");
       sessionStorage.clear();
     }
-  }, [payment, hasVerified, removeAllCoupons, clearCart]);
+  }, [payment, hasVerified, removeAllCoupons]);
 
-  // 4. Efecto para manejar errores
+  // 5. Efecto para manejar errores
   useEffect(() => {
     if (isError && !hasVerified) {
       setHasVerified(true);
@@ -81,7 +136,7 @@ export default function CancelledPage() {
     }
   }, [isError, hasVerified, router]);
 
-  if (isLoading) {
+  if (isLoadingPaymentId) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -131,25 +186,6 @@ export default function CancelledPage() {
           cuenta.
         </p>
 
-        {payment && (
-          <div className="bg-gray-50 rounded-lg p-4 mb-6">
-            <h3 className="font-semibold text-gray-900 mb-2">
-              Detalles del pago:
-            </h3>
-            <div className="text-sm text-gray-600 space-y-1">
-              <p>
-                <strong>ID de Orden:</strong> {payment.order_id}
-              </p>
-              <p>
-                <strong>Monto:</strong> ${payment.amount}
-              </p>
-              <p>
-                <strong>Estado:</strong> {payment.status_display}
-              </p>
-            </div>
-          </div>
-        )}
-
         <div className="space-y-3">
           <button
             onClick={() => router.push("/checkout")}
@@ -166,7 +202,7 @@ export default function CancelledPage() {
           </button>
         </div>
 
-        {payment && <PaymentStatus payment={payment} />}
+        {payment && <PaymentStatus paymentId={paymentId} />}
       </div>
     </div>
   );

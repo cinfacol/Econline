@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import {
   useCreateCheckoutSessionMutation,
   useProcessPaymentMutation,
+  useCancelPaymentMutation,
 } from "@/redux/features/payment/paymentApiSlice";
 import { getStripe } from "@/lib/stripe";
 import { useClearCartMutation } from "@/redux/features/cart/cartApiSlice";
@@ -32,6 +33,7 @@ const usePayment = () => {
 
   const [createCheckoutSession] = useCreateCheckoutSessionMutation();
   const [processPayment] = useProcessPaymentMutation();
+  const [cancelPayment] = useCancelPaymentMutation();
   const [clearCart] = useClearCartMutation();
 
   const cleanupStorage = useCallback(() => {
@@ -125,6 +127,32 @@ const usePayment = () => {
       }
     },
     [createCheckoutSession, handleError, paymentState, cleanupStorage]
+  );
+
+  const handleCancellation = useCallback(
+    async (paymentId) => {
+      if (!paymentId) {
+        console.warn("[usePayment] No payment ID provided for cancellation");
+        return;
+      }
+
+      try {
+        console.log("[usePayment] Cancelling payment:", paymentId);
+        const result = await cancelPayment(paymentId).unwrap();
+        
+        if (result?.success || result?.message) {
+          console.log("[usePayment] Payment cancelled successfully:", result);
+          return result;
+        } else {
+          console.warn("[usePayment] Unexpected cancellation response:", result);
+          return result;
+        }
+      } catch (error) {
+        console.error("[usePayment] Error cancelling payment:", error);
+        throw error;
+      }
+    },
+    [cancelPayment]
   );
 
   useEffect(() => {
@@ -247,6 +275,7 @@ const usePayment = () => {
 
   return {
     handlePayment,
+    handleCancellation,
     isProcessing: paymentState === PAYMENT_STATES.PROCESSING,
     error,
     paymentState,

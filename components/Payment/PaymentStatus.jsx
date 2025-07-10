@@ -57,7 +57,8 @@ export function PaymentStatus({ paymentId }) {
             {payment?.status === "P" && "Pendiente"}
             {payment?.status === "C" && "Completado"}
             {payment?.status === "F" && "Fallido"}
-            {!["P", "C", "F"].includes(payment?.status) &&
+            {payment?.status === "X" && "Cancelado"}
+            {!["P", "C", "F", "X"].includes(payment?.status) &&
               (payment ? "Estado desconocido" : "No disponible")}
           </div>
         </div>
