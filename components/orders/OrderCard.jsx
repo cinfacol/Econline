@@ -33,6 +33,16 @@ const OrderCard = ({ order }) => {
           <span className="text-xs text-gray-500 dark:text-gray-400">
             Envío: {order.shipping_price !== null ? `$${order.shipping_price}` : "-"}
           </span>
+          {order.coupon && (
+            <span className="text-xs text-green-700 dark:text-green-400 mt-1 block">
+              Cupón: <span className="font-semibold">{order.coupon.code}</span> - Descuento: <span className="font-semibold">${order.coupon.discount_amount}</span>
+            </span>
+          )}
+          {order.discount_amount > 0 && !order.coupon && (
+            <span className="text-xs text-green-700 dark:text-green-400 mt-1 block">
+              Descuento aplicado: <span className="font-semibold">${order.discount_amount}</span>
+            </span>
+          )}
         </div>
       </div>
       {/* Dirección */}
