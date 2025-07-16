@@ -1,4 +1,4 @@
-import React from "react";
+import OrdersHistory from "@/components/orders/OrdersHistory";
 
 export const metadata = {
   title: "Purchases Details",
@@ -9,6 +9,7 @@ function Compras() {
   return (
     <div>
       <h1>Tus Compras</h1>
+      <OrdersHistory />
     </div>
   );
 }
