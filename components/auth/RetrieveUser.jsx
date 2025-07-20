@@ -3,7 +3,6 @@
 import { useRetrieveUserQuery } from "@/redux/features/auth/authApiSlice";
 import { useAppSelector } from "@/redux/hooks";
 import { Spinner } from "@/components/common";
-import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 function RetrieveUserInfo() {

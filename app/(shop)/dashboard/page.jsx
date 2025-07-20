@@ -1,6 +1,4 @@
 import RetrieveUserInfo from "@/components/auth/RetrieveUser";
-import UserAddresses from "@/components/user/Addresses";
-import AddAddressButton from "@/components/user/AddAddressButton";
 import { Container } from "@/components/ui";
 
 export const metadata = {
@@ -26,11 +24,6 @@ const DashboardPage = async () => {
       <main className="mx-auto max-w-7xl py-6 my-8 sm:px-6 lg:px-8">
         <RetrieveUserInfo />
       </main>
-      <hr className="border-b border-gray-900/10 pb-8" />
-      <article className="border border-gray-200 bg-white shadow-sm rounded mb-5 p-3 lg:p-5">
-        {/* <UserAddresses />
-        <AddAddressButton /> */}
-      </article>
     </Container>
   );
 };

@@ -68,12 +68,13 @@ function ProfileButton() {
       await logout({}).unwrap();
       dispatch(setLogout());
       toast.success("¡Sesión cerrada exitosamente!");
-      router.push("/");
+      // Usar window.location.href para una redirección limpia
+      window.location.href = "/";
     } catch (error) {
       const message = error?.data?.error || "Ocurrió un error desconocido";
       toast.error(`Error al cerrar sesión: ${message}`);
     }
-  }, [logout, dispatch, router]);
+  }, [logout, dispatch]);
 
   const renderUserInfo = useMemo(() => {
     if (isLoading) {
