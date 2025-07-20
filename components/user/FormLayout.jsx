@@ -1,6 +1,7 @@
 "use client";
 
 import { useGetProfileQuery, useUpdateProfileMutation } from "@/redux/features/auth/authApiSlice";
+import { useAppSelector } from "@/redux/hooks";
 import { Spinner } from "@/components/common";
 import Image from "next/image";
 import { useState } from "react";
@@ -13,7 +14,10 @@ const genderOptions = [
 ];
 
 export default function FormLayout() {
-  const { data: profile, isLoading, error } = useGetProfileQuery();
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
+  const { data: profile, isLoading, error } = useGetProfileQuery(undefined, {
+    skip: !isAuthenticated,
+  });
   const [form, setForm] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
   const [updateProfile, { isLoading: isSaving, isSuccess, isError, error: saveError }] = useUpdateProfileMutation();

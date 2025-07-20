@@ -1,12 +1,16 @@
 "use client";
 
 import { useRetrieveUserQuery } from "@/redux/features/auth/authApiSlice";
+import { useAppSelector } from "@/redux/hooks";
 import { Spinner } from "@/components/common";
 import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 function RetrieveUserInfo() {
-  const { data: user, isLoading, error } = useRetrieveUserQuery();
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
+  const { data: user, isLoading, error } = useRetrieveUserQuery(undefined, {
+    skip: !isAuthenticated,
+  });
   const { profile_photo, full_name, email, date_joined } = user || {};
 
   if (isLoading) {

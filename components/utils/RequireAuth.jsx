@@ -1,11 +1,19 @@
 "use client";
 
-import { redirect } from "next/navigation";
+import { useEffect } from "react";
+import { redirect, useRouter } from "next/navigation";
 import { useAppSelector } from "@/redux/hooks";
 import { Spinner } from "@/components/common";
 
 export default function RequireAuth({ children }) {
+  const router = useRouter();
   const { isLoading, isAuthenticated } = useAppSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.push("/auth/login");
+    }
+  }, [isLoading, isAuthenticated, router]);
 
   if (isLoading) {
     return (
@@ -16,7 +24,11 @@ export default function RequireAuth({ children }) {
   }
 
   if (!isAuthenticated) {
-    redirect("/auth/login");
+    return (
+      <div className="flex justify-center my-8">
+        <Spinner lg />
+      </div>
+    );
   }
 
   return <>{children}</>;

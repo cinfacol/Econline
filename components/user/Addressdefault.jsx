@@ -1,11 +1,15 @@
 "use client";
 
 import { useGetAddressQuery } from "@/redux/features/address/addressApiSlice";
+import { useAppSelector } from "@/redux/hooks";
 import { MapPin } from "lucide-react";
 import Link from "next/link";
 
 const AddressDefault = () => {
-  const { data, isLoading, error } = useGetAddressQuery();
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
+  const { data, isLoading, error } = useGetAddressQuery(undefined, {
+    skip: !isAuthenticated,
+  });
   const { ids = [], entities = {} } = data || {};
   const items = ids.map((id) => entities[id] || null).filter(Boolean);
 

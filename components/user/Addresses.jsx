@@ -5,10 +5,14 @@ import {
   useGetAddressQuery,
   useSetDefaultAddressMutation,
 } from "@/redux/features/address/addressApiSlice";
+import { useAppSelector } from "@/redux/hooks";
 import { toast } from "sonner";
 
 const UserAddresses = () => {
-  const { data, isSuccess, error, isLoading } = useGetAddressQuery();
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
+  const { data, isSuccess, error, isLoading } = useGetAddressQuery(undefined, {
+    skip: !isAuthenticated,
+  });
   const [setDefaultAddress] = useSetDefaultAddressMutation();
   const { ids = [], entities = {} } = data || {};
   const items = ids.map((id) => entities[id] || null).filter(Boolean);

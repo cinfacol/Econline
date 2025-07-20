@@ -179,8 +179,8 @@ function ProfileButton() {
             <span className="sr-only">Abrir menú de usuario</span>
             <Avatar>
               <AvatarImage
-                src={user?.profile_photo || "/images/profile_default.png"}
-                alt={user?.full_name || "Usuario"}
+                src={isAuthenticated && user?.profile_photo ? user.profile_photo : "/images/profile_default.png"}
+                alt={isAuthenticated && user?.full_name ? user.full_name : "Usuario"}
               />
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>

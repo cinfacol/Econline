@@ -1,5 +1,6 @@
 "use client";
 import { useGetProfileQuery } from "@/redux/features/auth/authApiSlice";
+import { useAppSelector } from "@/redux/hooks";
 import { Spinner } from "@/components/common";
 import Image from "next/image";
 import Link from "next/link";
@@ -23,7 +24,10 @@ const fieldLabels = {
 const booleanFields = ["is_buyer", "is_seller", "is_agent"];
 
 export default function UserProfileDetails() {
-  const { data: profile, isLoading, error } = useGetProfileQuery();
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
+  const { data: profile, isLoading, error } = useGetProfileQuery(undefined, {
+    skip: !isAuthenticated,
+  });
 
   if (isLoading) {
     return (

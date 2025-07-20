@@ -5,11 +5,15 @@ import {
   useSetDefaultAddressMutation,
 } from "@/redux/features/address/addressApiSlice";
 import { useRetrieveUserQuery } from "@/redux/features/auth/authApiSlice";
+import { useAppSelector } from "@/redux/hooks";
 import { toast } from "sonner";
 
 export default function useAddAddress() {
   const router = useRouter();
-  const { data } = useRetrieveUserQuery();
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
+  const { data } = useRetrieveUserQuery(undefined, {
+    skip: !isAuthenticated,
+  });
   const [addAddress, { isLoading }] = useAddAddressMutation();
   const [setDefaultAddress] = useSetDefaultAddressMutation();
   const user = data?.pk;
