@@ -31,7 +31,7 @@ const navigation = {
       authHref: "/purchases", // ruta cuando está autenticado
       guestHref: "/auth/login", // ruta cuando no está autenticado
     },
-    { name: "Products", href: "/product" },
+    { name: "Products", href: "/products" },
   ],
 };
 

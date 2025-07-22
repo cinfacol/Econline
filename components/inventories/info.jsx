@@ -102,7 +102,7 @@ const Info = ({ inventoryId }) => {
             href={`/products/${data?.user?.id}`}
             className="mr-2 text-blue-600 text-center bg-gray-200 py-1 px-2 rounded-full"
           >
-            Otros productos del vendedor
+            Explorar productos relacionados
           </Link>
         </div>
       </div>

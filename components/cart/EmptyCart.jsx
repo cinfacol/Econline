@@ -14,7 +14,7 @@ export function EmptyCart() {
       <p className="mt-2 text-center text-gray-500 dark:text-gray-400">
         Parece que aún no has agregado productos a tu carrito.
       </p>
-      <Link href="/product" className="mt-6">
+      <Link href="/products" className="mt-6">
         <Button variant="warning" className="flex items-center gap-2">
           Explorar productos
         </Button>

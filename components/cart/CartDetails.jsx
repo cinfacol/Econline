@@ -41,37 +41,6 @@ export default function CartDetails() {
     }, 0);
   }, [items]);
 
-  // Remove local calculation useMemo
-  // const { taxes, subTotal, total, save } = useMemo(() => {
-  //   if (!items?.length) {
-  //     return {
-  //       taxes: 0,
-  //       subTotal: 0,
-  //       total: 0,
-  //       save: 0,
-  //     };
-  //   }
-
-  //   return items.reduce(
-  //     (acc, item) => {
-  //       const itemTax =
-  //         item.inventory.taxe * item.inventory.store_price * item.quantity;
-  //       const itemSubtotal = item.inventory.store_price * item.quantity;
-  //       const itemSavings =
-  //         (item.inventory.retail_price - item.inventory.store_price) *
-  //         item.quantity;
-
-  //       return {
-  //         taxes: acc.taxes + itemTax,
-  //         subTotal: acc.subTotal + itemSubtotal - itemTax / items.length,
-  //         save: acc.save + itemSavings,
-  //         total: acc.total + itemSubtotal,
-  //       };
-  //     },
-  //     { taxes: 0, subTotal: 0, save: 0, total: 0 }
-  //   );
-  // }, [items]);
-
   // Handlers optimizados
   const handleCheckoutRedirect = useCallback(async () => {
     setIsRedirecting(true);

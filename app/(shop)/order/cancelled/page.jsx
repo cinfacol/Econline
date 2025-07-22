@@ -195,7 +195,7 @@ export default function CancelledPage() {
           </button>
 
           <button
-            onClick={() => router.push("/product")}
+            onClick={() => router.push("/products")}
             className="w-full bg-gray-200 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-300 transition-colors"
           >
             Continuar comprando

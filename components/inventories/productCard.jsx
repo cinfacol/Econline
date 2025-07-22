@@ -22,14 +22,14 @@ const ProductCard = ({ data, priority = false }) => {
   const router = useRouter();
 
   const handleClick = () => {
-    router.push(`/product/${data?.id}`);
+    router.push(`/products/${data?.id}`);
   };
 
   const dat = data;
 
   return (
-    <div className="bg-white group cursor-pointer rounded-xl border p-3 space-y-4">
-      <div className="aspect-square rounded-xl bg-gray-100 relative">
+    <div className="bg-white group cursor-text rounded-xl border p-3 space-y-4">
+      <div className="aspect-square rounded-xl bg-gray-100 relative cursor-pointer">
         <Image
           loader={cloudinaryImageLoader}
           onClick={handleClick}
@@ -38,16 +38,14 @@ const ProductCard = ({ data, priority = false }) => {
           fill
           sizes="(max-width: 500px) 100vw, (max-width: 768px) 50vw, 33vw"
           className="object-cover rounded-xl"
-          priority={priority} // Use the passed priority prop
+          priority={priority}
           quality={80}
-          // loading="lazy" // Remove loading="lazy" when priority is true
         />
-        <div className="opacity-20 group-hover:opacity-100 transition absolute w-full px-6 bottom-5">
+        <div className="opacity-20 group-hover:opacity-100 transition absolute w-full px-6 bottom-5 cursor-pointer">
           <div className="flex gap-x-6 justify-center">
             <Button
               variant="outline"
               onClick={() => {
-                // event.stopPropagation();
                 previewModal.onOpen(data);
               }}
             >

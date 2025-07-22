@@ -50,7 +50,6 @@ export function CartSummary({
           smallValue={true}
         />
         {/* Remove Impuestos row as it's not provided by backend in this context */}
-        {/* <SummaryRow label="Impuestos" value={taxes} /> */}
         {discountAmount > 0 && ( // Show discount if greater than 0
           <SummaryRow
             label="Descuento"
@@ -60,15 +59,7 @@ export function CartSummary({
             // strikethrough // Strikethrough might not be appropriate for discount amount itself
           />
         )}
-        {/* Remove Ahorro row as discountAmount replaces it */}
-        {/* {savings > 0 && (
-          <SummaryRow
-            label="Ahorro"
-            value={savings}
-            className="text-green-600"
-            strikethrough
-          />
-        )} */}
+
         <SummaryRow
           label="Total"
           value={total}
@@ -94,8 +85,7 @@ export function CartSummary({
         </Button>
 
         <div className="flex items-center justify-center gap-2">
-          <span className="text-sm text-gray-500">o</span>
-          <Link href="/product" className={buttonVariants({ variant: "link" })}>
+          <Link href="/products" className={buttonVariants({ variant: "link" })}>
             Seguir comprando <MoveRight className="h-4 w-4" />
           </Link>
         </div>

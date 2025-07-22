@@ -193,7 +193,7 @@ const CheckoutDetails = () => {
     return (
       <div className="text-center py-12">
         <h2 className="text-2xl font-bold mb-4">Tu carrito está vacío</h2>
-        <Button onClick={() => router.push("/product")}>
+        <Button onClick={() => router.push("/products")}>
           Continuar comprando
         </Button>
       </div>
