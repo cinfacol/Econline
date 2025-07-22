@@ -99,7 +99,7 @@ const Info = ({ inventoryId }) => {
           <h3 className="font-semibold text-black">Vendedor:</h3>
           <div>{data?.user?.full_name}</div>
           <Link
-            href={`/products/${data?.user?.id}`}
+            href={`/related/${inventoryId}`}
             className="mr-2 text-blue-600 text-center bg-gray-200 py-1 px-2 rounded-full"
           >
             Explorar productos relacionados

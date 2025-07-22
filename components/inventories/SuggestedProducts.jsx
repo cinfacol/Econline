@@ -30,13 +30,17 @@ const SuggestedProducts = ({ title, inventoryId }) => {
       <h3 className="font-bold text-3xl">{title}</h3>
       {ids?.length === 0 && <NoResults />}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {ids?.map((id) => {
-          const Item = entities[id];
-
-          if (Item.id !== inventoryId) {
-            return <ProductCard key={Item?.id} data={Item} />;
-          }
-        })}
+        {Array.from(
+          new Map(
+            ids
+              .filter((id) => id !== inventoryId)
+              .map((id) => entities[id])
+              .filter((item) => item && item.id)
+              .map((item) => [item.id, item])
+          ).values()
+        ).map((Item) => (
+          <ProductCard key={Item.id} data={Item} />
+        ))}
       </div>
     </div>
   );
