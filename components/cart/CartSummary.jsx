@@ -4,7 +4,13 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 // Componente interno para las filas del resumen
-function SummaryRow({ label, value, className, strikethrough = false, smallValue = false }) {
+function SummaryRow({
+  label,
+  value,
+  className,
+  strikethrough = false,
+  smallValue = false,
+}) {
   return (
     <div className={cn("flex items-center justify-between", className)}>
       <span className="text-sm text-gray-500">{label}</span>
@@ -37,7 +43,7 @@ export function CartSummary({
       <h2 className="text-lg font-semibold">Resumen de la Compra</h2>
 
       <div className="mt-6 space-y-4">
-        <SummaryRow 
+        <SummaryRow
           label={
             <span>
               Productos
@@ -45,7 +51,7 @@ export function CartSummary({
                 ({totalProducts})
               </span>
             </span>
-          } 
+          }
           value={subTotal}
           smallValue={true}
         />
@@ -80,12 +86,15 @@ export function CartSummary({
               Redirigiendo...
             </span>
           ) : (
-            "Proceder al pago"
+            "Proceed to Checkout"
           )}
         </Button>
 
         <div className="flex items-center justify-center gap-2">
-          <Link href="/products" className={buttonVariants({ variant: "link" })}>
+          <Link
+            href="/products"
+            className={buttonVariants({ variant: "link" })}
+          >
             Seguir comprando <MoveRight className="h-4 w-4" />
           </Link>
         </div>
