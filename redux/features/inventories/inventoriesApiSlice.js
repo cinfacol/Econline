@@ -71,57 +71,32 @@ export const inventoriesApiSlice = apiAppSlice.injectEndpoints({
       providesTags: ["Products"],
     }),
 
-    /* getProductsByAgent: builder.query({
-      query: () => "agents/",
-      transformResponse: (responseData) => {
-        let min = 1;
-        const loadedProducts = responseData.map((product) => {
-          if (!product?.date)
-            product.date = sub(new Date(), { minutes: min++ }).toISOString();
-          return product;
-        });
-        return productsAdapter.setAll(initialState, loadedProducts);
-      },
-      providesTags: (result, error, arg) => [
-        "products",
-        ...result.ids.map((id) => ({ type: "Product", id })),
-      ],
-    }), */
-    /* addNewProduct: builder.mutation({
-      query: (initialProduct) => ({
-        url: "create/",
+    // Endpoint para crear un producto
+    createProduct: builder.mutation({
+      query: (productData) => ({
+        url: "create/", // Asumiendo que el endpoint es /api/products/
         method: "POST",
-        body: {
-          ...initialProduct,
-          userId: Number(initialProduct.userId),
-          date: new Date().toISOString(),
-        },
+        body: productData,
       }),
-      invalidatesTags: [{ type: "Product", id: "LIST" }],
-    }), */
-    /* updateProduct: builder.mutation({
-      query: (initialProduct) => ({
-        url: "update/<slug:slug>/",
+      invalidatesTags: ["Product"], // Invalidar la caché de "Product" después de crear
+    }),
+    // Endpoint para actualizar un producto
+    updateProduct: builder.mutation({
+      query: ({ id, productData }) => ({
+        url: "update/<slug:slug>/", // Asumiendo que el endpoint es /api/products/{id}/
         method: "PUT",
-        body: {
-          ...initialProduct,
-          date: new Date().toISOString(),
-        },
+        body: productData,
       }),
-      invalidatesTags: (result, error, arg) => [
-        { type: "Product", id: arg.id },
-      ],
-    }), */
-    /* deleteProduct: builder.mutation({
-      query: ({ id }) => ({
-        url: "delete/<slug:slug>/",
+      invalidatesTags: ["Product"], // Invalidar la caché de "Product" después de actualizar
+    }),
+    // Endpoint para eliminar un producto
+    deleteProduct: builder.mutation({
+      query: (id) => ({
+        url: "delete/<slug:slug>/", // Asumiendo que el endpoint es /api/products/{id}/
         method: "DELETE",
-        body: { id },
       }),
-      invalidatesTags: (result, error, arg) => [
-        { type: "Product", id: arg.id },
-      ],
-    }), */
+      invalidatesTags: ["Product"], // Invalidar la caché de "Product" después de eliminar
+    }),
   }),
 });
 
@@ -129,8 +104,7 @@ export const {
   useGetInventoriesQuery,
   useGetInventoriesByCategoryQuery,
   useGetProductQuery,
-  // useGetProductsByAgentQuery,
-  // useAddNewProductMutation,
-  // useUpdateProductMutation,
-  // useDeleteProductMutation,
+  useCreateProductMutation,
+  useUpdateProductMutation,
+  useDeleteProductMutation,
 } = inventoriesApiSlice;

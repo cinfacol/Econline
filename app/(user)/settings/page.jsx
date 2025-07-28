@@ -1,4 +1,7 @@
-import CartDetails from "@/components/cart/CartDetails";
+import ManageProducts from "@/components/settings/ManageProducts";
+import AddressDefault from "@/components/user/Addressdefault";
+import { Container } from "@/components/ui";
+
 export const metadata = {
   title: "Settings | Econline",
   description: "Gestiona tus preferencias y configuraciones de cuenta",
@@ -9,14 +12,26 @@ export const metadata = {
   },
 };
 
-export default function SettingsPage() {
+const SettingsPage = async () => {
   return (
-    <section className="mx-auto max-w-8xl px-4 py-8 sm:px-6 lg:px-8">
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
-          Settings
-        </h1>
-      </header>
-    </section>
+    <Container className="bg-white overflow-hidden">
+      <div className="relative isolate px-6 pt-2 lg:px-8">
+        <header className="text-center py-8 bg-gradient-to-r from-blue-500 to-purple-600 text-white mt-8 mb-8 rounded-xl">
+          <h2 className="text-4xl font-bold tracking-tight sm:text-6xl">
+            Settings
+          </h2>
+        </header>
+      </div>
+      <section className="border border-gray-200 bg-white shadow-sm rounded mb-5 p-3 lg:p-5">
+        <h2 className="text-2xl font-semibold mb-4">Ingresar Productos</h2>
+        <ManageProducts />
+      </section>
+      <section className="border border-gray-200 bg-white shadow-sm rounded mb-5 p-3 lg:p-5">
+        <h2 className="text-2xl font-semibold mb-4">Direcciones</h2>
+        <AddressDefault />
+      </section>
+    </Container>
   );
-}
+};
+
+export default SettingsPage;
