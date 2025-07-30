@@ -1,4 +1,5 @@
 import InventoriesList from "@/components/inventories/InventoriesList";
+import ProductCarousel from "@/components/inventories/ProductCarousel";
 import { Container } from "@/components/ui";
 // import { RadioButtonCategoryGroup } from "@/components/common/RadioButtonCategoryGroup";
 import { Suspense } from "react";
@@ -19,12 +20,14 @@ export const metadata = {
 export default function Home() {
   return (
     <Container className="bg-white overflow-hidden">
-      <Suspense fallback={<Spinner />}>
-        {/* <RadioButtonCategoryGroup /> */}
-      </Suspense>
+      <div className="relative isolate px-6 pt-2 lg:px-8">
+        <header className="text-center py-2 my-8">
+          <ProductCarousel />
+        </header>
+      </div>
 
       {/* Hero section */}
-      <div className="relative isolate px-6 pt-2 lg:px-8">
+      {/* <div className="relative isolate px-6 pt-2 lg:px-8">
         <header className="text-center py-8 bg-gradient-to-r from-blue-500 to-purple-600 text-white mt-8 mb-8">
           <h1 className="text-4xl font-bold tracking-tight sm:text-6xl">
             Tienda Online Tutorial Application
@@ -41,7 +44,7 @@ export default function Home() {
             </button>
           </div>
         </header>
-      </div>
+      </div> */}
       <div className="space-y-10 pb-10">
         <div className="flex flex-col gap-y-8 px-4 sm:px-6 lg:px-8">
           <Suspense fallback={<Spinner />}>
