@@ -37,7 +37,7 @@ const ProductCard = ({ data, priority = false, imgClassName = "" }) => {
         <p className="font-semibold text-base text-gray-950 text-center truncate">
           {data?.product?.name}
         </p>
-        <p className="text-xs text-gray-500 line-clamp-2 text-center min-h-[2rem]">
+        <p className="text-xs text-gray-500 line-clamp-2 text-ellipsis text-center min-h-[2rem]">
           {data?.product?.description || <span className="opacity-0">-</span>}
         </p>
       </div>

@@ -97,7 +97,7 @@ export default function ProductCarousel({ excludeId }) {
           slidesToShow={4}
           slidesToScroll={1}
           autoplay={true}
-          autoplaySpeed={3500}
+          autoplaySpeed={7000}
           cssEase="cubic-bezier(0.77, 0, 0.175, 1)"
           nextArrow={<Arrow direction="next" />}
           prevArrow={<Arrow direction="prev" />}
