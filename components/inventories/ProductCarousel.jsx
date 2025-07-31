@@ -6,6 +6,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import CarouselCard from "./CarouselCard";
 import { useGetInventoriesQuery } from "@/redux/features/inventories/inventoriesApiSlice";
+import { useGetInventoryImagesQuery } from "@/redux/features/inventories/inventoriesApiSlice";
 import { useAppSelector } from "@/redux/hooks";
 import { ChevronRight } from "lucide-react";
 import { useMemo } from "react";
@@ -53,6 +54,10 @@ export default function ProductCarousel({ excludeId }) {
     categoryTerm,
   });
   const { ids = [], entities = {} } = data || {};
+  const { data: imagesData, isSuccess: isImagesSuccess } =
+    useGetInventoryImagesQuery();
+
+  console.log("ProductCarousel data:", imagesData);
 
   const productImage = useMemo(
     () =>

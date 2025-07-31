@@ -70,6 +70,10 @@ export const inventoriesApiSlice = apiAppSlice.injectEndpoints({
       query: (inventoryId) => `/inventory/details/${inventoryId}/`,
       providesTags: ["Products"],
     }),
+    getInventoryImages: builder.query({
+      query: () => `/inventory/images/`,
+      providesTags: ["Inventory"],
+    }),
 
     // Endpoint para crear un producto
     createProduct: builder.mutation({
@@ -103,6 +107,7 @@ export const inventoriesApiSlice = apiAppSlice.injectEndpoints({
 export const {
   useGetInventoriesQuery,
   useGetInventoriesByCategoryQuery,
+  useGetInventoryImagesQuery,
   useGetProductQuery,
   useCreateProductMutation,
   useUpdateProductMutation,
