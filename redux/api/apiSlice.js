@@ -57,6 +57,7 @@ export const apiSlice = createApi({
     "Shipping",
     "Token",
     "User",
+    "Auth",
   ],
   baseQuery: baseQueryWithReauth,
   endpoints: (builder) => ({}),

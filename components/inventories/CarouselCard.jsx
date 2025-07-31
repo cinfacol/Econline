@@ -22,7 +22,7 @@ const CarouselCard = ({ image, id, priority = false, imgClassName = "" }) => {
       <Image
         loader={cloudinaryImageLoader}
         src={image?.image || "/placeholder.png"}
-        alt={image?.alt_text || image.inventory}
+        alt={image?.alt_text || image?.inventory}
         fill
         sizes="(max-width: 600px) 100vw, 140px"
         className={`object-center !object-contain w-full h-full rounded-xl ${imgClassName}`}
@@ -30,7 +30,7 @@ const CarouselCard = ({ image, id, priority = false, imgClassName = "" }) => {
         quality={80}
       />
       <span className="absolute bottom-0 left-0 w-full bg-black/60 text-white text-xs font-semibold px-2 py-1 text-center rounded-b-xl truncate pointer-events-none">
-        {image.inventory}
+        {image?.inventory}
       </span>
     </div>
   );

@@ -5,9 +5,7 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import CarouselCard from "./CarouselCard";
-import { useGetInventoriesQuery } from "@/redux/features/inventories/inventoriesApiSlice";
 import { useGetInventoryImagesQuery } from "@/redux/features/inventories/inventoriesApiSlice";
-import { useAppSelector } from "@/redux/hooks";
 import { ChevronRight } from "lucide-react";
 import { useMemo } from "react";
 
@@ -45,39 +43,8 @@ function Arrow(props) {
 }
 
 export default function ProductCarousel({ excludeId }) {
-  const searchTerm = useAppSelector((state) => state?.inventory?.searchTerm);
-  const categoryTerm = useAppSelector(
-    (state) => state?.inventory?.categoryTerm
-  );
-  const { data, isSuccess, isLoading, error } = useGetInventoriesQuery({
-    searchTerm,
-    categoryTerm,
-  });
-  const { ids = [], entities = {} } = data || {};
-  const { data: imagesData, isSuccess: isImagesSuccess } =
+  const { data, isSuccess, isLoading, error } =
     useGetInventoryImagesQuery();
-
-  console.log("ProductCarousel data:", imagesData);
-
-  const productImage = useMemo(
-    () =>
-      Array.from(
-        new Map(
-          ids
-            .filter((id) => id !== excludeId)
-            .map((id) => entities[id])
-            .filter(
-              (item) =>
-                item &&
-                item.id &&
-                Array.isArray(item.image) &&
-                item.image.some((img) => img.default === true)
-            )
-            .map((item) => [item.id, item])
-        ).values()
-      ),
-    [ids, entities, excludeId]
-  );
 
   if (isLoading) {
     return (
@@ -96,7 +63,7 @@ export default function ProductCarousel({ excludeId }) {
     return <p>Error: {error?.message}</p>;
   }
   if (isSuccess) {
-    if (productImage.length === 0) {
+    if (data.length === 0) {
       return <NoResults title={"images"} />;
     }
     return (
@@ -118,11 +85,11 @@ export default function ProductCarousel({ excludeId }) {
             { breakpoint: 480, settings: { slidesToShow: 1 } },
           ]}
         >
-          {productImage.map((Item, index) => {
+          {data.map((Item, index) => {
             // Las primeras 6 imágenes tienen priority
             const priority = index < 6;
-            const defaultImage = Array.isArray(Item.image)
-              ? Item.image.find((img) => img.default === true)
+            const defaultImage = Array.isArray(Item.images)
+              ? Item.images.find((img) => img.default === true)
               : null;
             return (
               <CarouselCard

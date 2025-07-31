@@ -1,6 +1,6 @@
 import { createEntityAdapter } from "@reduxjs/toolkit";
 import { sub } from "date-fns";
-import { apiAppSlice } from "@/redux/api/apiAppSlice";
+import { apiSlice } from "@/redux/api/apiSlice";
 
 const reviewsAdapter = createEntityAdapter({
   sortComparer: (a, b) => b.date.localeCompare(a.date),
@@ -8,7 +8,7 @@ const reviewsAdapter = createEntityAdapter({
 
 const initialState = reviewsAdapter.getInitialState();
 
-export const reviewsApiSlice = apiAppSlice.injectEndpoints({
+export const reviewsApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getReviewsByProductId: builder.query({
       query: (productId) => ({ url: `/reviews/get-reviews/${productId}` }),

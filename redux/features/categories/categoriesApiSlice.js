@@ -1,6 +1,6 @@
 import { createEntityAdapter } from "@reduxjs/toolkit";
 import { sub } from "date-fns";
-import { apiAppSlice } from "@/redux/api/apiAppSlice";
+import { apiSlice } from "@/redux/api/apiSlice";
 
 const categoriesAdapter = createEntityAdapter({
   sortComparer: (a, b) => b.date.localeCompare(a.date),
@@ -8,7 +8,7 @@ const categoriesAdapter = createEntityAdapter({
 
 const initialState = categoriesAdapter.getInitialState();
 
-export const categoriesApiSlice = apiAppSlice.injectEndpoints({
+export const categoriesApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getCategories: builder.query({
       query: () => "/categories/all/",
