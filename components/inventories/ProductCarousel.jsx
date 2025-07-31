@@ -54,14 +54,20 @@ export default function ProductCarousel({ excludeId }) {
   });
   const { ids = [], entities = {} } = data || {};
 
-  const productList = useMemo(
+  const productImage = useMemo(
     () =>
       Array.from(
         new Map(
           ids
             .filter((id) => id !== excludeId)
             .map((id) => entities[id])
-            .filter((item) => item && item.id)
+            .filter(
+              (item) =>
+                item &&
+                item.id &&
+                Array.isArray(item.image) &&
+                item.image.some((img) => img.default === true)
+            )
             .map((item) => [item.id, item])
         ).values()
       ),
@@ -85,8 +91,8 @@ export default function ProductCarousel({ excludeId }) {
     return <p>Error: {error?.message}</p>;
   }
   if (isSuccess) {
-    if (productList.length === 0) {
-      return <NoResults title={"products"} />;
+    if (productImage.length === 0) {
+      return <NoResults title={"images"} />;
     }
     return (
       <div className="relative px-2 py-4 md:px-8 md:py-6">
@@ -94,7 +100,7 @@ export default function ProductCarousel({ excludeId }) {
           dots={false}
           infinite={true}
           speed={500}
-          slidesToShow={4}
+          slidesToShow={6}
           slidesToScroll={1}
           autoplay={true}
           autoplaySpeed={7000}
@@ -107,12 +113,17 @@ export default function ProductCarousel({ excludeId }) {
             { breakpoint: 480, settings: { slidesToShow: 1 } },
           ]}
         >
-          {productList.map((Item, index) => {
-            const priority = index < 4;
+          {productImage.map((Item, index) => {
+            // Las primeras 6 imágenes tienen priority
+            const priority = index < 6;
+            const defaultImage = Array.isArray(Item.image)
+              ? Item.image.find((img) => img.default === true)
+              : null;
             return (
               <CarouselCard
                 key={Item.id}
-                data={Item}
+                image={defaultImage}
+                id={Item.id}
                 priority={priority}
                 imgClassName="w-32 h-32 object-cover mx-auto"
               />
