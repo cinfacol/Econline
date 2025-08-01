@@ -1,4 +1,3 @@
-export { default as Skeleton } from "./ProductSkeleton";
 export { default as Container } from "./Container";
 export { default as Currency } from "./Currency";
 export { default as IconButton } from "./IconButton";

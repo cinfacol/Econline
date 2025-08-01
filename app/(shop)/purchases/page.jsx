@@ -1,7 +1,7 @@
 import OrdersHistory from "@/components/orders/OrdersHistory";
 
 export const metadata = {
-  title: "Purchases Details",
+  title: "Mis Compras",
   description: "Purchase Page in a Modern Ecommerce App",
 };
 

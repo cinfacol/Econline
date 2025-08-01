@@ -1,6 +1,7 @@
 "use client";
 
-import { NoResults, Skeleton } from "@/components/ui";
+import { NoResults } from "@/components/ui";
+import { Skeleton } from "@/components/skeletons";
 import {
   useGetInventoriesQuery,
   useGetInventoriesByCategoryQuery,
