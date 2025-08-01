@@ -1,6 +1,7 @@
 "use client";
 
-import { NoResults, Skeleton } from "@/components/ui";
+import { NoResults } from "@/components/ui";
+import { ProductSkeleton } from "@/components/skeletons";
 import {
   useGetInventoriesByCategoryQuery,
   useGetProductQuery,
@@ -22,7 +23,7 @@ const SuggestedProducts = ({ title, inventoryId }) => {
   const { ids = [], entities = {} } = category || {};
 
   // Handle loading and error states
-  if (isLoading) return <Skeleton />;
+  if (isLoading) return <ProductSkeleton />;
   if (error) return <p>Error: {error.message}</p>;
 
   return (
