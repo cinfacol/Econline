@@ -1,7 +1,7 @@
 "use client";
 
 import { NoResults } from "@/components/ui";
-import { Skeleton } from "@/components/skeletons";
+import { CarouselSkeleton } from "@/components/skeletons";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -52,7 +52,7 @@ export default function ProductCarousel({ excludeId }) {
         <div className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {[...Array(4)].map((_, index) => (
-              <Skeleton key={index} />
+              <CarouselSkeleton key={index} />
             ))}
           </div>
         </div>

@@ -15,7 +15,7 @@ import {
   useGetPaymentTotalQuery,
   useGetPaymentMethodsQuery,
 } from "@/redux/features/payment/paymentApiSlice";
-import { CheckoutSkeleton } from "@/components/skeletons/CheckoutSkeleton";
+import { CheckoutSkeleton } from "@/components/skeletons";
 import { usePayment } from "@/hooks";
 import AddressDefault from "@/components/user/Addressdefault";
 

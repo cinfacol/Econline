@@ -77,6 +77,8 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(0.269 0 0);
   --sidebar-ring: oklch(0.439 0 0);
+  --shimmer-start: #374151; /* Tailwind gray-700 */
+  --shimmer-mid: #4b5563; /* Tailwind gray-600 */
 }
 
 @theme inline {
@@ -127,4 +129,24 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.animate-shimmer {
+  background-image: linear-gradient(
+    90deg,
+    var(--shimmer-start, #e5e7eb) 0%,
+    var(--shimmer-mid, #f3f4f6) 50%,
+    var(--shimmer-start, #e5e7eb) 100%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite linear;
 }

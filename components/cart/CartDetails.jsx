@@ -65,7 +65,7 @@ export default function CartDetails() {
         }
       } catch (error) {
         console.error("Error updating quantity:", error);
-        
+
         // Manejar errores específicos
         if (error?.data?.error === "Item is not in cart") {
           toast.error("El producto no está en el carrito");

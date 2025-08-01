@@ -1,25 +1,16 @@
-const Skeleton = () => {
+import { Skeleton } from "./Skeleton";
+
+export const ProductSkeleton = () => {
   return (
-    <div className="bg-white rounded-xl p-4 shadow-sm animate-pulse">
-      {/* Imagen */}
-      <div className="aspect-square rounded-xl bg-gray-200 mb-4" />
-
-      {/* Título */}
-      <div className="h-4 bg-gray-200 rounded w-3/4 mb-4" />
-
-      {/* Precio */}
-      <div className="h-4 bg-gray-200 rounded w-1/4 mb-4" />
-
-      {/* Descripción */}
+    <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm animate-pulse">
+      <Skeleton className="aspect-square rounded-xl mb-4" />
+      <Skeleton className="h-4 w-3/4 mb-3" />
+      <Skeleton className="h-4 w-1/4 mb-4" />
       <div className="space-y-2">
-        <div className="h-3 bg-gray-200 rounded w-full" />
-        <div className="h-3 bg-gray-200 rounded w-5/6" />
+        <Skeleton className="h-3 w-full" />
+        <Skeleton className="h-3 w-5/6" />
       </div>
-
-      {/* Botón */}
-      <div className="h-8 bg-gray-200 rounded-full mt-4" />
+      <Skeleton className="h-8 rounded-full mt-6" />
     </div>
   );
 };
-
-export default Skeleton;
