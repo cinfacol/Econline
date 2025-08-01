@@ -95,7 +95,7 @@ export default function ProductCarousel({ excludeId }) {
               <CarouselCard
                 key={Item.id}
                 image={defaultImage}
-                id={Item.id}
+                id={Item.images[0].inventory}
                 priority={priority}
                 imgClassName="w-32 h-32 object-cover mx-auto"
               />
