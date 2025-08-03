@@ -23,7 +23,7 @@ export default function Navigation() {
   if (isLoading) return <Spinner lg />;
   if (error) return <p className="pt-4 mt-1">{error?.data?.error}</p>;
 
-  // Destructure data and handle empty cart case concisely
+  // Destructure data and handle empty category case concisely
   const { ids = [] } = data || {}; // Default to empty array
   const { entities = [] } = data || {}; // Default to empty array
 

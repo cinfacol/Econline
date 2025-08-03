@@ -7,8 +7,7 @@ import { useGetCategoriesQuery } from "@/redux/features/categories/categoriesApi
 import { Spinner } from "@/components/common";
 
 export default function MobileNavigation() {
-  const { data, isSuccess, isLoading, error } =
-    useGetCategoriesQuery("getCategories");
+  const { data, isSuccess, isLoading, error } = useGetCategoriesQuery();
 
   if (isLoading) return <Spinner lg />;
   if (error) return <p>Error: {error?.data?.detail}</p>;

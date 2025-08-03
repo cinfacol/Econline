@@ -6,7 +6,7 @@ import { useGetCategoriesQuery } from "@/redux/features/categories/categoriesApi
 // categoryLink { data } recibe los ids de todas las categorías encontradas
 const CategoryLink = ({ data }) => {
   // Llama al hook para obtener las categorías
-  const { data: categoriesData } = useGetCategoriesQuery("getCategories");
+  const { data: categoriesData } = useGetCategoriesQuery();
 
   // Suponiendo que data contiene los ids de las categorías
   const cat = data

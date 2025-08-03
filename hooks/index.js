@@ -7,4 +7,5 @@ export { default as useVerify } from "./use-verify";
 export { usePayment } from "./use-payment";
 export { default as useGetEntityByCategory } from "./useGetEntitiesByCategory";
 export { default as useAddAddress } from "./use-add-address";
+export { default as useAddProduct } from "./use-add-product";
 export { useAuth } from "./useAuth";

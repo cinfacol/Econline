@@ -6,3 +6,5 @@ export { default as PasswordResetForm } from "./PasswordResetForm";
 export { default as RegisterForm } from "./RegisterForm";
 export { default as AddAddressForm } from "./AddAddressForm";
 export { default as AddressForm } from "./AddressForm";
+export { default as AddProductForm } from "./AddProductForm";
+export { default as ProductForm } from "./ProductForm";

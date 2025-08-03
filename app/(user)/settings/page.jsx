@@ -1,6 +1,7 @@
-import ManageProducts from "@/components/settings/ManageProducts";
 import AddressDefault from "@/components/user/Addressdefault";
 import { Container } from "@/components/ui";
+import Link from "next/link";
+import AddProductsButton from "@/components/settings/AddProductsButton";
 
 export const metadata = {
   title: "Settings | Econline",
@@ -22,14 +23,13 @@ const SettingsPage = async () => {
           </h2>
         </header>
       </div>
-      <section className="border border-gray-200 bg-white shadow-sm rounded mb-5 p-3 lg:p-5">
-        <h2 className="text-2xl font-semibold mb-4">Ingresar Productos</h2>
-        <ManageProducts />
-      </section>
-      <section className="border border-gray-200 bg-white shadow-sm rounded mb-5 p-3 lg:p-5">
+      <article className="border border-gray-200 bg-white shadow-sm rounded mb-5 p-3 lg:p-5">
+        <AddProductsButton />
+      </article>
+      <article className="border border-gray-200 bg-white shadow-sm rounded mb-5 p-3 lg:p-5">
         <h2 className="text-2xl font-semibold mb-4">Direcciones</h2>
         <AddressDefault />
-      </section>
+      </article>
     </Container>
   );
 };

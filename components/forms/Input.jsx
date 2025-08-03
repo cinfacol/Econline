@@ -40,6 +40,8 @@ export default function Input({
           }
           name={labelId}
           type={type}
+          rows={5}
+          cols={40}
           onChange={onChange}
           value={value}
           placeholder={placeholder}
