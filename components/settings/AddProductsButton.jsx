@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { MapPinPlus } from "lucide-react";
+import { ListPlus } from "lucide-react";
 
 const AddProductsButton = () => {
   const router = useRouter();
@@ -11,7 +11,7 @@ const AddProductsButton = () => {
       className="font-bold"
       onClick={() => router.push("/settings/product/new")}
     >
-      <MapPinPlus />
+      <ListPlus />
       Add New Product
     </Button>
   );

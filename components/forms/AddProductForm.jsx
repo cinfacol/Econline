@@ -2,6 +2,8 @@
 
 import { useAddProduct } from "@/hooks";
 import { ProductForm } from "@/components/forms";
+import NewCategoryFields from "./NewCategoryFields";
+import { useGetMeasureUnitsQuery } from "@/redux/features/categories/categoriesApiSlice";
 import { useGetCategoriesQuery } from "@/redux/features/categories/categoriesApiSlice";
 
 export default function AddProductForm() {
@@ -17,29 +19,40 @@ export default function AddProductForm() {
     onChange,
     onCheckboxChange,
     onSubmit,
+    showCategoryForm,
+    newCategoryName,
+    newParentName,
+    newMeasureUnit,
   } = useAddProduct();
-  const { data } = useGetCategoriesQuery();
+  const { data: categoriesData } = useGetCategoriesQuery();
+  const { data: measureUnits = [] } = useGetMeasureUnitsQuery();
 
-  // Destructure data and handle empty category case concisely
-  const { ids = [] } = data || {}; // Default to empty array
-  const { entities = [] } = data || {}; // Default to empty array
+  function buildCategoriesFromData() {
+    const result = [];
+    const { ids = [], entities = {} } = categoriesData || {};
 
-  let categories = [];
+    const items = ids?.map((id) => entities[id]).filter(Boolean);
 
-  const items = ids?.map((item) => {
-    const Item = entities[item];
-    return Item;
-  });
+    items?.forEach((parentCat) => {
+      if (parentCat.sub_categories?.length > 0) {
+        parentCat.sub_categories.forEach((subCat) => {
+          result.push({
+            value: subCat.id,
+            label: `${subCat.name}`,
+          });
+        });
+      } else {
+        result.push({
+          value: parentCat.id,
+          label: parentCat.name,
+        });
+      }
+    });
 
-  items.map((parentCat) => {
-    if (parentCat?.sub_categories?.length > 0) {
-      parentCat.sub_categories.map((subCat) => {
-        categories.push({ name: subCat.name });
-      });
-    } else {
-      categories.push({ name: parentCat.name });
-    }
-  });
+    return result;
+  }
+
+  const categories = buildCategoriesFromData();
 
   const config = [
     {
@@ -47,7 +60,7 @@ export default function AddProductForm() {
       labelId: "product_name",
       type: "text",
       value: product_name,
-      placeholder: "Ingresa el nombre del producto *",
+      placeholder: "Nombre del producto",
       required: true,
     },
     {
@@ -57,45 +70,54 @@ export default function AddProductForm() {
       value: product_description,
       rows: rows || 5,
       cols: cols || 40,
-      placeholder: "Ingresa una descripción del producto *",
+      placeholder: "Descripción del producto",
       required: true,
     },
     {
-      labelText: "Category Name",
+      labelText: "Category",
       labelId: "category_name",
       type: "select",
       value: category_name,
-      // default: "Colombia",
       required: true,
-      options: categories.map((category) => ({
-        value: category.name,
-        label: category.name,
-      })),
+      options: [
+        ...categories.map((c) => ({ label: c.label })),
+        { value: "__new__", label: "➕ Crear nueva categoría" },
+      ],
     },
     {
       labelText: "Is Active",
       labelId: "is_active",
       type: "checkbox",
       value: is_active,
-      required: false,
     },
     {
       labelText: "Published Status",
       labelId: "published_status",
       type: "checkbox",
       value: published_status,
-      required: false,
     },
   ];
 
   return (
-    <ProductForm
-      config={config}
-      isLoading={isLoading}
-      btnText="Add New Product"
-      onChange={onChange}
-      onCheckboxChange={onCheckboxChange}
-      onSubmit={onSubmit}
-    />
+    <>
+      <ProductForm
+        config={config}
+        isLoading={isLoading}
+        btnText="Add New Product"
+        onChange={onChange}
+        onCheckboxChange={onCheckboxChange}
+        onSubmit={onSubmit}
+      />
+
+      {showCategoryForm && (
+        <NewCategoryFields
+          newCategoryName={newCategoryName}
+          newParentName={newParentName}
+          newMeasureUnit={newMeasureUnit}
+          measureUnits={measureUnits}
+          onChange={onChange}
+        />
+      )}
+    </>
   );
 }

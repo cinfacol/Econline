@@ -26,8 +26,11 @@ export default function Form({
               <option value="" disabled>
                 {field.placeholder}
               </option>
-              {field.options.map((option) => (
-                <option key={option.value} value={option.value}>
+              {field.options.map((option, index) => (
+                <option
+                  key={`${option.value || option.label}-${index}`}
+                  value={option.value}
+                >
                   {option.label}
                 </option>
               ))}

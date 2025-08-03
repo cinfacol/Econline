@@ -87,7 +87,7 @@ export const inventoriesApiSlice = apiSlice.injectEndpoints({
         method: "POST",
         body: productData,
       }),
-      invalidatesTags: ["Product"], // Invalidar la caché de "Product" después de crear
+      invalidatesTags: ["Products"], // Invalidar la caché de "Products" después de crear
     }),
     // Endpoint para actualizar un producto
     updateProduct: builder.mutation({
@@ -96,7 +96,7 @@ export const inventoriesApiSlice = apiSlice.injectEndpoints({
         method: "PUT",
         body: productData,
       }),
-      invalidatesTags: ["Product"], // Invalidar la caché de "Product" después de actualizar
+      invalidatesTags: ["Products"], // Invalidar la caché de "Products" después de actualizar
     }),
     // Endpoint para eliminar un producto
     deleteProduct: builder.mutation({

@@ -26,7 +26,21 @@ export const categoriesApiSlice = apiSlice.injectEndpoints({
         return categoriesAdapter.setAll(initialState, loadedItems);
       },
     }),
+    createCategory: builder.mutation({
+      query: (body) => ({
+        url: "/categories/",
+        method: "POST",
+        body,
+      }),
+    }),
+    getMeasureUnits: builder.query({
+      query: () => "/measure-units/",
+    }),
   }),
 });
 
-export const { useGetCategoriesQuery } = categoriesApiSlice;
+export const {
+  useGetCategoriesQuery,
+  useCreateCategoryMutation,
+  useGetMeasureUnitsQuery,
+} = categoriesApiSlice;
