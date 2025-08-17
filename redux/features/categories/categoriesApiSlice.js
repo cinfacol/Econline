@@ -25,16 +25,39 @@ export const categoriesApiSlice = apiSlice.injectEndpoints({
         // Devolver el estado actualizado
         return categoriesAdapter.setAll(initialState, loadedItems);
       },
+      providesTags: ["Categories"],
     }),
     createCategory: builder.mutation({
-      query: (body) => ({
-        url: "/categories/",
+      query: (categoryData) => ({
+        url: "/categories/create/",
         method: "POST",
-        body,
+        body: categoryData,
       }),
+      transformResponse: (response) => {
+        if (response.category && !response.category.date) {
+          response.category.date = new Date().toISOString();
+        }
+        return response;
+      },
+      invalidatesTags: ["Categories"],
     }),
     getMeasureUnits: builder.query({
-      query: () => "/measure-units/",
+      query: () => "/categories/measure-units/",
+      transformResponse: (responseData) => {
+        return responseData.measure_units ?? [];
+      },
+      providesTags: ["MeasureUnits"],
+    }),
+    createMeasureUnit: builder.mutation({
+      query: (measureUnitData) => ({
+        url: "/categories/measure-units/create/",
+        method: "POST",
+        body: measureUnitData,
+      }),
+      transformResponse: (response) => {
+        return response;
+      },
+      invalidatesTags: ["MeasureUnits"],
     }),
   }),
 });
@@ -43,4 +66,5 @@ export const {
   useGetCategoriesQuery,
   useCreateCategoryMutation,
   useGetMeasureUnitsQuery,
+  useCreateMeasureUnitMutation,
 } = categoriesApiSlice;
