@@ -12,7 +12,7 @@ export default function AdminDashboard() {
       title: "Categorías",
       description: "Gestiona las categorías de productos",
       icon: "📁",
-      route: "/admin/categories",
+      route: "/categories",
       bgColor: "bg-blue-50",
       borderColor: "border-blue-200",
       textColor: "text-blue-800",
