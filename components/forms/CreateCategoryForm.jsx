@@ -19,6 +19,8 @@ export default function CreateCategoryForm({ onCategoryCreated, onCancel }) {
   const { data: measureUnits = [], refetch: refetchMeasureUnits } =
     useGetMeasureUnitsQuery();
 
+  console.log("Measure Units:", measureUnits);
+
   const { formData, errors, isLoading, onChange, onSubmit, resetForm } =
     useCreateCategory();
 
