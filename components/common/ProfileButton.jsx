@@ -110,7 +110,7 @@ function ProfileButton() {
         },
         {
           label: "Dashboard",
-          href: "/dashboard",
+          href: "/admin",
           icon: (
             <LayoutDashboardIcon className="size-4 mr-2 text-xs text-gray/50" />
           ),
@@ -155,7 +155,8 @@ function ProfileButton() {
       }
       if (href) {
         const allowedUrls = [
-          "/dashboard",
+          // "/dashboard",
+          "/admin",
           "/profile",
           "/settings",
           "/auth/login",
@@ -180,8 +181,16 @@ function ProfileButton() {
             <span className="sr-only">Abrir menú de usuario</span>
             <Avatar>
               <AvatarImage
-                src={isAuthenticated && user?.profile_photo ? user.profile_photo : "/images/profile_default.png"}
-                alt={isAuthenticated && user?.full_name ? user.full_name : "Usuario"}
+                src={
+                  isAuthenticated && user?.profile_photo
+                    ? user.profile_photo
+                    : "/images/profile_default.png"
+                }
+                alt={
+                  isAuthenticated && user?.full_name
+                    ? user.full_name
+                    : "Usuario"
+                }
               />
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
