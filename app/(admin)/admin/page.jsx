@@ -22,7 +22,7 @@ export default function AdminDashboard() {
       title: "Productos",
       description: "Administra tu catálogo de productos",
       icon: "📦",
-      route: "/admin/products",
+      route: "/settings/product/new",
       bgColor: "bg-green-50",
       borderColor: "border-green-200",
       textColor: "text-green-800",
