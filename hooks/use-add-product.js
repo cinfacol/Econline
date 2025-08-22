@@ -81,7 +81,12 @@ export default function useAddProduct(initialCategoryIds = []) {
         user,
       }).unwrap();
       toast.success("Product added successfully");
-      router.push("/settings/product/details");
+      // Limpiar localStorage de categorías seleccionadas
+      if (typeof window !== "undefined") {
+        window.localStorage.removeItem("selectedCategoryIds");
+      }
+      // Redirigir al formulario de inventario
+      router.push("/inventory/new");
     } catch (error) {
       toast.error("Failed to register new Product");
     }
