@@ -27,6 +27,39 @@ export const categoriesApiSlice = apiSlice.injectEndpoints({
       },
       providesTags: ["Categories"],
     }),
+    setSelectedCategories: builder.mutation({
+      queryFn: async (ids) => {
+        // Guarda los IDs en localStorage
+        if (typeof window !== "undefined") {
+          window.localStorage.setItem(
+            "selectedCategoryIds",
+            JSON.stringify(ids)
+          );
+        }
+        return { data: ids };
+      },
+    }),
+    getSelectedCategories: builder.query({
+      queryFn: () => {
+        let ids = [];
+        if (typeof window !== "undefined") {
+          const stored = window.localStorage.getItem("selectedCategoryIds");
+          if (stored) {
+            try {
+              ids = JSON.parse(stored);
+            } catch {
+              ids = [];
+            }
+          }
+        }
+        return { data: ids };
+      },
+      // El cacheKey será el mismo que la mutation
+      async onCacheEntryAdded(arg, { cacheDataLoaded, getCacheEntry }) {
+        await cacheDataLoaded;
+        // No hace nada, solo asegura que el cache esté disponible
+      },
+    }),
     createCategory: builder.mutation({
       query: (categoryData) => ({
         url: "/categories/create/",
@@ -67,4 +100,6 @@ export const {
   useCreateCategoryMutation,
   useGetMeasureUnitsQuery,
   useCreateMeasureUnitMutation,
+  useSetSelectedCategoriesMutation,
+  useGetSelectedCategoriesQuery,
 } = categoriesApiSlice;

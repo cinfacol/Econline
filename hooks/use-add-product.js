@@ -6,7 +6,7 @@ import { useAppSelector } from "@/redux/hooks";
 import { toast } from "sonner";
 import { useCreateProductMutation } from "@/redux/features/inventories/inventoriesApiSlice";
 
-export default function useAddProduct() {
+export default function useAddProduct(initialCategoryIds = []) {
   const router = useRouter();
   const { isAuthenticated } = useAppSelector((state) => state.auth);
   const { data } = useRetrieveUserQuery(undefined, {
@@ -18,7 +18,7 @@ export default function useAddProduct() {
   const [formData, setFormData] = useState({
     product_name: "",
     product_description: "",
-    category_name: "",
+    category_ids: initialCategoryIds, // inicializa con los seleccionados
     is_active: true,
     published_status: false,
   });
@@ -26,7 +26,7 @@ export default function useAddProduct() {
   const {
     product_name,
     product_description,
-    category_name,
+    category_ids,
     is_active,
     published_status,
   } = formData;
@@ -44,9 +44,11 @@ export default function useAddProduct() {
     ) {
       setCategoryForm({ ...categoryForm, [field]: e.target.value });
     } else {
-      setFormData({ ...formData, [field]: e.target.value });
-      if (field === "category_name" && e.target.value === "__new__") {
-        setShowCategoryForm(true);
+      // Si el campo es category_ids, asigna el array
+      if (field === "category_ids") {
+        setFormData({ ...formData, [field]: e.target.value });
+      } else {
+        setFormData({ ...formData, [field]: e.target.value });
       }
     }
   };
@@ -57,33 +59,29 @@ export default function useAddProduct() {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    let finalCategoryName = formData.category_name;
-
-    if (showCategoryForm && categoryForm.newCategoryName) {
-      try {
-        const created = await createCategory({
-          name: categoryForm.newCategoryName,
-          parent: categoryForm.newParentName || null,
-          measure_unit: categoryForm.newMeasureUnit,
-        }).unwrap();
-        finalCategoryName = created.name;
-      } catch (error) {
-        toast.error("Error creando categoría");
+    try {
+      // Enviar los UUID directamente
+      const categoryIds = Array.isArray(formData.category_ids)
+        ? formData.category_ids.filter(
+            (id) => id !== null && id !== undefined && id !== "" && id !== false
+          )
+        : [];
+      if (!formData.product_name || categoryIds.length === 0) {
+        toast.error(
+          "Debes ingresar el nombre y seleccionar al menos una categoría válida."
+        );
         return;
       }
-    }
-
-    try {
       await addProduct({
-        user,
-        product_name: formData.product_name,
-        product_description: formData.product_description,
-        category_name: finalCategoryName,
+        name: formData.product_name, // el campo que espera el backend
+        description: formData.product_description,
+        category: categoryIds, // envía array de UUIDs
         is_active: formData.is_active,
         published_status: formData.published_status,
+        user,
       }).unwrap();
       toast.success("Product added successfully");
-      router.push("/settings/product/details"); // siguiente etapa
+      router.push("/settings/product/details");
     } catch (error) {
       toast.error("Failed to register new Product");
     }

@@ -1,6 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import {
+  useGetCategoriesQuery,
+  useSetSelectedCategoriesMutation,
+} from "@/redux/features/categories/categoriesApiSlice";
 // import {
 //   useCreateProductMutation,
 //   useUpdateProductMutation,
@@ -14,6 +18,31 @@ export default function ManageProducts() {
   const [productPrice, setProductPrice] = useState("");
   const [productImage, setProductImage] = useState(null);
   const [errors, setErrors] = useState({});
+  const [selectedCategories, setSelectedCategoriesState] = useState([]);
+  const [setSelectedCategories] = useSetSelectedCategoriesMutation();
+  const { data: categoriesData } = useGetCategoriesQuery();
+
+  function buildCategoriesOptions() {
+    const options = [];
+    if (!categoriesData || !categoriesData.ids || !categoriesData.entities)
+      return options;
+    const items = categoriesData.ids
+      .map((id) => categoriesData.entities[id])
+      .filter(Boolean);
+    items.forEach((parentCat) => {
+      options.push({ value: parentCat.id, label: parentCat.name });
+      if (parentCat.sub_categories?.length > 0) {
+        parentCat.sub_categories.forEach((subCat) => {
+          options.push({
+            value: subCat.id,
+            label: `${parentCat.name} > ${subCat.name}`,
+          });
+        });
+      }
+    });
+    return options;
+  }
+  const categoryOptions = buildCategoriesOptions();
 
   const [
     createProduct,
@@ -125,26 +154,33 @@ export default function ManageProducts() {
         </div>
         <div>
           <label
-            htmlFor="productName"
+            htmlFor="categorySelect"
             className="block text-sm font-medium text-gray-700 dark:text-gray-300"
           >
-            Categoría del Producto
+            Categorías del Producto
           </label>
-          <input
-            type="text"
-            id="categoryName"
-            name="categoryName"
+          <select
+            id="categorySelect"
+            name="categorySelect"
+            multiple
             className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            value={productName}
+            value={selectedCategories}
             onChange={(e) => {
-              setCategoryName(e.target.value);
-              setErrors({ ...errors, categoryName: "" });
+              const selected = Array.from(
+                e.target.selectedOptions,
+                (opt) => opt.value
+              );
+              setSelectedCategoriesState(selected);
+              setSelectedCategories(selected); // Actualiza el cache local de RTK Query
             }}
             required
-          />
-          {errors.categoryName && (
-            <p className="text-red-500 text-sm mt-1">{errors.categoryName}</p>
-          )}
+          >
+            {categoryOptions.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
         </div>
         {/* <div>
           <label

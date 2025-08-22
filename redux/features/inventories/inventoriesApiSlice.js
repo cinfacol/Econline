@@ -83,7 +83,7 @@ export const inventoriesApiSlice = apiSlice.injectEndpoints({
     // Endpoint para crear un producto
     createProduct: builder.mutation({
       query: (productData) => ({
-        url: "/inventory/create/", // Asumiendo que el endpoint es /api/products/
+        url: "/products/create/", // Endpoint correcto para productos
         method: "POST",
         body: productData,
       }),

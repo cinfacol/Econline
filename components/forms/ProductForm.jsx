@@ -15,7 +15,31 @@ export default function Form({
       {config.map((field) => (
         <div key={field.labelId} className="form-group">
           <label htmlFor={field.labelId}>{field.labelText}</label>
-          {field.type === "select" ? (
+          {field.type === "multiselect" ? (
+            <select
+              id={field.labelId}
+              multiple
+              value={field.value}
+              onChange={(e) => {
+                const selected = Array.from(
+                  e.target.selectedOptions,
+                  (option) => option.value
+                );
+                onChange({ target: { value: selected } }, field.labelId);
+              }}
+              required={field.required}
+              className="block w-full rounded-md border-0 px-1.5 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            >
+              {field.options.map((option, index) => (
+                <option
+                  key={`${option.value || option.label}-${index}`}
+                  value={option.value}
+                >
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          ) : field.type === "select" ? (
             <select
               id={field.labelId}
               value={field.value}

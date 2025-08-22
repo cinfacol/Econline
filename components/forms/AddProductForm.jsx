@@ -3,14 +3,19 @@
 import { useAddProduct } from "@/hooks";
 import { ProductForm } from "@/components/forms";
 import NewCategoryFields from "./NewCategoryFields";
-import { useGetMeasureUnitsQuery } from "@/redux/features/categories/categoriesApiSlice";
+import {
+  useGetMeasureUnitsQuery,
+  useSetSelectedCategoriesMutation,
+  useGetSelectedCategoriesQuery,
+} from "@/redux/features/categories/categoriesApiSlice";
 import { useGetCategoriesQuery } from "@/redux/features/categories/categoriesApiSlice";
 
 export default function AddProductForm() {
+  const { data: selectedCategoryIds } = useGetSelectedCategoriesQuery();
   const {
     product_name,
     product_description,
-    category_name,
+    category_ids,
     rows,
     cols,
     is_active,
@@ -23,36 +28,39 @@ export default function AddProductForm() {
     newCategoryName,
     newParentName,
     newMeasureUnit,
-  } = useAddProduct();
+  } = useAddProduct(selectedCategoryIds || []);
   const { data: categoriesData } = useGetCategoriesQuery();
   const { data: measureUnits = [] } = useGetMeasureUnitsQuery();
 
-  function buildCategoriesFromData() {
-    const result = [];
-    const { ids = [], entities = {} } = categoriesData || {};
-
+  // Si no hay categorías seleccionadas, no mostrar nada
+  function buildSelectedCategoriesOptions(selectedIds = [], categoriesData) {
+    if (!categoriesData || !selectedIds || selectedIds.length === 0) return [];
+    const { ids = [], entities = {} } = categoriesData;
     const items = ids?.map((id) => entities[id]).filter(Boolean);
-
+    const result = [];
     items?.forEach((parentCat) => {
+      if (selectedIds.includes(parentCat.id)) {
+        result.push({ value: parentCat.id, label: parentCat.name });
+      }
       if (parentCat.sub_categories?.length > 0) {
         parentCat.sub_categories.forEach((subCat) => {
-          result.push({
-            value: subCat.id,
-            label: `${subCat.name}`,
-          });
-        });
-      } else {
-        result.push({
-          value: parentCat.id,
-          label: parentCat.name,
+          if (selectedIds.includes(subCat.id)) {
+            result.push({
+              value: subCat.id,
+              label: `${parentCat.name} > ${subCat.name}`,
+            });
+          }
         });
       }
     });
-
     return result;
   }
 
-  const categories = buildCategoriesFromData();
+  // Opciones solo para las seleccionadas
+  const categories = buildSelectedCategoriesOptions(
+    selectedCategoryIds,
+    categoriesData
+  );
 
   const config = [
     {
@@ -75,14 +83,11 @@ export default function AddProductForm() {
     },
     {
       labelText: "Category",
-      labelId: "category_name",
-      type: "select",
-      value: category_name,
+      labelId: "category_ids",
+      type: "multiselect",
+      value: category_ids,
       required: true,
-      options: [
-        ...categories.map((c) => ({ label: c.label })),
-        { value: "__new__", label: "➕ Crear nueva categoría" },
-      ],
+      options: categories,
     },
     {
       labelText: "Is Active",
@@ -99,25 +104,13 @@ export default function AddProductForm() {
   ];
 
   return (
-    <>
-      <ProductForm
-        config={config}
-        isLoading={isLoading}
-        btnText="Add New Product"
-        onChange={onChange}
-        onCheckboxChange={onCheckboxChange}
-        onSubmit={onSubmit}
-      />
-
-      {showCategoryForm && (
-        <NewCategoryFields
-          newCategoryName={newCategoryName}
-          newParentName={newParentName}
-          newMeasureUnit={newMeasureUnit}
-          measureUnits={measureUnits}
-          onChange={onChange}
-        />
-      )}
-    </>
+    <ProductForm
+      config={config}
+      isLoading={isLoading}
+      btnText="Add New Product"
+      onChange={onChange}
+      onCheckboxChange={onCheckboxChange}
+      onSubmit={onSubmit}
+    />
   );
 }
