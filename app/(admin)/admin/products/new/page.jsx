@@ -1,7 +1,6 @@
 import { Spinner } from "@/components/common";
 import { AddProductForm } from "@/components/forms";
 import { Suspense } from "react";
-import ManageProducts from "@/components/settings/ManageProducts";
 import React from "react";
 
 const NewProductPage = () => {
@@ -21,10 +20,6 @@ const NewProductPage = () => {
           <AddProductForm />
         </Suspense>
       </div>
-      {/* <div>
-        <h2 className="text-2xl font-semibold mb-4">Ingresar Productos</h2>
-        <ManageProducts />
-      </div> */}
     </main>
   );
 };

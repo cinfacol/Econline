@@ -9,7 +9,7 @@ const AddProductsButton = () => {
     <Button
       variant="warning"
       className="font-bold"
-      onClick={() => router.push("/categories")}
+      onClick={() => router.push("/admin/categories")}
     >
       <ListPlus />
       Add New Product

@@ -58,7 +58,7 @@ export default function CategoryManagementView() {
   const handleContinueToProduct = () => {
     setSelectedCategoriesMutation(selectedCategories);
     // Redirigir a la página de crear producto
-    router.push("/settings/product/new"); // Ajusta la ruta según tu estructura
+    router.push("/admin/products/new"); // Ajusta la ruta según tu estructura
   };
 
   const handleSelectCategory = (category) => {

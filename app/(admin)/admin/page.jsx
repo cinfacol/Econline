@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import RetrieveUserInfo from "@/components/auth/RetrieveUser";
 
@@ -12,7 +11,7 @@ export default function AdminDashboard() {
       title: "Categorías",
       description: "Gestiona las categorías de productos",
       icon: "📁",
-      route: "/categories",
+      route: "/admin/categories",
       bgColor: "bg-blue-50",
       borderColor: "border-blue-200",
       textColor: "text-blue-800",
@@ -22,7 +21,7 @@ export default function AdminDashboard() {
       title: "Productos",
       description: "Administra tu catálogo de productos",
       icon: "📦",
-      route: "/settings/product/new",
+      route: "/admin/products/new",
       bgColor: "bg-green-50",
       borderColor: "border-green-200",
       textColor: "text-green-800",
@@ -32,7 +31,7 @@ export default function AdminDashboard() {
       title: "Inventario",
       description: "Controla stock, precios e imágenes",
       icon: "📊",
-      route: "/admin/inventory",
+      route: "/admin/inventory/new",
       bgColor: "bg-purple-50",
       borderColor: "border-purple-200",
       textColor: "text-purple-800",
