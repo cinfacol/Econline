@@ -39,7 +39,7 @@ const ProductCard = ({ data, priority = false }) => {
           sizes="(max-width: 500px) 100vw, (max-width: 768px) 50vw, 33vw"
           className="object-cover rounded-xl"
           priority={priority}
-          quality={80}
+          // quality={80}
         />
         <div className="opacity-20 group-hover:opacity-100 transition absolute w-full px-6 bottom-5 cursor-pointer">
           <div className="flex gap-x-6 justify-center">

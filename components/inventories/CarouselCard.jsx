@@ -27,7 +27,7 @@ const CarouselCard = ({ image, id, priority = false, imgClassName = "" }) => {
         sizes="(max-width: 600px) 100vw, 140px"
         className={`object-center !object-contain w-full h-full rounded-xl ${imgClassName}`}
         priority={priority}
-        quality={80}
+        // quality={80}
       />
       <span className="absolute bottom-0 left-0 w-full bg-black/60 text-white text-xs font-semibold px-2 py-1 text-center rounded-b-xl truncate pointer-events-none">
         {image?.inventory}
