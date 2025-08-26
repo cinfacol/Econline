@@ -62,7 +62,7 @@ export default function Form({
           ) : field.type === "checkbox" ? (
             <Input
               type={field.type}
-              id={field.labelId}
+              labelId={field.labelId}
               checked={field.value}
               onChange={(e) => onCheckboxChange(e, field.labelId)}
             />
@@ -82,7 +82,7 @@ export default function Form({
           ) : (
             <Input
               type={field.type}
-              id={field.labelId}
+              labelId={field.labelId}
               onChange={(e) => onChange(e, field.labelId)}
               value={field.value}
               placeholder={field.placeholder}

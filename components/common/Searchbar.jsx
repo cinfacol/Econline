@@ -19,6 +19,8 @@ const ProductSearchBar = () => {
   return (
     <div className="relative w-full hidden lg:inline-flex lg:w-[400px] h-10 text-base text-gray-500 border-[1px] border-gray-400 items-center gap-2 justify-between px-6 rounded-full">
       <input
+        id="main-search"
+        name="main-search"
         type="text"
         value={searchTerm}
         onChange={handleInputChange}
