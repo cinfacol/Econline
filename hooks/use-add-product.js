@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import useSelectedCategories from "./use-selected-categories";
 import { useRouter } from "next/navigation";
 import { useRetrieveUserQuery } from "@/redux/features/auth/authApiSlice";
 import { useCreateCategoryMutation } from "@/redux/features/categories/categoriesApiSlice";
@@ -6,7 +7,7 @@ import { useAppSelector } from "@/redux/hooks";
 import { toast } from "sonner";
 import { useCreateProductMutation } from "@/redux/features/inventories/inventoriesApiSlice";
 
-export default function useAddProduct(initialCategoryIds = []) {
+export default function useAddProduct(initialCategoryIds) {
   const router = useRouter();
   const { isAuthenticated } = useAppSelector((state) => state.auth);
   const { data } = useRetrieveUserQuery(undefined, {
@@ -15,13 +16,23 @@ export default function useAddProduct(initialCategoryIds = []) {
   const [addProduct, { isLoading }] = useCreateProductMutation();
   const [createCategory] = useCreateCategoryMutation();
   const user = data?.pk;
+  // Usar el custom hook para leer siempre la selección más reciente
+  const selectedCategoryIds = useSelectedCategories();
   const [formData, setFormData] = useState({
     product_name: "",
     product_description: "",
-    category_ids: initialCategoryIds, // inicializa con los seleccionados
+    category_ids: selectedCategoryIds, // inicializa con los seleccionados
     is_active: true,
     published_status: false,
   });
+
+  // Sincroniza el estado si cambian las categorías seleccionadas
+  useEffect(() => {
+    setFormData((prev) => ({
+      ...prev,
+      category_ids: selectedCategoryIds,
+    }));
+  }, [selectedCategoryIds]);
 
   const {
     product_name,

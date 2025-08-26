@@ -1,6 +1,10 @@
 "use client";
 
+import React from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useAddProduct } from "@/hooks";
+import useSelectedCategories from "../../hooks/use-selected-categories";
 import { ProductForm } from "@/components/forms";
 import NewCategoryFields from "./NewCategoryFields";
 import {
@@ -56,11 +60,33 @@ export default function AddProductForm() {
     return result;
   }
 
+  function buildAllCategoriesOptions(categoriesData) {
+    if (!categoriesData) return [];
+    const { ids = [], entities = {} } = categoriesData;
+    const items = ids?.map((id) => entities[id]).filter(Boolean);
+    const result = [];
+    items?.forEach((parentCat) => {
+      result.push({ value: parentCat.id, label: parentCat.name });
+      if (parentCat.sub_categories?.length > 0) {
+        parentCat.sub_categories.forEach((subCat) => {
+          result.push({
+            value: subCat.id,
+            label: `${parentCat.name} > ${subCat.name}`,
+          });
+        });
+      }
+    });
+    return result;
+  }
+
   // Opciones solo para las seleccionadas
-  const categories = buildSelectedCategoriesOptions(
+  /* const categories = buildSelectedCategoriesOptions(
     selectedCategoryIds,
     categoriesData
-  );
+  ); */
+
+  // Opciones para todas las categorías
+  const categories = buildAllCategoriesOptions(categoriesData);
 
   const config = [
     {
@@ -104,13 +130,23 @@ export default function AddProductForm() {
   ];
 
   return (
-    <ProductForm
-      config={config}
-      isLoading={isLoading}
-      btnText="Add New Product"
-      onChange={onChange}
-      onCheckboxChange={onCheckboxChange}
-      onSubmit={onSubmit}
-    />
+    <>
+      <div className="mb-4">
+        <Link
+          href="/admin/categories"
+          className="text-blue-600 hover:underline text-sm"
+        >
+          ← Volver a gestionar/crear categorías
+        </Link>
+      </div>
+      <ProductForm
+        config={config}
+        isLoading={isLoading}
+        btnText="Add New Product"
+        onChange={onChange}
+        onCheckboxChange={onCheckboxChange}
+        onSubmit={onSubmit}
+      />
+    </>
   );
 }
