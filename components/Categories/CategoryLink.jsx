@@ -28,13 +28,13 @@ const CategoryLink = ({ data }) => {
   // Filtra y asigna claves únicas en un solo paso para categorías Parent
   const parentCategoriesWithKeys = parentData?.map((item) => ({
     ...item,
-    key: `parent-${item.id}`, // Unique key for parent categories
+    key: `parent-${item.id}`,
   }));
 
   // Filtra y asigna claves únicas en un solo paso para categorías noParent
   const noParentCategoriesWithKeys = noParentData?.map((item) => ({
     ...item,
-    key: `no-parent-${item.id}`, // Unique key for no-parent categories
+    key: `no-parent-${item.id}`,
   }));
 
   // Filtrar categorías no parent según la coincidencia con las categorías parent
@@ -48,7 +48,7 @@ const CategoryLink = ({ data }) => {
   const commonNonParentCategoriesWithKeys = commonNonParentData?.map(
     (sub, index) => ({
       ...sub,
-      key: `non-parent-${index}`, // Unique key for filtered non-parent categories
+      key: `non-parent-${index}`,
     })
   );
 

@@ -62,7 +62,6 @@ export function CartSummary({
             value={discountAmount}
             className="text-green-600"
             smallValue={true}
-            // strikethrough // Strikethrough might not be appropriate for discount amount itself
           />
         )}
 
