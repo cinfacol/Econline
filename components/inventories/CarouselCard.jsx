@@ -4,7 +4,13 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import cloudinaryImageLoader from "@/actions/imageLoader";
 
-const CarouselCard = ({ image, id, priority = false, imgClassName = "" }) => {
+const CarouselCard = ({
+  image,
+  name,
+  id,
+  priority = false,
+  imgClassName = "",
+}) => {
   const router = useRouter();
 
   const handleClick = () => {
@@ -30,7 +36,7 @@ const CarouselCard = ({ image, id, priority = false, imgClassName = "" }) => {
         // quality={80}
       />
       <span className="absolute bottom-0 left-0 w-full bg-black/60 text-white text-xs font-semibold px-2 py-1 text-center rounded-b-xl truncate pointer-events-none">
-        {image?.inventory}
+        {name}
       </span>
     </div>
   );
