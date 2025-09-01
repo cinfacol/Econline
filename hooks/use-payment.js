@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useCallback, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
@@ -139,12 +141,15 @@ const usePayment = () => {
       try {
         console.log("[usePayment] Cancelling payment:", paymentId);
         const result = await cancelPayment(paymentId).unwrap();
-        
+
         if (result?.success || result?.message) {
           console.log("[usePayment] Payment cancelled successfully:", result);
           return result;
         } else {
-          console.warn("[usePayment] Unexpected cancellation response:", result);
+          console.warn(
+            "[usePayment] Unexpected cancellation response:",
+            result
+          );
           return result;
         }
       } catch (error) {

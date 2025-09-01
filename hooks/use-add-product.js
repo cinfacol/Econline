@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import useSelectedCategories from "./use-selected-categories";
 import { useRouter } from "next/navigation";

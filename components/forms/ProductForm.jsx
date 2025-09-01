@@ -2,7 +2,7 @@ import { Input } from "@/components/forms";
 import { Spinner } from "@/components/common";
 import { Button } from "@/components/ui/button";
 
-export default function Form({
+export default function ProductForm({
   config,
   isLoading,
   btnText,

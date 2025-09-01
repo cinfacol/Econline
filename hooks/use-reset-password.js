@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import { useResetPasswordMutation } from "@/redux/features/auth/authApiSlice";
 import { toast } from "sonner";
