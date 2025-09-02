@@ -10,6 +10,22 @@ const initialState = inventoriesAdapter.getInitialState();
 
 export const inventoriesApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
+    getBrands: builder.query({
+      query: () => "/inventory/brands/list/",
+      transformResponse: (responseData) => {
+        // La respuesta es paginada o lista simple
+        return responseData.results || responseData || [];
+      },
+      providesTags: ["Brands"],
+    }),
+    createBrand: builder.mutation({
+      query: (brandData) => ({
+        url: "/inventory/brands/create/",
+        method: "POST",
+        body: brandData,
+      }),
+      invalidatesTags: ["Brands"],
+    }),
     getProducts: builder.query({
       query: () => "/products/list/",
       transformResponse: (responseData) => {
@@ -131,4 +147,6 @@ export const {
   useUpdateProductMutation,
   useDeleteProductMutation,
   useGetProductsQuery,
+  useGetBrandsQuery,
+  useCreateBrandMutation,
 } = inventoriesApiSlice;

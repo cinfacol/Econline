@@ -43,6 +43,7 @@ export const apiSlice = createApi({
   reducerPath: "api",
   tagTypes: [
     "Address",
+    "Brands",
     "Cart",
     "CartItems",
     "Categories",

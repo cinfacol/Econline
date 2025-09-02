@@ -3,8 +3,25 @@
 import { Form } from "@/components/forms";
 import { useAddInventory } from "@/hooks";
 import { useGetProductsQuery } from "@/redux/features/inventories/inventoriesApiSlice";
+import { useGetBrandsQuery } from "@/redux/features/inventories/inventoriesApiSlice";
+import { useCreateBrandMutation } from "@/redux/features/inventories/inventoriesApiSlice";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export default function InventoryForm() {
+  const [createBrand] = useCreateBrandMutation();
+  const [newBrandName, setNewBrandName] = useState("");
+  // Hook para obtener marcas
+  const { data: brandsData, isLoading: brandsLoading } = useGetBrandsQuery();
+  const [showBrandModal, setShowBrandModal] = useState(false);
+
+  // Opciones para el select de marcas
+  const brandOptions = Array.isArray(brandsData)
+    ? brandsData.map((brand) => ({
+        value: brand.name,
+        label: brand.name,
+      }))
+    : [];
   // Importar el hook para obtener productos
   // eslint-disable-next-line
   const { data: productsData, isLoading: productsLoading } =
@@ -62,12 +79,25 @@ export default function InventoryForm() {
       onChange: (e) => onChange(e, "product_id"),
     },
     {
-      labelText: "Marca",
+      labelText: (
+        <div className="flex items-center justify-between">
+          <span>Marca</span>
+          <button
+            type="button"
+            className="ml-2 text-indigo-600 text-lg font-bold"
+            onClick={() => setShowBrandModal(true)}
+            title="Agregar nueva marca"
+          >
+            +
+          </button>
+        </div>
+      ),
       labelId: "marca",
-      type: "text",
-      value: marca,
-      placeholder: "Marca del producto",
+      type: "select",
+      value: marca || "",
       required: true,
+      options: brandOptions,
+      placeholder: "Selecciona una marca",
       onChange: (e) => onChange(e, "marca"),
     },
     {
@@ -166,6 +196,61 @@ export default function InventoryForm() {
   ];
   return (
     <>
+      {/* Modal para agregar nueva marca */}
+      {showBrandModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white rounded-lg p-6 shadow-lg w-full max-w-md">
+            <h2 className="text-xl font-bold mb-4">Agregar nueva marca</h2>
+            {/* Formulario simple para nueva marca */}
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                if (!newBrandName.trim()) return;
+                try {
+                  await createBrand({ name: newBrandName }).unwrap();
+                  toast.success("Marca creada exitosamente");
+                  setShowBrandModal(false);
+                  setNewBrandName("");
+                  // Seleccionar automáticamente la nueva marca en el select
+                  onChange({ target: { value: newBrandName } }, "marca");
+                } catch (err) {
+                  toast.error(err?.data?.name || "Error al crear la marca");
+                  setShowBrandModal(false);
+                  setNewBrandName("");
+                }
+              }}
+            >
+              <input
+                type="text"
+                name="newBrand"
+                value={newBrandName}
+                onChange={(e) => setNewBrandName(e.target.value)}
+                placeholder="Nombre de la marca"
+                className="w-full border rounded px-3 py-2 mb-4"
+                required
+              />
+              <div className="flex justify-end gap-2">
+                <button
+                  type="button"
+                  className="px-4 py-2 bg-gray-300 rounded"
+                  onClick={() => {
+                    setShowBrandModal(false);
+                    setNewBrandName("");
+                  }}
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-indigo-600 text-white rounded"
+                >
+                  Guardar
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
       {noProducts && (
         <div className="mb-4 text-red-600">
           No hay productos disponibles.{" "}
