@@ -14,13 +14,10 @@ export default function Form({
       {config.map((input) => (
         <Input
           key={input.labelId}
-          labelId={input.labelId}
-          type={input.type}
-          onChange={onChange}
-          value={input.value}
-          placeholder={input.placeholder}
-          link={input.link}
-          required={input.required}
+          {...input}
+          onChange={
+            input.onChange ? input.onChange : (e) => onChange(e, input.labelId)
+          }
         >
           {input.labelText}
         </Input>

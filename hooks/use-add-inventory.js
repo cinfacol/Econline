@@ -18,6 +18,7 @@ export default function useAddInventory() {
   const [formData, setFormData] = useState({
     marca: "",
     tipo: "",
+    estado: "Nuevo",
     retail_price: "",
     store_price: "",
     tax: "",
@@ -26,6 +27,8 @@ export default function useAddInventory() {
     is_active: true,
     is_default: false,
     published_status: false,
+    product_id: "",
+    attribute_value: "",
   });
 
   const {
@@ -65,6 +68,8 @@ export default function useAddInventory() {
         is_active: formData.is_active,
         is_default: formData.is_default,
         published_status: formData.published_status,
+        product: formData.product_id,
+        attribute_values: [formData.attribute_value],
         user,
       }).unwrap();
       toast.success("Inventory added successfully");

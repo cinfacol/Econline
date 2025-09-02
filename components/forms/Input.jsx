@@ -9,6 +9,7 @@ export default function Input({
   children,
   link,
   required = false,
+  options,
 }) {
   return (
     <div>
@@ -31,22 +32,41 @@ export default function Input({
         )}
       </div>
       <div className="mt-2">
-        <input
-          id={labelId}
-          className={
-            type === "checkbox"
-              ? "form-checkbox rounded-full text-blue-600"
-              : "block w-full rounded-md border-0 px-1.5 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-          }
-          name={labelId}
-          type={type}
-          rows={5}
-          cols={40}
-          onChange={onChange}
-          value={value}
-          placeholder={placeholder}
-          required={required}
-        />
+        {type === "select" ? (
+          <select
+            id={labelId}
+            name={labelId}
+            className="block w-full rounded-md border-0 px-1.5 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            onChange={onChange}
+            value={value}
+            required={required}
+          >
+            {options && Array.isArray(options)
+              ? options.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))
+              : null}
+          </select>
+        ) : (
+          <input
+            id={labelId}
+            className={
+              type === "checkbox"
+                ? "form-checkbox rounded-full text-blue-600"
+                : "block w-full rounded-md border-0 px-1.5 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            }
+            name={labelId}
+            type={type}
+            rows={5}
+            cols={40}
+            onChange={onChange}
+            value={value}
+            placeholder={placeholder}
+            required={required}
+          />
+        )}
       </div>
     </div>
   );
