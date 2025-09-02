@@ -1,10 +1,10 @@
 "use client";
 
 import { Form } from "@/components/forms";
-import { useLogin } from "@/hooks";
+import { useAddInventory } from "@/hooks";
 
 export default function InventoryForm() {
-  const { isLoading, onChange, onSubmit } = useLogin();
+  const { isLoading, onChange, onSubmit } = useAddInventory();
   const Condiciones = [{ Name: "Nuevo" }, { Name: "Usado" }];
 
   const config = [

@@ -79,32 +79,36 @@ export const inventoriesApiSlice = apiSlice.injectEndpoints({
       },
       providesTags: ["Inventory"],
     }),
-
-    // Endpoint para crear un producto
+    createInventory: builder.mutation({
+      query: (inventoryData) => ({
+        url: "/inventory/create/",
+        method: "POST",
+        body: inventoryData,
+      }),
+      invalidatesTags: ["Inventory"],
+    }),
     createProduct: builder.mutation({
       query: (productData) => ({
-        url: "/products/create/", // Endpoint correcto para productos
+        url: "/products/create/",
         method: "POST",
         body: productData,
       }),
-      invalidatesTags: ["Products"], // Invalidar la caché de "Products" después de crear
+      invalidatesTags: ["Products"],
     }),
-    // Endpoint para actualizar un producto
     updateProduct: builder.mutation({
       query: ({ id, productData }) => ({
-        url: "update/<slug:slug>/", // Asumiendo que el endpoint es /api/products/{id}/
+        url: "update/<slug:slug>/",
         method: "PUT",
         body: productData,
       }),
-      invalidatesTags: ["Products"], // Invalidar la caché de "Products" después de actualizar
+      invalidatesTags: ["Products"],
     }),
-    // Endpoint para eliminar un producto
     deleteProduct: builder.mutation({
       query: (id) => ({
-        url: "delete/<slug:slug>/", // Asumiendo que el endpoint es /api/products/{id}/
+        url: "delete/<slug:slug>/",
         method: "DELETE",
       }),
-      invalidatesTags: ["Product"], // Invalidar la caché de "Product" después de eliminar
+      invalidatesTags: ["Product"],
     }),
   }),
 });
@@ -112,6 +116,7 @@ export const inventoriesApiSlice = apiSlice.injectEndpoints({
 export const {
   useGetInventoriesQuery,
   useGetInventoriesByCategoryQuery,
+  useCreateInventoryMutation,
   useGetInventoryImagesQuery,
   useGetProductQuery,
   useCreateProductMutation,

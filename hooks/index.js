@@ -8,6 +8,7 @@ export { usePayment } from "./use-payment";
 export { default as useGetEntityByCategory } from "./useGetEntitiesByCategory";
 export { default as useAddAddress } from "./use-add-address";
 export { default as useAddProduct } from "./use-add-product";
+export { default as useAddInventory } from "./use-add-inventory";
 export { default as useCreateCategory } from "./use-create-category";
 export { default as useCreateMeasureUnit } from "./use-create-measure-unit";
 export { useAuth } from "./useAuth";
