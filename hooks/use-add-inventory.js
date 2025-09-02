@@ -78,7 +78,7 @@ export default function useAddInventory() {
         window.localStorage.removeItem("selectedCategoryIds");
       }
       // Redirigir al formulario de inventario
-      router.push("/inventory/new");
+      router.push("/admin");
     } catch (error) {
       toast.error("Failed to register new Inventory");
     }

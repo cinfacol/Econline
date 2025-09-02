@@ -85,23 +85,29 @@ export default function ProductCarousel({ excludeId }) {
             { breakpoint: 480, settings: { slidesToShow: 1 } },
           ]}
         >
-          {data.map((Item, index) => {
-            // Las primeras 6 imágenes tienen priority
-            const priority = index < 6;
-            const defaultImage = Array.isArray(Item.images)
-              ? Item.images.find((img) => img.default === true)
-              : null;
-            return (
-              <CarouselCard
-                key={Item.id}
-                image={defaultImage}
-                id={Item?.images[0]?.inventory}
-                name={Item.product_name}
-                priority={priority}
-                imgClassName="w-32 h-32 object-cover mx-auto"
-              />
-            );
-          })}
+          {data
+            .filter((Item) => {
+              const defaultImage = Array.isArray(Item.images)
+                ? Item.images.find((img) => img.default === true)
+                : null;
+              return !!defaultImage;
+            })
+            .map((Item, index) => {
+              const priority = index < 6;
+              const defaultImage = Array.isArray(Item.images)
+                ? Item.images.find((img) => img.default === true)
+                : null;
+              return (
+                <CarouselCard
+                  key={Item.id}
+                  image={defaultImage}
+                  id={Item?.images[0]?.inventory}
+                  name={Item.product_name}
+                  priority={priority}
+                  imgClassName="w-32 h-32 object-cover mx-auto"
+                />
+              );
+            })}
         </Slider>
       </div>
     );

@@ -72,12 +72,15 @@ export default function InventoriesList({
                   )
                   .map((item) => [item.id, item])
               ).values()
-            ).map((Item, index) => {
-              const priority = index < 4;
-              return (
-                <ProductCard key={Item.id} data={Item} priority={priority} />
-              );
-            })}
+            )
+              // Filtrar solo productos con imagen
+              .filter((Item) => Item?.image && Item.image.length > 0)
+              .map((Item, index) => {
+                const priority = index < 4;
+                return (
+                  <ProductCard key={Item.id} data={Item} priority={priority} />
+                );
+              })}
           </div>
         </div>
       </section>

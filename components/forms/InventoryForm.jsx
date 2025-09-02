@@ -12,8 +12,6 @@ export default function InventoryForm() {
       ? useGetProductsQuery()
       : { data: [], isLoading: false };
 
-  console.log("products_data", productsData);
-
   // Procesar productos para el select
   const productOptions = Array.isArray(productsData)
     ? productsData.map((prod) => ({
