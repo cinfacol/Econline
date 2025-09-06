@@ -9,6 +9,7 @@ import { useGetAttributeValuesQuery } from "@/redux/features/inventories/invento
 import { useCreateAttributeValueMutation } from "@/redux/features/inventories/inventoriesApiSlice";
 import { useGetTypesQuery } from "@/redux/features/inventories/inventoriesApiSlice";
 import { useCreateTypeMutation } from "@/redux/features/inventories/inventoriesApiSlice";
+import MediaModal from "@/components/forms/MediaModal";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -24,6 +25,7 @@ export default function InventoryForm() {
     useState("");
   const [newTypeName, setNewTypeName] = useState("");
   const [newTypeDescription, setNewTypeDescription] = useState("");
+  const [showMediaModal, setShowMediaModal] = useState(false);
 
   // Hook para obtener marcas
   const { data: brandsData, isLoading: brandsLoading } = useGetBrandsQuery();
@@ -81,12 +83,14 @@ export default function InventoryForm() {
   const noProducts =
     !productsLoading && (!productOptions || productOptions.length === 0);
 
-  // Agregar campos al estado y handlers
-  // ...existing code...
   // Agregar attribute_value y product_id al destructuring
   const {
     isLoading,
     onChange,
+    onImageChange,
+    onImagesUpdate,
+    removeImage,
+    onSelectChange,
     onCheckboxChange,
     onSubmit,
     marca,
@@ -102,6 +106,9 @@ export default function InventoryForm() {
     published_status,
     attribute_value,
     product_id,
+    units,
+    units_sold,
+    images,
   } = useAddInventory();
 
   const Condiciones = [
@@ -238,6 +245,80 @@ export default function InventoryForm() {
       type: "number",
       value: weight,
       required: true,
+    },
+    {
+      labelText: "Unidades disponibles",
+      labelId: "units",
+      type: "number",
+      value: units,
+      placeholder: "Cantidad de unidades disponibles",
+      required: true,
+      min: 0,
+    },
+    {
+      labelText: "Unidades vendidas",
+      labelId: "units_sold",
+      type: "number",
+      value: units_sold,
+      placeholder: "Cantidad de unidades vendidas",
+      required: true,
+      min: 0,
+      readOnly: true, // Solo lectura para inventarios nuevos
+    },
+    {
+      labelText: (
+        <div className="flex items-center justify-between">
+          <span>Imágenes del inventario ({images.length})</span>
+          <button
+            type="button"
+            className="ml-2 text-indigo-600 text-lg font-bold"
+            onClick={() => setShowMediaModal(true)}
+            title="Gestionar imágenes"
+          >
+            +
+          </button>
+        </div>
+      ),
+      labelId: "images",
+      type: "custom", // Tipo personalizado
+      value: images,
+      customRender: () => (
+        <div>
+          <button
+            type="button"
+            onClick={() => setShowMediaModal(true)}
+            className="w-full p-3 border-2 border-dashed border-gray-300 rounded-lg text-center hover:border-indigo-400 hover:bg-indigo-50 transition-colors"
+          >
+            {images.length === 0 ? (
+              <span className="text-gray-500">
+                Haz clic para agregar imágenes
+              </span>
+            ) : (
+              <div>
+                <span className="text-indigo-600 font-medium">
+                  {images.length} imagen{images.length !== 1 ? "es" : ""}{" "}
+                  agregada{images.length !== 1 ? "s" : ""}
+                </span>
+                <div className="mt-2 flex flex-wrap gap-2 justify-center">
+                  {images.slice(0, 3).map((image, idx) => (
+                    <img
+                      key={idx}
+                      src={URL.createObjectURL(image.file)}
+                      alt={image.alt_text}
+                      className="w-12 h-12 object-cover rounded border"
+                    />
+                  ))}
+                  {images.length > 3 && (
+                    <div className="w-12 h-12 bg-gray-200 rounded border flex items-center justify-center text-xs">
+                      +{images.length - 3}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </button>
+        </div>
+      ),
     },
     {
       labelText: "¿Es digital?",
@@ -492,6 +573,14 @@ export default function InventoryForm() {
         btnText="Agregar Inventario"
         onChange={onChange}
         onSubmit={onSubmit}
+      />
+
+      {/* Modal para gestión de imágenes */}
+      <MediaModal
+        isOpen={showMediaModal}
+        onClose={() => setShowMediaModal(false)}
+        images={images}
+        onSave={onImagesUpdate}
       />
     </>
   );

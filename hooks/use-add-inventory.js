@@ -29,6 +29,9 @@ export default function useAddInventory() {
     published_status: false,
     product_id: "",
     attribute_value: "",
+    units: "",
+    units_sold: 0,
+    images: [], // Array de objetos con {file, alt_text, is_featured, default}
   });
 
   const {
@@ -45,14 +48,34 @@ export default function useAddInventory() {
     published_status,
     product_id,
     attribute_value,
+    units,
+    units_sold,
+    images,
   } = formData;
 
   const onChange = (e, field) => {
     setFormData({ ...formData, [field]: e.target.value });
   };
 
+  const onSelectChange = (e, field) => {
+    setFormData({ ...formData, [field]: e.target.value });
+  };
+
   const onCheckboxChange = (e, field) => {
     setFormData({ ...formData, [field]: e.target.checked });
+  };
+
+  const onImageChange = (files) => {
+    setFormData({ ...formData, images: Array.from(files) });
+  };
+
+  const onImagesUpdate = (images) => {
+    setFormData({ ...formData, images: images });
+  };
+
+  const removeImage = (index) => {
+    const newImages = formData.images.filter((_, i) => i !== index);
+    setFormData({ ...formData, images: newImages });
   };
 
   const onSubmit = async (e) => {
@@ -69,7 +92,11 @@ export default function useAddInventory() {
     }
 
     try {
-      const payload = {
+      // Crear FormData para manejar archivos
+      const formDataRequest = new FormData();
+
+      // Datos del inventario
+      const inventoryData = {
         brand: formData.marca || null,
         type: formData.tipo || null,
         quality: formData.estado,
@@ -88,7 +115,32 @@ export default function useAddInventory() {
         user,
       };
 
-      await addInventory(payload).unwrap();
+      // Agregar datos del inventario al FormData
+      Object.keys(inventoryData).forEach((key) => {
+        if (Array.isArray(inventoryData[key])) {
+          inventoryData[key].forEach((item) => {
+            formDataRequest.append(key, item);
+          });
+        } else {
+          formDataRequest.append(key, inventoryData[key]);
+        }
+      });
+
+      // Agregar datos de stock
+      formDataRequest.append("units", formData.units || 0);
+      formDataRequest.append("units_sold", formData.units_sold || 0);
+
+      // Agregar imágenes
+      if (formData.images && formData.images.length > 0) {
+        formData.images.forEach((imageObj) => {
+          formDataRequest.append("images", imageObj.file);
+          formDataRequest.append("alt_texts", imageObj.alt_text);
+          formDataRequest.append("is_featured_flags", imageObj.is_featured);
+          formDataRequest.append("default_flags", imageObj.default);
+        });
+      }
+
+      await addInventory(formDataRequest).unwrap();
       toast.success("Inventory added successfully");
       // Limpiar localStorage de categorías seleccionadas
       if (typeof window !== "undefined") {
@@ -105,6 +157,10 @@ export default function useAddInventory() {
     ...formData,
     isLoading,
     onChange,
+    onImageChange,
+    onImagesUpdate,
+    removeImage,
+    onSelectChange,
     onCheckboxChange,
     onSubmit,
   };

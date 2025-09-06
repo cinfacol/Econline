@@ -11,17 +11,35 @@ export default function Form({
 }) {
   return (
     <form className="space-y-6" onSubmit={onSubmit}>
-      {config.map((input) => (
-        <Input
-          key={input.labelId}
-          {...input}
-          onChange={
-            input.onChange ? input.onChange : (e) => onChange(e, input.labelId)
-          }
-        >
-          {input.labelText}
-        </Input>
-      ))}
+      {config.map((input) =>
+        input.type === "custom" ? (
+          <div key={input.labelId}>
+            <div className="flex justify-between align-center">
+              <label
+                htmlFor={input.labelId}
+                className="block text-sm font-medium leading-6 text-gray-900"
+              >
+                {input.labelText}
+              </label>
+            </div>
+            <div className="mt-2">
+              {input.customRender && input.customRender()}
+            </div>
+          </div>
+        ) : (
+          <Input
+            key={input.labelId}
+            {...input}
+            onChange={
+              input.onChange
+                ? input.onChange
+                : (e) => onChange(e, input.labelId)
+            }
+          >
+            {input.labelText}
+          </Input>
+        )
+      )}
 
       <div>
         <Button variant="default" className="font-bold" disabled={isLoading}>
