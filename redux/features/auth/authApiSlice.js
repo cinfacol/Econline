@@ -48,7 +48,10 @@ const authApiSlice = apiSlice.injectEndpoints({
         if (response.is_guest) {
           return { isGuest: true };
         }
-        return { isAuthenticated: true };
+        return {
+          isAuthenticated: true,
+          isAdmin: response.is_admin || false,
+        };
       },
     }),
     logout: builder.mutation({

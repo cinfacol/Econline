@@ -25,9 +25,14 @@ const booleanFields = ["is_buyer", "is_seller", "is_agent"];
 
 export default function UserProfileDetails() {
   const { isAuthenticated } = useAppSelector((state) => state.auth);
-  const { data: profile, isLoading, error } = useGetProfileQuery(undefined, {
+  const {
+    data: profile,
+    isLoading,
+    error,
+  } = useGetProfileQuery(undefined, {
     skip: !isAuthenticated,
   });
+  console.log("Profile data:", profile);
 
   if (isLoading) {
     return (
@@ -51,7 +56,7 @@ export default function UserProfileDetails() {
         <div className="flex-shrink-0 flex items-center justify-center mb-6 md:mb-0 md:mr-8">
           <Image
             className="h-32 w-32 rounded-full object-cover border-4 border-indigo-200 shadow-lg"
-            src={profile.profile.profile_photo || "/images/profile_default.png"}
+            src={profile.profile.profile_photo || "/images/default_avatar.png"}
             alt={profile.profile.full_name || "Usuario"}
             width={128}
             height={128}
@@ -61,7 +66,9 @@ export default function UserProfileDetails() {
         <div className="flex-1 w-full">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-1">{profile.profile.full_name}</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-1">
+                {profile.profile.full_name}
+              </h2>
               <p className="text-gray-600 mb-2">@{profile.profile.username}</p>
             </div>
             <Button
@@ -84,7 +91,8 @@ export default function UserProfileDetails() {
             {Object.entries(fieldLabels).map(([key, label]) => {
               if (key === "full_name" || key === "username") return null;
               const value = profile.profile[key];
-              if (value === undefined || value === null || value === "") return null;
+              if (value === undefined || value === null || value === "")
+                return null;
               if (booleanFields.includes(key)) {
                 return (
                   <li key={key} className="flex items-center gap-2">
@@ -107,4 +115,4 @@ export default function UserProfileDetails() {
       </div>
     </>
   );
-} 
+}

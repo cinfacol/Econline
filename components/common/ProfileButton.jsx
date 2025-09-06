@@ -32,7 +32,7 @@ function ProfileButton() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [logout] = useLogoutMutation();
-  const { isAuthenticated } = useAppSelector((state) => state.auth);
+  const { isAuthenticated, isAdmin } = useAppSelector((state) => state.auth);
   const {
     data: user,
     isLoading,
@@ -103,18 +103,26 @@ function ProfileButton() {
 
   const menuItems = useMemo(() => {
     if (isAuthenticated) {
-      return [
+      const baseItems = [
         {
           label: user?.email,
           disabled: true,
         },
-        {
-          label: "Dashboard",
+      ];
+
+      // Solo mostrar Dashboard si es administrador
+      if (isAdmin) {
+        baseItems.push({
+          label: "Dashboard Admin",
           href: "/admin",
           icon: (
             <LayoutDashboardIcon className="size-4 mr-2 text-xs text-gray/50" />
           ),
-        },
+        });
+      }
+
+      // Añadir elementos comunes para todos los usuarios autenticados
+      baseItems.push(
         {
           label: "Profile",
           href: "/profile",
@@ -129,8 +137,10 @@ function ProfileButton() {
           label: "Logout",
           onClick: handleLogout,
           icon: <LogOutIcon className="size-4 mr-2 text-xs text-gray/50" />,
-        },
-      ];
+        }
+      );
+
+      return baseItems;
     } else {
       return [
         {
@@ -145,7 +155,7 @@ function ProfileButton() {
         },
       ];
     }
-  }, [isAuthenticated, user, handleLogout]);
+  }, [isAuthenticated, user, handleLogout, isAdmin]);
 
   const handleNavigation = useCallback(
     (e, href, onClick) => {

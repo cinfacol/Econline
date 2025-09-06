@@ -3,10 +3,12 @@ import { setAuth, setGuest, logout } from "@/redux/features/auth/authSlice";
 
 export const useAuth = () => {
   const dispatch = useDispatch();
-  const { isAuthenticated, isGuest, isLoading } = useSelector((state) => state.auth);
+  const { isAuthenticated, isGuest, isLoading, isAdmin } = useSelector(
+    (state) => state.auth
+  );
 
-  const login = () => {
-    dispatch(setAuth());
+  const login = (userData = {}) => {
+    dispatch(setAuth(userData));
   };
 
   const logoutUser = () => {
@@ -21,8 +23,9 @@ export const useAuth = () => {
     isAuthenticated,
     isGuest,
     isLoading,
+    isAdmin,
     login,
     logout: logoutUser,
     setAsGuest,
   };
-}; 
+};

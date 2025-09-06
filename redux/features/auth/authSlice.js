@@ -9,7 +9,7 @@ export const verifyToken = createAsyncThunk(
       // Usar la misma configuración de base URL que apiSlice
       const baseUrl = process.env.NEXT_PUBLIC_HOST || "http://localhost:9090";
       const url = `${baseUrl}/api/auth/jwt/verify/`;
-      
+
       const response = await fetch(url, {
         method: "POST",
         credentials: "include", // Para incluir las cookies
@@ -17,15 +17,18 @@ export const verifyToken = createAsyncThunk(
           "Content-Type": "application/json",
         },
       });
-      
+
       const data = await response.json();
-      
+
       if (response.ok) {
         // El backend retorna is_guest (con guión bajo)
         if (data.is_guest) {
           return { isGuest: true };
         } else {
-          return { isAuthenticated: true };
+          return {
+            isAuthenticated: true,
+            isAdmin: data.is_admin || false,
+          };
         }
       } else {
         return rejectWithValue(data);
@@ -40,23 +43,27 @@ const initialState = {
   isAuthenticated: false,
   isGuest: false,
   isLoading: true,
+  isAdmin: false,
 };
 
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    setAuth: (state) => {
+    setAuth: (state, action) => {
       state.isAuthenticated = true;
       state.isGuest = false;
+      state.isAdmin = action.payload?.isAdmin || false;
     },
     setGuest: (state) => {
       state.isAuthenticated = false;
       state.isGuest = true;
+      state.isAdmin = false;
     },
     logout: (state) => {
       state.isAuthenticated = false;
       state.isGuest = false;
+      state.isAdmin = false;
     },
     finishInitialLoad: (state) => {
       state.isLoading = false;
@@ -72,18 +79,22 @@ const authSlice = createSlice({
         if (action.payload.isGuest) {
           state.isGuest = true;
           state.isAuthenticated = false;
+          state.isAdmin = false;
         } else {
           state.isAuthenticated = true;
           state.isGuest = false;
+          state.isAdmin = action.payload.isAdmin || false;
         }
       })
       .addCase(verifyToken.rejected, (state, action) => {
         state.isLoading = false;
         state.isAuthenticated = false;
         state.isGuest = false;
+        state.isAdmin = false;
       });
   },
 });
 
-export const { setAuth, setGuest, logout, finishInitialLoad } = authSlice.actions;
+export const { setAuth, setGuest, logout, finishInitialLoad } =
+  authSlice.actions;
 export default authSlice.reducer;

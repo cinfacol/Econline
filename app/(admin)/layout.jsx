@@ -1,5 +1,5 @@
-import { RequireAuth } from "@/components/utils";
+import { RequireAdmin } from "@/components/utils";
 
 export default function ProtectedLayout({ children }) {
-  return <RequireAuth>{children}</RequireAuth>;
+  return <RequireAdmin>{children}</RequireAdmin>;
 }
