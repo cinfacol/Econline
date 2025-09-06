@@ -6,7 +6,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Pencil } from "lucide-react";
-import { Container } from "@/components/ui";
 
 const fieldLabels = {
   username: "Usuario",
@@ -34,9 +33,9 @@ export default function UserProfileDetails() {
   });
 
   // Debug log solo si profile existe
-  if (profile) {
+  /* if (profile) {
     console.log("Profile photo:", profile.profile?.profile_photo);
-  }
+  } */
 
   if (isLoading) {
     return (

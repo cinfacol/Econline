@@ -46,7 +46,7 @@ const UserAddresses = () => {
     return (
       <>
         <h2 className="text-2xl pb-3 font-bold tracking-tight text-gray-900">
-          Addresses ({items.length})
+          {items.length === 1 ? "Dirección" : "Direcciones"} ({items.length})
         </h2>
         {items.map((address) => (
           <AddressItem
