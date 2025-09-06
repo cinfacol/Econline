@@ -41,6 +41,7 @@ export default function Input({
             value={value}
             required={required}
           >
+            <option value="">{placeholder || "Seleccionar..."}</option>
             {options && Array.isArray(options)
               ? options.map((opt, index) => (
                   <option key={`${opt.value}-${index}`} value={opt.value}>

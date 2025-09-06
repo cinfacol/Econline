@@ -26,6 +26,38 @@ export const inventoriesApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["Brands"],
     }),
+    getAttributeValues: builder.query({
+      query: () => "/inventory/attribute-values/list/",
+      transformResponse: (responseData) => {
+        // La respuesta es paginada o lista simple
+        return responseData.results || responseData || [];
+      },
+      providesTags: ["AttributeValues"],
+    }),
+    createAttributeValue: builder.mutation({
+      query: (attributeValueData) => ({
+        url: "/inventory/attribute-values/create/",
+        method: "POST",
+        body: attributeValueData,
+      }),
+      invalidatesTags: ["AttributeValues"],
+    }),
+    getTypes: builder.query({
+      query: () => "/inventory/types/list/",
+      transformResponse: (responseData) => {
+        // La respuesta es paginada o lista simple
+        return responseData.results || responseData || [];
+      },
+      providesTags: ["Types"],
+    }),
+    createType: builder.mutation({
+      query: (typeData) => ({
+        url: "/inventory/types/create/",
+        method: "POST",
+        body: typeData,
+      }),
+      invalidatesTags: ["Types"],
+    }),
     getProducts: builder.query({
       query: () => "/products/list/",
       transformResponse: (responseData) => {
@@ -149,4 +181,8 @@ export const {
   useGetProductsQuery,
   useGetBrandsQuery,
   useCreateBrandMutation,
+  useGetAttributeValuesQuery,
+  useCreateAttributeValueMutation,
+  useGetTypesQuery,
+  useCreateTypeMutation,
 } = inventoriesApiSlice;

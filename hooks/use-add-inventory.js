@@ -18,7 +18,7 @@ export default function useAddInventory() {
   const [formData, setFormData] = useState({
     marca: "",
     tipo: "",
-    estado: "Nuevo",
+    estado: "New",
     retail_price: "",
     store_price: "",
     tax: "",
@@ -43,6 +43,8 @@ export default function useAddInventory() {
     is_active,
     is_default,
     published_status,
+    product_id,
+    attribute_value,
   } = formData;
 
   const onChange = (e, field) => {
@@ -55,11 +57,22 @@ export default function useAddInventory() {
 
   const onSubmit = async (e) => {
     e.preventDefault();
+
+    // Validaciones antes del envío
+    if (
+      !formData.product_id ||
+      formData.product_id === "" ||
+      formData.product_id === "0"
+    ) {
+      toast.error("Debe seleccionar un producto");
+      return;
+    }
+
     try {
-      await addInventory({
-        marca: formData.marca,
-        tipo: formData.tipo,
-        estado: formData.estado,
+      const payload = {
+        brand: formData.marca || null,
+        type: formData.tipo || null,
+        quality: formData.estado,
         retail_price: formData.retail_price,
         store_price: formData.store_price,
         tax: formData.tax,
@@ -68,10 +81,14 @@ export default function useAddInventory() {
         is_active: formData.is_active,
         is_default: formData.is_default,
         published_status: formData.published_status,
-        product: formData.product_id,
-        attribute_values: [formData.attribute_value],
+        product: formData.product_id || null,
+        attribute_values: formData.attribute_value
+          ? [formData.attribute_value]
+          : [],
         user,
-      }).unwrap();
+      };
+
+      await addInventory(payload).unwrap();
       toast.success("Inventory added successfully");
       // Limpiar localStorage de categorías seleccionadas
       if (typeof window !== "undefined") {

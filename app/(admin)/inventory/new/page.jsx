@@ -1,10 +1,10 @@
-import AddInventoryForm from "@/components/forms/AddInventoryForm";
+import InventoryForm from "@/components/forms/InventoryForm";
 
 const page = () => {
   return (
     <div>
       <h1>Crear Nuevo Inventario</h1>
-      <AddInventoryForm />
+      <InventoryForm />
     </div>
   );
 };
