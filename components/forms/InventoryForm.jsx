@@ -119,7 +119,7 @@ export default function InventoryForm() {
           <button
             type="button"
             className="ml-2 text-indigo-600 text-lg font-bold"
-            onClick={() => router.push('/admin/products/new')}
+            onClick={() => router.push("/admin/products/new")}
             title="Agregar nuevo producto"
           >
             +

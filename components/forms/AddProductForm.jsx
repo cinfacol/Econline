@@ -114,7 +114,7 @@ export default function AddProductForm() {
           <button
             type="button"
             className="ml-2 text-indigo-600 text-lg font-bold"
-            onClick={() => router.push('/admin/categories')}
+            onClick={() => router.push("/admin/categories")}
             title="Gestionar categorías"
           >
             +
