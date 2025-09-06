@@ -2,7 +2,10 @@
 
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { verifyToken, finishInitialLoad, setGuest } from "@/redux/features/auth/authSlice";
+import {
+  verifyToken,
+  finishInitialLoad,
+} from "@/redux/features/auth/authSlice";
 import { Container } from "@/components/ui";
 import { Spinner } from "@/components/common";
 
@@ -13,12 +16,13 @@ const AuthInitializer = ({ children }) => {
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        const result = await dispatch(verifyToken()).unwrap();
-        // Ensure loading is finished even on success
-        dispatch(finishInitialLoad());
+        // verifyToken maneja toda la lógica y actualiza el estado apropiadamente
+        await dispatch(verifyToken()).unwrap();
       } catch (error) {
-        // Si falla la verificación, el usuario es guest
-        dispatch(setGuest());
+        // El error ya es manejado en el extraReducer rejected
+        console.log("Auth verification completed");
+      } finally {
+        // Asegurar que el loading termine
         dispatch(finishInitialLoad());
       }
     };
@@ -39,4 +43,4 @@ const AuthInitializer = ({ children }) => {
   return children;
 };
 
-export default AuthInitializer; 
+export default AuthInitializer;

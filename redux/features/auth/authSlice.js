@@ -1,18 +1,16 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { apiSlice } from "@/redux/api/apiSlice";
 
-// Async thunk para verificar el token
+// Async thunk para verificar el token silenciosamente (sin endpoints que requieren auth)
 export const verifyToken = createAsyncThunk(
   "auth/verifyToken",
   async (_, { rejectWithValue }) => {
     try {
-      // Usar la misma configuración de base URL que apiSlice
       const baseUrl = process.env.NEXT_PUBLIC_HOST || "http://localhost:9090";
       const url = `${baseUrl}/api/auth/jwt/verify/`;
 
       const response = await fetch(url, {
         method: "POST",
-        credentials: "include", // Para incluir las cookies
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
@@ -21,20 +19,19 @@ export const verifyToken = createAsyncThunk(
       const data = await response.json();
 
       if (response.ok) {
-        // El backend retorna is_guest (con guión bajo)
+        // Si la verificación es exitosa, el usuario está autenticado
         if (data.is_guest) {
-          return { isGuest: true };
+          return { isGuest: true, isAuthenticated: false };
         } else {
-          return {
-            isAuthenticated: true,
-            isAdmin: data.is_admin || false,
-          };
+          return { isGuest: false, isAuthenticated: true };
         }
       } else {
-        return rejectWithValue(data);
+        // Si falla la verificación, el usuario es guest
+        return { isGuest: true, isAuthenticated: false };
       }
     } catch (error) {
-      return rejectWithValue({ error: "Network error" });
+      // En caso de error de red, asumir guest
+      return { isGuest: true, isAuthenticated: false };
     }
   }
 );
@@ -43,7 +40,6 @@ const initialState = {
   isAuthenticated: false,
   isGuest: false,
   isLoading: true,
-  isAdmin: false,
 };
 
 const authSlice = createSlice({
@@ -53,17 +49,14 @@ const authSlice = createSlice({
     setAuth: (state, action) => {
       state.isAuthenticated = true;
       state.isGuest = false;
-      state.isAdmin = action.payload?.isAdmin || false;
     },
     setGuest: (state) => {
       state.isAuthenticated = false;
       state.isGuest = true;
-      state.isAdmin = false;
     },
     logout: (state) => {
       state.isAuthenticated = false;
       state.isGuest = false;
-      state.isAdmin = false;
     },
     finishInitialLoad: (state) => {
       state.isLoading = false;
@@ -76,21 +69,13 @@ const authSlice = createSlice({
       })
       .addCase(verifyToken.fulfilled, (state, action) => {
         state.isLoading = false;
-        if (action.payload.isGuest) {
-          state.isGuest = true;
-          state.isAuthenticated = false;
-          state.isAdmin = false;
-        } else {
-          state.isAuthenticated = true;
-          state.isGuest = false;
-          state.isAdmin = action.payload.isAdmin || false;
-        }
+        state.isAuthenticated = action.payload.isAuthenticated;
+        state.isGuest = action.payload.isGuest;
       })
-      .addCase(verifyToken.rejected, (state, action) => {
+      .addCase(verifyToken.rejected, (state) => {
         state.isLoading = false;
         state.isAuthenticated = false;
-        state.isGuest = false;
-        state.isAdmin = false;
+        state.isGuest = true;
       });
   },
 });

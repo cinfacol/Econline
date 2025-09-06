@@ -6,13 +6,13 @@ import { Spinner } from "@/components/common";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 function RetrieveUserInfo() {
-  const { isAuthenticated } = useAppSelector((state) => state.auth);
+  const { isAuthenticated, isGuest } = useAppSelector((state) => state.auth);
   const {
     data: user,
     isLoading,
     error,
   } = useRetrieveUserQuery(undefined, {
-    skip: !isAuthenticated,
+    skip: !isAuthenticated || isGuest,
   });
   const { profile_photo, full_name, email, date_joined } = user || {};
 

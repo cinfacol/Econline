@@ -12,7 +12,12 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions);
 
   if (result.error && result.error.status === 401) {
-    if (!mutex.isLocked()) {
+    // Verificar el estado de autenticación antes de intentar refresh
+    const state = api.getState();
+    const { isAuthenticated, isGuest } = state.auth;
+
+    // Solo intentar refresh si el usuario está autenticado y no es guest
+    if (isAuthenticated && !isGuest && !mutex.isLocked()) {
       const release = await mutex.acquire();
       try {
         const refreshResult = await baseQuery(
@@ -31,9 +36,13 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
       } finally {
         release();
       }
-    } else {
+    } else if (isAuthenticated && !isGuest) {
+      // Si está autenticado pero el mutex está bloqueado, esperar
       await mutex.waitForUnlock();
       result = await baseQuery(args, api, extraOptions);
+    } else {
+      // Si no está autenticado o es guest, hacer logout sin intentar refresh
+      api.dispatch(logout());
     }
   }
   return result;

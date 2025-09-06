@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  useAddItemToCartMutation,
-  useGetItemsQuery,
-} from "@/redux/features/cart/cartApiSlice";
+import { useAddItemToCartMutation } from "@/redux/features/cart/cartApiSlice";
 import { ShoppingCart } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -20,10 +17,10 @@ const AddItem = ({ data, access, ButtonComponent }) => {
   const onAddToCart = async () => {
     const inventory_id = data?.id;
     const quantity = 1;
-    
+
     try {
       const result = await addItem({ inventory_id, quantity }).unwrap();
-      
+
       if (result.success) {
         toast.success("Producto agregado al carrito exitosamente");
       } else {

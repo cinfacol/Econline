@@ -3,7 +3,10 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAppDispatch } from "@/redux/hooks";
-import { useLoginMutation } from "@/redux/features/auth/authApiSlice";
+import {
+  useLoginMutation,
+  useVerifyMutation,
+} from "@/redux/features/auth/authApiSlice";
 import { setAuth } from "@/redux/features/auth/authSlice";
 import { toast } from "sonner";
 
@@ -11,6 +14,7 @@ export default function useLogin() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [login, { isLoading }] = useLoginMutation();
+  const [verify] = useVerifyMutation();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -30,7 +34,8 @@ export default function useLogin() {
 
     login({ email, password })
       .unwrap()
-      .then(() => {
+      .then(async () => {
+        // Simplemente autenticar después del login exitoso
         dispatch(setAuth());
         toast.success("Logged in successfully");
         router.push("/");

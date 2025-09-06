@@ -17,11 +17,17 @@ import {
 } from "@/redux/features/payment/paymentApiSlice";
 import { CheckoutSkeleton } from "@/components/skeletons";
 import { usePayment } from "@/hooks";
+import { useAppSelector } from "@/redux/hooks";
 import AddressDefault from "@/components/user/Addressdefault";
 
 const CheckoutDetails = () => {
   const router = useRouter();
   const { state, dispatch } = useCheckout();
+  const {
+    isAuthenticated,
+    isGuest,
+    isLoading: authLoading,
+  } = useAppSelector((state) => state.auth);
   const { handlePayment, isProcessing, error, paymentState, setError } =
     usePayment();
 
@@ -30,6 +36,7 @@ const CheckoutDetails = () => {
     isLoading: isLoadingCart,
     refetch: refetchCart,
   } = useGetItemsQuery(undefined, {
+    skip: !isAuthenticated || isGuest || authLoading, // También saltar si aún está cargando el estado de auth
     refetchOnMountOrArgChange: true,
   });
 

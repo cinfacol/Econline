@@ -11,9 +11,9 @@ import { useCreateProductMutation } from "@/redux/features/inventories/inventori
 
 export default function useAddProduct(initialCategoryIds) {
   const router = useRouter();
-  const { isAuthenticated } = useAppSelector((state) => state.auth);
+  const { isAuthenticated, isGuest } = useAppSelector((state) => state.auth);
   const { data } = useRetrieveUserQuery(undefined, {
-    skip: !isAuthenticated,
+    skip: !isAuthenticated || isGuest,
   });
   const [addProduct, { isLoading }] = useCreateProductMutation();
   const [createCategory] = useCreateCategoryMutation();

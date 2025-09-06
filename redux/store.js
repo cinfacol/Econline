@@ -13,9 +13,7 @@ export const store = configureStore({
     modal: modalSliceReducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat([
-      apiSlice.middleware,
-    ]),
+    getDefaultMiddleware().concat([apiSlice.middleware]),
   devTools: process.env.NODE_ENV !== "production",
 });
 

@@ -3,15 +3,25 @@
 import { ShoppingCart } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useGetItemsQuery } from "@/redux/features/cart/cartApiSlice";
+import { useAppSelector } from "@/redux/hooks";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/common";
 
 export default function CartActions() {
-  const { data: itemsData, isLoading, error } = useGetItemsQuery();
+  const { isAuthenticated, isGuest, isLoading } = useAppSelector(
+    (state) => state.auth
+  );
+  const {
+    data: itemsData,
+    isLoading: cartLoading,
+    error,
+  } = useGetItemsQuery(undefined, {
+    skip: !isAuthenticated || isGuest || isLoading, // Solo ejecutar si está autenticado, no es guest y terminó la carga
+  });
 
   const router = useRouter();
 
-  if (isLoading) return <Spinner />;
+  if (cartLoading) return <Spinner />;
 
   return (
     <div className="relative flex">

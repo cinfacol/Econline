@@ -1,11 +1,17 @@
 "use client";
 
 import { useAppSelector } from "@/redux/hooks";
+import { useRetrieveUserQuery } from "@/redux/features/auth/authApiSlice";
 import { ShieldCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 export default function AdminBadge({ className = "" }) {
-  const { isAuthenticated, isAdmin } = useAppSelector((state) => state.auth);
+  const { isAuthenticated, isGuest } = useAppSelector((state) => state.auth);
+  const { data: user } = useRetrieveUserQuery(undefined, {
+    skip: !isAuthenticated || isGuest,
+  });
+
+  const isAdmin = user?.is_admin || false;
 
   if (!isAuthenticated || !isAdmin) {
     return null;

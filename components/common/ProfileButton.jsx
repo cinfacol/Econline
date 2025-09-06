@@ -32,16 +32,23 @@ function ProfileButton() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [logout] = useLogoutMutation();
-  const { isAuthenticated, isAdmin } = useAppSelector((state) => state.auth);
+  const {
+    isAuthenticated,
+    isGuest,
+    isLoading: authLoading,
+  } = useAppSelector((state) => state.auth);
   const {
     data: user,
     isLoading,
     error,
   } = useRetrieveUserQuery(undefined, {
-    skip: !isAuthenticated,
+    skip: !isAuthenticated || isGuest || authLoading, // Solo ejecutar si está autenticado, no es guest y terminó la carga
     pollingInterval: 300000, // Revalidar cada 5 minutos
     refetchOnMountOrArgChange: true,
   });
+
+  // Usar directamente la información del servidor para isAdmin
+  const isAdmin = user?.is_admin || false;
 
   useEffect(() => {
     if (
@@ -51,6 +58,7 @@ function ProfileButton() {
       error.status !== 403 && // Ignorar errores de permisos
       !error.message?.includes("unauthorized") // Ignorar mensajes de unauthorized
     ) {
+      // Solo mostrar errores relevantes para el usuario (problemas de red, servidor, etc.)
       toast.error(
         error.data?.message ||
           error.message ||

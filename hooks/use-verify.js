@@ -13,7 +13,8 @@ export default function useVerify() {
   useEffect(() => {
     verify(undefined)
       .unwrap()
-      .then(() => {
+      .then((response) => {
+        // Simplemente autenticar si la verificación es exitosa
         dispatch(setAuth());
       })
       .finally(() => {

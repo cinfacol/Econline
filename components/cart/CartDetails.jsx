@@ -12,6 +12,7 @@ import {
   useRemoveItemMutation,
   useClearCartMutation,
 } from "@/redux/features/cart/cartApiSlice";
+import { useAppSelector } from "@/redux/hooks";
 import { CartItemSkeleton } from "@/components/skeletons";
 import { EmptyCart } from "./EmptyCart";
 import { CartItem } from "./CartItem";
@@ -20,7 +21,14 @@ import { CartSummary } from "./CartSummary";
 export default function CartDetails() {
   const router = useRouter();
   const [isRedirecting, setIsRedirecting] = useState(false);
-  const { data, isSuccess, isLoading } = useGetItemsQuery();
+  const {
+    isAuthenticated,
+    isGuest,
+    isLoading: authLoading,
+  } = useAppSelector((state) => state.auth);
+  const { data, isSuccess, isLoading } = useGetItemsQuery(undefined, {
+    skip: !isAuthenticated || isGuest || authLoading, // También saltar si aún está cargando el estado de auth
+  });
   const [removeItem] = useRemoveItemMutation();
   const [clearCart] = useClearCartMutation();
   const [decQty] = useDecQtyMutation();

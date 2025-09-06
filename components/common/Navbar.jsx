@@ -37,7 +37,9 @@ const navigation = {
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
-  const { isAuthenticated } = useAppSelector((state) => state.auth);
+  const { isAuthenticated, isGuest, isLoading } = useAppSelector(
+    (state) => state.auth
+  );
   const router = useRouter();
 
   // Función helper para obtener la URL correcta
@@ -211,7 +213,7 @@ export default function Navbar() {
                     </Link>
                   </div>
                   {/* Cart */}
-                  {isAuthenticated ? (
+                  {!isLoading && isAuthenticated && !isGuest ? (
                     <CartActions />
                   ) : (
                     <div className="relative flex">
@@ -220,8 +222,10 @@ export default function Navbar() {
                         className="text-gray-400 hover:text-gray-500 cursor-pointer"
                         size="lg"
                         onClick={() => {
-                          toast.warning("You must logged in first");
-                          router.push("/auth/login");
+                          if (!isLoading) {
+                            toast.warning("You must logged in first");
+                            router.push("/auth/login");
+                          }
                         }}
                       >
                         <span className="sr-only">items in cart, view bag</span>

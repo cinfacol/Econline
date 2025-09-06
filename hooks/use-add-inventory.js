@@ -9,9 +9,9 @@ import { useCreateInventoryMutation } from "@/redux/features/inventories/invento
 
 export default function useAddInventory() {
   const router = useRouter();
-  const { isAuthenticated } = useAppSelector((state) => state.auth);
+  const { isAuthenticated, isGuest } = useAppSelector((state) => state.auth);
   const { data } = useRetrieveUserQuery(undefined, {
-    skip: !isAuthenticated,
+    skip: !isAuthenticated || isGuest,
   });
   const [addInventory, { isLoading }] = useCreateInventoryMutation();
   const user = data?.pk;

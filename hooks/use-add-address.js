@@ -12,9 +12,9 @@ import { toast } from "sonner";
 
 export default function useAddAddress() {
   const router = useRouter();
-  const { isAuthenticated } = useAppSelector((state) => state.auth);
+  const { isAuthenticated, isGuest } = useAppSelector((state) => state.auth);
   const { data } = useRetrieveUserQuery(undefined, {
-    skip: !isAuthenticated,
+    skip: !isAuthenticated || isGuest,
   });
   const [addAddress, { isLoading }] = useAddAddressMutation();
   const [setDefaultAddress] = useSetDefaultAddressMutation();
