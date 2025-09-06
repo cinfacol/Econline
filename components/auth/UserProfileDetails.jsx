@@ -32,7 +32,11 @@ export default function UserProfileDetails() {
   } = useGetProfileQuery(undefined, {
     skip: !isAuthenticated,
   });
-  console.log("Profile data:", profile);
+
+  // Debug log solo si profile existe
+  if (profile) {
+    console.log("Profile photo:", profile.profile?.profile_photo);
+  }
 
   if (isLoading) {
     return (
@@ -56,11 +60,36 @@ export default function UserProfileDetails() {
         <div className="flex-shrink-0 flex items-center justify-center mb-6 md:mb-0 md:mr-8">
           <Image
             className="h-32 w-32 rounded-full object-cover border-4 border-indigo-200 shadow-lg"
-            src={profile.profile.profile_photo || "/images/default_avatar.png"}
-            alt={profile.profile.full_name || "Usuario"}
+            src={
+              profile?.profile?.profile_photo?.startsWith("/")
+                ? `${process.env.NEXT_PUBLIC_HOST || "http://localhost:9090"}${
+                    profile.profile.profile_photo
+                  }`
+                : profile?.profile?.profile_photo ||
+                  "/images/default_avatar.svg"
+            }
+            alt={profile?.profile?.full_name || "Usuario"}
             width={128}
             height={128}
             priority
+            onError={(e) => {
+              // Fallback hierarchy: SVG -> PNG -> nothing
+              if (e.target.src.includes("default_avatar.svg")) {
+                e.target.src = "/images/default_avatar.svg";
+              } else if (!e.target.src.includes("fallback")) {
+                // Create a simple fallback directly
+                e.target.src =
+                  "data:image/svg+xml;base64," +
+                  btoa(`
+                  <svg width="128" height="128" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="64" cy="64" r="64" fill="#6366f1"/>
+                    <circle cx="64" cy="45" r="15" fill="white" opacity="0.9"/>
+                    <path d="M 64 60 C 55 60, 45 65, 40 80 L 88 80 C 83 65, 73 60, 64 60 Z" fill="white" opacity="0.9"/>
+                  </svg>
+                `);
+                e.target.setAttribute("data-fallback", "true");
+              }
+            }}
           />
         </div>
         <div className="flex-1 w-full">

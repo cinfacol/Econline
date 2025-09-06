@@ -1,6 +1,9 @@
 "use client";
 
-import { useGetProfileQuery, useUpdateProfileMutation } from "@/redux/features/auth/authApiSlice";
+import {
+  useGetProfileQuery,
+  useUpdateProfileMutation,
+} from "@/redux/features/auth/authApiSlice";
 import { useAppSelector } from "@/redux/hooks";
 import { Spinner } from "@/components/common";
 import Image from "next/image";
@@ -15,12 +18,19 @@ const genderOptions = [
 
 export default function FormLayout() {
   const { isAuthenticated } = useAppSelector((state) => state.auth);
-  const { data: profile, isLoading, error } = useGetProfileQuery(undefined, {
+  const {
+    data: profile,
+    isLoading,
+    error,
+  } = useGetProfileQuery(undefined, {
     skip: !isAuthenticated,
   });
   const [form, setForm] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
-  const [updateProfile, { isLoading: isSaving, isSuccess, isError, error: saveError }] = useUpdateProfileMutation();
+  const [
+    updateProfile,
+    { isLoading: isSaving, isSuccess, isError, error: saveError },
+  ] = useUpdateProfileMutation();
   const router = useRouter();
 
   // Inicializa el formulario cuando llegan los datos
@@ -75,7 +85,10 @@ export default function FormLayout() {
       }
     });
     try {
-      await updateProfile({ username: profile.profile.username, data: formData }).unwrap();
+      await updateProfile({
+        username: profile.profile.username,
+        data: formData,
+      }).unwrap();
     } catch (err) {
       // El feedback de error se maneja abajo
     }
@@ -88,11 +101,20 @@ export default function FormLayout() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-2xl mx-auto bg-white rounded-xl shadow-md p-6 md:p-10 border border-gray-200 space-y-8">
-      <h2 className="text-2xl font-bold text-gray-900 mb-4 text-center">Editar perfil</h2>
+    <form
+      onSubmit={handleSubmit}
+      className="max-w-2xl mx-auto bg-white rounded-xl shadow-md p-6 md:p-10 border border-gray-200 space-y-8"
+    >
+      <h2 className="text-2xl font-bold text-gray-900 mb-4 text-center">
+        Editar perfil
+      </h2>
       <div className="flex flex-col items-center mb-8">
         <Image
-          src={photoPreview || profile.profile.profile_photo || "/images/profile_default.png"}
+          src={
+            photoPreview ||
+            profile.profile.profile_photo ||
+            "/images/default_avatar.svg"
+          }
           alt={profile.profile.full_name || "Usuario"}
           width={112}
           height={112}
@@ -100,7 +122,15 @@ export default function FormLayout() {
         />
         <label className="mt-4">
           <span className="inline-flex items-center gap-2 rounded bg-indigo-600 px-4 py-2 text-white font-semibold shadow hover:bg-indigo-500 cursor-pointer transition">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path d="M15.232 5.232l3.536 3.536M9 13l6-6m2 2l-6 6m-2 2h6a2 2 0 002-2v-6a2 2 0 00-2-2h-6a2 2 0 00-2 2v6a2 2 0 002 2z"/></svg>
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              viewBox="0 0 24 24"
+            >
+              <path d="M15.232 5.232l3.536 3.536M9 13l6-6m2 2l-6 6m-2 2h6a2 2 0 002-2v-6a2 2 0 00-2-2h-6a2 2 0 00-2 2v6a2 2 0 002 2z" />
+            </svg>
             Cambiar imagen
           </span>
           <input
@@ -114,19 +144,46 @@ export default function FormLayout() {
       </div>
       {isSuccess && (
         <div className="mb-4 flex items-center justify-center gap-2 text-green-600 bg-green-50 border border-green-200 rounded px-4 py-2">
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2}
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M5 13l4 4L19 7"
+            />
+          </svg>
           ¡Perfil actualizado correctamente!
         </div>
       )}
       {isError && (
         <div className="mb-4 flex items-center justify-center gap-2 text-red-600 bg-red-50 border border-red-200 rounded px-4 py-2">
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-          Error al guardar los cambios: {saveError?.data?.detail || "Intenta de nuevo."}
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2}
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+          Error al guardar los cambios:{" "}
+          {saveError?.data?.detail || "Intenta de nuevo."}
         </div>
       )}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 px-2 md:px-8">
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Usuario</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Usuario
+          </label>
           <input
             type="text"
             value={profile.profile.username}
@@ -135,7 +192,9 @@ export default function FormLayout() {
           />
         </div>
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Email
+          </label>
           <input
             type="email"
             value={profile.profile.email || profile.email}
@@ -144,7 +203,9 @@ export default function FormLayout() {
           />
         </div>
         <div className="md:col-span-2 mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Sobre mí</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Sobre mí
+          </label>
           <textarea
             name="about_me"
             value={form.about_me}
@@ -154,7 +215,9 @@ export default function FormLayout() {
           />
         </div>
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Licencia</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Licencia
+          </label>
           <input
             type="text"
             name="license"
@@ -164,7 +227,9 @@ export default function FormLayout() {
           />
         </div>
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Género</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Género
+          </label>
           <select
             name="gender"
             value={form.gender}
@@ -172,7 +237,9 @@ export default function FormLayout() {
             className="block w-full rounded-md border-gray-300 shadow-sm px-3 py-2 focus:ring-2 focus:ring-indigo-500"
           >
             {genderOptions.map((opt) => (
-              <option key={opt.value} value={opt.value}>{opt.label}</option>
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
             ))}
           </select>
         </div>
@@ -217,12 +284,42 @@ export default function FormLayout() {
         >
           {isSaving ? (
             <>
-              <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg>
+              <svg
+                className="w-5 h-5 animate-spin"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v8z"
+                ></path>
+              </svg>
               Guardando...
             </>
           ) : (
             <>
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
               Guardar cambios
             </>
           )}

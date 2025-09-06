@@ -194,7 +194,7 @@ function ProfileButton() {
                 src={
                   isAuthenticated && user?.profile_photo
                     ? user.profile_photo
-                    : "/images/profile_default.png"
+                    : "/images/default_avatar.svg"
                 }
                 alt={
                   isAuthenticated && user?.full_name

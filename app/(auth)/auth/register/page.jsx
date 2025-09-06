@@ -18,7 +18,7 @@ export default function RegisterPage() {
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
         <Image
           className="mx-auto w-auto"
-          src="/images/default_avatar.png"
+          src="/images/default_avatar.svg"
           alt="Tienda Logo"
           width={40}
           height={40}

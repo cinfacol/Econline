@@ -55,7 +55,7 @@ export default function GuestButton() {
             <span className="absolute -inset-1.5" />
             <span className="sr-only">Abrir menú de usuario</span>
             <Avatar>
-              <AvatarImage src="/images/profile_default.png" alt="Invitado" />
+              <AvatarImage src="/images/default_avatar.svg" alt="Invitado" />
               <AvatarFallback>GU</AvatarFallback>
             </Avatar>
           </MenuButton>

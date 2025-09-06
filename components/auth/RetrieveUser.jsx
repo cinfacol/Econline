@@ -7,7 +7,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 function RetrieveUserInfo() {
   const { isAuthenticated } = useAppSelector((state) => state.auth);
-  const { data: user, isLoading, error } = useRetrieveUserQuery(undefined, {
+  const {
+    data: user,
+    isLoading,
+    error,
+  } = useRetrieveUserQuery(undefined, {
     skip: !isAuthenticated,
   });
   const { profile_photo, full_name, email, date_joined } = user || {};
@@ -34,7 +38,7 @@ function RetrieveUserInfo() {
         <div className="relative">
           <Avatar className="h-15 w-15">
             <AvatarImage
-              src={profile_photo || "/images/profile_default.png"}
+              src={profile_photo || "/images/default_avatar.svg"}
               alt={full_name || "Usuario"}
             />
             <AvatarFallback>CN</AvatarFallback>
