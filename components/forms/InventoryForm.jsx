@@ -11,8 +11,10 @@ import { useGetTypesQuery } from "@/redux/features/inventories/inventoriesApiSli
 import { useCreateTypeMutation } from "@/redux/features/inventories/inventoriesApiSlice";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function InventoryForm() {
+  const router = useRouter();
   const [createBrand] = useCreateBrandMutation();
   const [createAttributeValue] = useCreateAttributeValueMutation();
   const [createType] = useCreateTypeMutation();
@@ -111,7 +113,19 @@ export default function InventoryForm() {
   // Generar config con handlers adecuados según tipo
   const config = [
     {
-      labelText: "Producto",
+      labelText: (
+        <div className="flex items-center justify-between">
+          <span>Producto</span>
+          <button
+            type="button"
+            className="ml-2 text-indigo-600 text-lg font-bold"
+            onClick={() => router.push('/admin/products/new')}
+            title="Agregar nuevo producto"
+          >
+            +
+          </button>
+        </div>
+      ),
       labelId: "product_id",
       type: "select",
       value: product_id || "",

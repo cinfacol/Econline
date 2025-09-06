@@ -2,7 +2,6 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { useAddProduct } from "@/hooks";
 import useSelectedCategories from "../../hooks/use-selected-categories";
 import { ProductForm } from "@/components/forms";
@@ -15,6 +14,7 @@ import {
 import { useGetCategoriesQuery } from "@/redux/features/categories/categoriesApiSlice";
 
 export default function AddProductForm() {
+  const router = useRouter();
   const { data: selectedCategoryIds } = useGetSelectedCategoriesQuery();
   const {
     product_name,
@@ -108,7 +108,19 @@ export default function AddProductForm() {
       required: true,
     },
     {
-      labelText: "Category",
+      labelText: (
+        <div className="flex items-center justify-between">
+          <span>Category</span>
+          <button
+            type="button"
+            className="ml-2 text-indigo-600 text-lg font-bold"
+            onClick={() => router.push('/admin/categories')}
+            title="Gestionar categorías"
+          >
+            +
+          </button>
+        </div>
+      ),
       labelId: "category_ids",
       type: "multiselect",
       value: category_ids,
@@ -131,14 +143,6 @@ export default function AddProductForm() {
 
   return (
     <>
-      <div className="mb-4">
-        <Link
-          href="/admin/categories"
-          className="text-blue-600 hover:underline text-sm"
-        >
-          ← Volver a gestionar/crear categorías
-        </Link>
-      </div>
       <ProductForm
         config={config}
         isLoading={isLoading}
