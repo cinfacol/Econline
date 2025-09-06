@@ -146,7 +146,7 @@ export default function AddProductForm() {
       <ProductForm
         config={config}
         isLoading={isLoading}
-        btnText="Add New Product"
+        btnText="Continuar, Crear Inventario"
         onChange={onChange}
         onCheckboxChange={onCheckboxChange}
         onSubmit={onSubmit}
