@@ -37,13 +37,7 @@ export default function MediaModal({ isOpen, onClose, images, onSave }) {
       updatedImages = currentImages.map((img) => ({ ...img, default: false }));
     }
 
-    // Si esta imagen será destacada, quitar featured de las demás
-    if (newImage.is_featured) {
-      updatedImages = updatedImages.map((img) => ({
-        ...img,
-        is_featured: false,
-      }));
-    }
+    // NO quitar featured de las demás - pueden ser varias imágenes destacadas
 
     const imageWithId = {
       ...newImage,
@@ -67,8 +61,8 @@ export default function MediaModal({ isOpen, onClose, images, onSave }) {
     setCurrentImages(
       currentImages.map((img) => {
         if (img.id === imageId) {
-          // Si se está marcando como default o featured, desmarcar las demás
-          if ((field === "default" || field === "is_featured") && value) {
+          // Solo desmarcar las demás si es el campo 'default' - puede haber múltiples featured
+          if (field === "default" && value) {
             const updatedImages = currentImages.map((otherImg) =>
               otherImg.id !== imageId
                 ? { ...otherImg, [field]: false }
