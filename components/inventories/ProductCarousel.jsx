@@ -63,8 +63,9 @@ export default function ProductCarousel({ excludeId }) {
     return <p>Error: {error?.message}</p>;
   }
   if (isSuccess) {
-    if (data.length === 0) {
-      return <NoResults title={"images"} />;
+    if (data.length < 4) {
+      return "";
+      // return <NoResults title={"images"} />;
     }
     return (
       <div className="relative px-2 py-4 md:px-8 md:py-6">
