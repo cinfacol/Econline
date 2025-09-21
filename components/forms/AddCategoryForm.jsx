@@ -75,8 +75,6 @@ export default function AddCategoryForm() {
   };
 
   const handleCategoryCreated = async (newCategory) => {
-    console.log("Nueva categoría creada desde AddCategoryForm:", newCategory);
-
     // Refrescar las categorías
     await refetchCategories();
     setRefreshKey((prev) => prev + 1);

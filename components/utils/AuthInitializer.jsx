@@ -20,7 +20,6 @@ const AuthInitializer = ({ children }) => {
         await dispatch(verifyToken()).unwrap();
       } catch (error) {
         // El error ya es manejado en el extraReducer rejected
-        console.log("Auth verification completed");
       } finally {
         // Asegurar que el loading termine
         dispatch(finishInitialLoad());

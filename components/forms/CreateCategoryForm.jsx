@@ -19,8 +19,6 @@ export default function CreateCategoryForm({ onCategoryCreated, onCancel }) {
   const { data: measureUnits = [], refetch: refetchMeasureUnits } =
     useGetMeasureUnitsQuery();
 
-  console.log("Measure Units:", measureUnits);
-
   const { formData, errors, isLoading, onChange, onSubmit, resetForm } =
     useCreateCategory();
 
@@ -98,8 +96,6 @@ export default function CreateCategoryForm({ onCategoryCreated, onCancel }) {
   };
 
   const handleMeasureUnitCreated = async (newMeasureUnit) => {
-    console.log("Nueva unidad de medida creada:", newMeasureUnit);
-
     // Refrescar las unidades de medida
     await refetchMeasureUnits();
 

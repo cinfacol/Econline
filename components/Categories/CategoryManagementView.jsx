@@ -49,7 +49,6 @@ export default function CategoryManagementView() {
   const allCategories = buildCategoriesFromData();
 
   const handleCategoryCreated = async (newCategory) => {
-    console.log("Nueva categoría creada:", newCategory);
     setShowCreateForm(false);
     // Refrescar las categorías para mostrar la nueva
     await refetch();

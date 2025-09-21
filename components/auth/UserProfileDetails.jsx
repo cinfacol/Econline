@@ -32,11 +32,6 @@ export default function UserProfileDetails() {
     skip: !isAuthenticated,
   });
 
-  // Debug log solo si profile existe
-  /* if (profile) {
-    console.log("Profile photo:", profile.profile?.profile_photo);
-  } */
-
   if (isLoading) {
     return (
       <div className="flex justify-center my-8">
